@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xây dựng Cấu hình PC - PC SHOP</title>
+    <title>Xây dựng Cấu hình PC tự chọn - PC SHOP</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -49,82 +49,140 @@
         </div>
     </div>
 
-    <!-- 3. PC Builder Main Content -->
-    <div class="container-category-page" style="max-width: 1280px; padding: 24px 16px;">
-        <div class="breadcrumb">
-            <a href="index.html">Trang chủ</a> / <span>Xây dựng cấu hình PC</span>
+    <!-- 3. PC Builder Main Page Container -->
+    <div class="build-pc-container">
+        
+        <!-- Breadcrumb -->
+        <div class="breadcrumb" style="margin-bottom: 16px;">
+            <a href="index.html">Trang chủ</a> / <span>Xây dựng máy tính - tạo cấu hình PC</span>
         </div>
 
-        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 28px; margin-top: 16px;">
-            <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-desktop" style="color: #0284c7;"></i> Công Cụ Xây Dựng Cấu Hình PC Tự Chọn
-            </h1>
-            <p style="font-size: 13.5px; color: #64748b; margin-bottom: 24px;">Tự do lựa chọn linh kiện phù hợp với ngân sách và nhu cầu của bạn. Hệ thống tự động kiểm tra tương thích 100%.</p>
+        <!-- Page Header Row -->
+        <div class="build-pc-header-row">
+            <div class="build-pc-title-box" style="display: flex; align-items: center; gap: 16px;">
+                <h1>CHỌN LINH KIỆN XÂY DỰNG CẤU HÌNH</h1>
+                <button class="btn-reset-build" onclick="openResetConfirmModal()">
+                    LÀM MỚI <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+            <div class="build-pc-total-top">
+                Chi phí dự tính: <strong id="totalCostTop">0 đ</strong>
+            </div>
+        </div>
 
-            <!-- Component Selection Table -->
-            <div style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Component List Table -->
+        <div class="build-pc-table" id="buildPcTable">
+            <!-- Dynamically Rendered via js/build-pc.js -->
+        </div>
+
+        <!-- Bottom Actions & Total Cost Bar (Matching Image 3) -->
+        <div class="build-pc-bottom-bar">
+            <div class="build-pc-total-bottom">
+                Chi phí dự tính: <strong id="totalCostBottom">0 đ</strong>
+            </div>
+            <div class="build-pc-actions-grid">
+                <button class="btn-build-action" onclick="alert('Yêu cầu tư vấn cấu hình PC đã được gửi!')">
+                    <i class="fa-solid fa-comments"></i> Yêu cầu tư vấn
+                </button>
+                <button class="btn-build-action" onclick="alert('Đang tạo ảnh cấu hình PC...')">
+                    <i class="fa-solid fa-image"></i> Tải ảnh cấu hình
+                </button>
+                <button class="btn-build-action" onclick="alert('Đang tải file Excel cấu hình PC...')">
+                    <i class="fa-solid fa-file-excel"></i> Tải file Excel cấu hình
+                </button>
+                <button class="btn-build-action" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Xem & In
+                </button>
+                <button class="btn-build-action btn-accent" onclick="addBuildToCart()">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 4. POPUP MODAL CHỌN LINH KIỆN (Exact Match to Image 1) -->
+    <div class="pc-builder-modal-overlay" id="pcBuilderModal">
+        <div class="pc-builder-modal">
+            
+            <!-- Modal Header -->
+            <div class="modal-header-bar">
+                <div class="modal-header-title" id="modalTitle">CHỌN LINH KIỆN</div>
+                <div class="modal-search-wrap">
+                    <input type="text" id="modalSearchInput" placeholder="Bạn cần tìm linh kiện gì?">
+                    <button type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal()">✕</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body-layout">
                 
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
-                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-microchip"></i></span>
-                        <strong style="font-size: 14px; color: #1e293b;">1. Bộ vi xử lý (CPU)</strong>
+                <!-- Left Sidebar Filter -->
+                <aside class="modal-sidebar-filter">
+                    <div class="modal-sidebar-title">LỌC SẢN PHẨM THEO</div>
+                    
+                    <div class="modal-filter-group">
+                        <h4>Hãng sản xuất</h4>
+                        <label class="modal-filter-checkbox"><input type="checkbox" checked> Tất cả</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> Intel</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> AMD</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> ASUS</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> Gigabyte</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> MSI</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> Kingston</label>
                     </div>
-                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn CPU...</div>
-                    <a href="category.html?slug=main-cpu-vga" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn CPU</a>
-                </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
-                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-hard-drive"></i></span>
-                        <strong style="font-size: 14px; color: #1e293b;">2. Bo mạch chủ (Main)</strong>
+                    <div class="modal-filter-group">
+                        <h4>Khoảng giá</h4>
+                        <label class="modal-filter-checkbox"><input type="checkbox" checked> Tất cả</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> Dưới 3 triệu</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> 3 triệu - 7 triệu</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> 7 triệu - 15 triệu</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox"> Trên 15 triệu</label>
                     </div>
-                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn Mainboard...</div>
-                    <a href="category.html?slug=main-cpu-vga" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn Mainboard</a>
-                </div>
+                </aside>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
-                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-memory"></i></span>
-                        <strong style="font-size: 14px; color: #1e293b;">3. Bộ nhớ RAM</strong>
+                <!-- Right Product List Area -->
+                <main class="modal-main-products">
+                    
+                    <div class="modal-sort-bar">
+                        <div class="modal-sort-left">
+                            <span>Sắp xếp:</span>
+                            <select id="modalSortSelect">
+                                <option value="newest">Mới nhất</option>
+                                <option value="price-asc">Giá tăng dần</option>
+                                <option value="price-desc">Giá giảm dần</option>
+                            </select>
+                        </div>
+                        <button class="btn-modal-clear-filter" onclick="loadModalProducts(activeModalComponentKey)">Xóa bộ lọc</button>
                     </div>
-                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn RAM...</div>
-                    <a href="category.html?slug=o-cung-ram" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn RAM</a>
-                </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
-                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-tv"></i></span>
-                        <strong style="font-size: 14px; color: #1e293b;">4. Card màn hình (VGA)</strong>
+                    <!-- Products List Container -->
+                    <div class="modal-product-list" id="modalProductList">
+                        <!-- Loaded dynamically via js/build-pc.js -->
                     </div>
-                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn VGA...</div>
-                    <a href="category.html?slug=main-cpu-vga" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn VGA</a>
-                </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
-                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-box"></i></span>
-                        <strong style="font-size: 14px; color: #1e293b;">5. Vỏ Case & Nguồn</strong>
-                    </div>
-                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn Case & Nguồn...</div>
-                    <a href="category.html?slug=case-nguon-tan" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn Case & Nguồn</a>
-                </div>
+                </main>
 
             </div>
 
-            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <span style="font-size: 14px; color: #64748b;">Tổng tiền cấu hình:</span>
-                    <strong style="font-size: 22px; color: #0284c7; margin-left: 8px;">0 đ</strong>
-                </div>
-                <div style="display: flex; gap: 12px;">
-                    <button style="padding: 10px 20px; background: #ef4444; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">Tạo lại cấu hình</button>
-                    <button style="padding: 10px 24px; background: #0284c7; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">Thêm vào giỏ hàng →</button>
-                </div>
+        </div>
+    </div>
+
+    <!-- 5. RESET CONFIRMATION MODAL -->
+    <div class="confirm-modal-overlay" id="resetConfirmModal">
+        <div class="confirm-modal-box">
+            <h3><i class="fa-solid fa-triangle-exclamation" style="color: #0284c7;"></i> Xác nhận làm mới</h3>
+            <p>Bạn có chắc chắn muốn làm mới toàn bộ cấu hình PC không? Tất cả linh kiện bạn đã chọn sẽ bị xóa.</p>
+            <div class="confirm-modal-actions">
+                <button class="btn-modal-cancel" onclick="closeResetConfirmModal()">HỦY</button>
+                <button class="btn-modal-confirm" onclick="confirmResetBuild()">ĐỒNG Ý</button>
             </div>
         </div>
     </div>
 
-    <!-- 4. Footer -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container-footer">
             <div class="footer-bottom">
@@ -133,7 +191,9 @@
         </div>
     </footer>
 
+    <!-- App Scripts -->
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/build-pc.js"></script>
 </body>
 </html>
