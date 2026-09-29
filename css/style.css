@@ -1951,10 +1951,10 @@ body {
 }
 
 .kcc-pagination-page.active {
-    background: #ff7700;
+    background: #0284c7;
     color: #ffffff;
     font-weight: 800;
-    box-shadow: 0 4px 12px rgba(255, 119, 0, 0.35);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
 }
 
 .kcc-pagination-nav {
