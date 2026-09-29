@@ -179,28 +179,31 @@ function renderLandingSections() {
 
     if (!pcGrid || !laptopGamingGrid || !laptopOfficeGrid) return;
 
-    // Lọc các sản phẩm theo từng nhóm
+    // Lọc lấy 10-12 sản phẩm mỗi nhóm để hiển thị slider cuộn mượt
     const pcProducts = liveProducts.filter(p => {
         const cat = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
         const name = (p.name || '').toLowerCase();
         return cat.includes('pc-gaming') || name.includes('pc gvn') || (name.includes('pc ') && !name.includes('laptop'));
-    }).slice(0, 5);
+    }).slice(0, 10);
 
     const gamingLaptopProducts = liveProducts.filter(p => {
         const cat = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
         const name = (p.name || '').toLowerCase();
         return cat.includes('laptop-gaming') || (name.includes('laptop') && (name.includes('gaming') || name.includes('rog') || name.includes('tuf') || name.includes('nitro') || name.includes('rtx')));
-    }).slice(0, 5);
+    }).slice(0, 10);
 
     const officeLaptopProducts = liveProducts.filter(p => {
         const cat = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
         const name = (p.name || '').toLowerCase();
         return cat === 'laptop' || (name.includes('laptop') && !name.includes('gaming') && !name.includes('nitro') && !name.includes('rog'));
-    }).slice(0, 5);
+    }).slice(0, 10);
 
-    renderProductCardsToContainer(pcGrid, pcProducts.length > 0 ? pcProducts : liveProducts.slice(0, 5));
-    renderProductCardsToContainer(laptopGamingGrid, gamingLaptopProducts.length > 0 ? gamingLaptopProducts : liveProducts.slice(5, 10));
-    renderProductCardsToContainer(laptopOfficeGrid, officeLaptopProducts.length > 0 ? officeLaptopProducts : liveProducts.slice(10, 15));
+    renderProductCardsToContainer(pcGrid, pcProducts.length > 0 ? pcProducts : liveProducts.slice(0, 10));
+    renderProductCardsToContainer(laptopGamingGrid, gamingLaptopProducts.length > 0 ? gamingLaptopProducts : liveProducts.slice(10, 20));
+    renderProductCardsToContainer(laptopOfficeGrid, officeLaptopProducts.length > 0 ? officeLaptopProducts : liveProducts.slice(20, 30));
+
+    // Khởi tạo Tự động trượt nhẹ sản phẩm theo định kỳ
+    initAutoSectionSliders();
 }
 
 function renderProductCardsToContainer(container, products) {
@@ -242,6 +245,33 @@ function renderProductCardsToContainer(container, products) {
         container.appendChild(card);
     });
 }
+
+// Hàm cuộn Slider cho từng Section bằng nút bấm ‹ ›
+function scrollSection(containerId, direction) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const scrollAmount = container.clientWidth * 0.8;
+    container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+}
+
+// Tự động cuộn slide sản phẩm nhẹ nhàng
+function initAutoSectionSliders() {
+    const sectionIds = ['pcGrid', 'laptopGamingGrid', 'laptopOfficeGrid'];
+    sectionIds.forEach(id => {
+        let dir = 1;
+        setInterval(() => {
+            const container = document.getElementById(id);
+            if (!container) return;
+            if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+                dir = -1;
+            } else if (container.scrollLeft <= 10) {
+                dir = 1;
+            }
+            container.scrollBy({ left: dir * 280, behavior: 'smooth' });
+        }, 6000);
+    });
+}
+
 
 
 // Cart Drawer
