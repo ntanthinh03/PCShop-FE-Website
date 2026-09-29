@@ -151,13 +151,85 @@ function updateTotalCostDisplay() {
     if (bottomElem) bottomElem.textContent = totalVnd;
 }
 
+// Helper xác định Socket của CPU
+function getCpuSocket(cpuProduct) {
+    if (!cpuProduct) return null;
+    const name = (cpuProduct.name || '').toLowerCase();
+
+    if (name.includes('am4') || name.includes('ryzen 5 5') || name.includes('ryzen 7 5') || name.includes('ryzen 9 5') || name.includes('ryzen 3 3') || name.includes('ryzen 5 3') || name.includes('ryzen 7 3') || name.includes('ryzen 9 3') || name.includes('5500') || name.includes('5600') || name.includes('5700') || name.includes('5800') || name.includes('5900') || name.includes('5950')) {
+        return 'AM4';
+    }
+    if (name.includes('am5') || name.includes('ryzen 5 7') || name.includes('ryzen 7 7') || name.includes('ryzen 9 7') || name.includes('ryzen 5 9') || name.includes('ryzen 7 9') || name.includes('ryzen 9 9') || name.includes('7500f') || name.includes('7600') || name.includes('7700') || name.includes('7800x3d') || name.includes('7900') || name.includes('7950') || name.includes('9600') || name.includes('9700') || name.includes('9800x3d') || name.includes('9900') || name.includes('9950')) {
+        return 'AM5';
+    }
+    if (name.includes('lga 1700') || name.includes('lga1700') || name.includes('14900') || name.includes('14700') || name.includes('14600') || name.includes('14500') || name.includes('14400') || name.includes('14100') || name.includes('13900') || name.includes('13700') || name.includes('13600') || name.includes('13400') || name.includes('12900') || name.includes('12700') || name.includes('12600') || name.includes('12400') || name.includes('12100')) {
+        return 'LGA 1700';
+    }
+    if (name.includes('lga 1851') || name.includes('lga1851') || name.includes('ultra 9 285k') || name.includes('ultra 7 265k') || name.includes('ultra 5 245k')) {
+        return 'LGA 1851';
+    }
+    return null;
+}
+
+// Helper kiểm tra tính tương thích Socket cho Mainboard
+function isMainboardCompatibleWithSocket(mbProduct, socket) {
+    if (!mbProduct || !socket) return true;
+    const name = (mbProduct.name || '').toLowerCase();
+
+    if (socket === 'AM4') {
+        return name.includes('am4') || name.includes('b450') || name.includes('b550') || name.includes('a520') || name.includes('x570') || name.includes('a320') || name.includes('b350') || name.includes('x470');
+    }
+    if (socket === 'AM5') {
+        return name.includes('am5') || name.includes('b650') || name.includes('x670') || name.includes('a620') || name.includes('x870');
+    }
+    if (socket === 'LGA 1700') {
+        return name.includes('1700') || name.includes('h610') || name.includes('b760') || name.includes('z790') || name.includes('b660') || name.includes('z690') || name.includes('h670');
+    }
+    if (socket === 'LGA 1851') {
+        return name.includes('1851') || name.includes('z890') || name.includes('b860');
+    }
+    return true;
+}
+
+// Helper xác định loại RAM bắt buộc (DDR4 hay DDR5)
+function getRequiredRamType() {
+    // Ưu tiên 1: Theo Mainboard đã chọn
+    if (selectedComponents.mainboard && selectedComponents.mainboard.product) {
+        const mbName = (selectedComponents.mainboard.product.name || '').toLowerCase();
+        if (mbName.includes('ddr4') || mbName.includes('d4') || mbName.includes('b450') || mbName.includes('b550') || mbName.includes('a520') || mbName.includes('x570') || mbName.includes('a320') || mbName.includes('b350') || mbName.includes('x470')) {
+            return 'DDR4';
+        }
+        if (mbName.includes('ddr5') || mbName.includes('d5') || mbName.includes('b650') || mbName.includes('x670') || mbName.includes('a620') || mbName.includes('x870')) {
+            return 'DDR5';
+        }
+    }
+
+    // Ưu tiên 2: Theo CPU đã chọn (nếu chưa chọn Mainboard)
+    if (selectedComponents.cpu && selectedComponents.cpu.product) {
+        const socket = getCpuSocket(selectedComponents.cpu.product);
+        if (socket === 'AM4') return 'DDR4';
+        if (socket === 'AM5' || socket === 'LGA 1851') return 'DDR5';
+    }
+
+    return null;
+}
+
 // MỞ POPUP MODAL CHỌN LINH KIỆN
 async function openComponentModal(key) {
     activeModalComponentKey = key;
     const comp = COMPONENT_TYPES.find(c => c.key === key);
     if (!comp) return;
 
-    document.getElementById('modalTitle').textContent = `CHỌN LINH KIỆN: ${comp.name.toUpperCase()}`;
+    let autoFilterLabel = '';
+    if (key === 'mainboard' && selectedComponents.cpu && selectedComponents.cpu.product) {
+        const socket = getCpuSocket(selectedComponents.cpu.product);
+        if (socket) autoFilterLabel = ` - SOCKET ${socket}`;
+    } else if (key === 'ram') {
+        const ramType = getRequiredRamType();
+        if (ramType) autoFilterLabel = ` - LOẠI ${ramType}`;
+    }
+
+    document.getElementById('modalTitle').textContent = `CHỌN LINH KIỆN: ${comp.name.toUpperCase()}${autoFilterLabel}`;
     document.getElementById('modalSearchInput').value = '';
 
     const modal = document.getElementById('pcBuilderModal');
@@ -182,57 +254,98 @@ async function loadModalProducts(comp) {
         if (res.status === 'success' && res.data) {
             const allProducts = Array.isArray(res.data) ? res.data : (res.data.data || []);
 
-            // Lọc NGHIÊM NGẶT 100% theo loại linh kiện (CẤM lẫn loại khác)
+            // Lọc NGHIÊM NGẶT 100% theo loại linh kiện và tính tương thích
             modalCategoryProducts = allProducts.filter(p => {
                 const name = (p.name || '').toLowerCase();
                 const catSlug = (p.category_slug || (p.category ? (p.category.slug || '') : '')).toLowerCase();
 
+                // CẤM tuyệt đối máy bộ PC dựng sẵn & Laptop lọt vào danh sách linh kiện lẻ
+                const isPrebuiltOrLaptop = name.includes('pc gvn') || name.includes('pc gaming') || name.includes('pcshop') || name.includes('laptop') || name.includes('bộ máy pc');
+                if (isPrebuiltOrLaptop) return false;
+
                 if (comp.key === 'cpu') {
-                    return (name.includes('vi xử lý') || name.includes('cpu') || name.includes('intel core') || name.includes('amd ryzen')) 
-                        && !name.includes('mainboard') && !name.includes('laptop') && !name.includes('pc gaming') && !name.includes('tản nhiệt');
+                    return (name.includes('vi xử lý') || name.includes('cpu') || name.includes('intel core') || name.includes('amd ryzen') || name.includes('ultra 5') || name.includes('ultra 7') || name.includes('ultra 9')) 
+                        && !name.includes('mainboard') && !name.includes('tản nhiệt');
                 }
+
                 if (comp.key === 'mainboard') {
-                    return (name.includes('mainboard') || name.includes('bo mạch') || name.includes('z790') || name.includes('b760') || name.includes('b650') || name.includes('x670') || name.includes('a620') || name.includes('h610'))
-                        && !name.includes('laptop') && !name.includes('vi xử lý') && !name.includes('cpu');
+                    const isMainboard = (name.includes('mainboard') || name.includes('bo mạch') || name.includes('z790') || name.includes('b760') || name.includes('b650') || name.includes('x670') || name.includes('a620') || name.includes('h610') || name.includes('b450') || name.includes('b550') || name.includes('a520') || name.includes('x570') || name.includes('b660') || name.includes('z690'))
+                        && !name.includes('vi xử lý') && !name.includes('cpu') && !name.includes('card màn hình');
+
+                    if (!isMainboard) return false;
+
+                    // TỰ ĐỘNG LỌC THEO SOCKET CPU NẾU ĐÃ CHỌN CPU
+                    if (selectedComponents.cpu && selectedComponents.cpu.product) {
+                        const cpuSocket = getCpuSocket(selectedComponents.cpu.product);
+                        if (cpuSocket) {
+                            return isMainboardCompatibleWithSocket(p, cpuSocket);
+                        }
+                    }
+                    return true;
                 }
+
                 if (comp.key === 'ram') {
-                    return (name.includes('ram') || name.includes('ddr4') || name.includes('ddr5') || name.includes('kingbank'))
-                        && !name.includes('laptop') && !name.includes('vga') && !name.includes('ssd');
+                    const isRam = (name.includes('ram') || name.includes('ddr4') || name.includes('ddr5') || name.includes('bộ nhớ ram'))
+                        && !name.includes('vga') && !name.includes('ssd') && !name.includes('ổ cứng');
+
+                    if (!isRam) return false;
+
+                    // TỰ ĐỘNG LỌC DDR4 / DDR5 THEO MAINBOARD HOẶC CPU ĐÃ CHỌN
+                    const requiredType = getRequiredRamType();
+                    if (requiredType === 'DDR4') {
+                        return name.includes('ddr4') || (!name.includes('ddr5') && (name.includes('3200mhz') || name.includes('3600mhz') || name.includes('2666mhz')));
+                    }
+                    if (requiredType === 'DDR5') {
+                        return name.includes('ddr5') || (!name.includes('ddr4') && (name.includes('5600mhz') || name.includes('6000mhz') || name.includes('5200mhz') || name.includes('4800mhz')));
+                    }
+                    return true;
                 }
+
                 if (comp.key === 'ssd') {
-                    return (name.includes('ssd') || name.includes('nvme') || name.includes('m.2')) && !name.includes('laptop') && !name.includes('ram');
+                    return (name.includes('ssd') || name.includes('nvme') || name.includes('m.2')) && !name.includes('ram') && !name.includes('hdd');
                 }
+
                 if (comp.key === 'hdd') {
                     return (name.includes('hdd') || name.includes('ổ cứng hdd') || name.includes('western digital purple') || name.includes('barracuda')) && !name.includes('ssd');
                 }
+
                 if (comp.key === 'vga') {
-                    return (name.includes('card màn hình') || name.includes('rtx') || name.includes('gtx') || name.includes('vga') || name.includes('radeon') || name.includes('geforce'))
-                        && !name.includes('laptop') && !name.includes('pc gaming') && !name.includes('vi xử lý');
+                    return (name.includes('card màn hình') || name.includes('vga') || name.includes('rtx') || name.includes('gtx') || name.includes('radeon') || name.includes('geforce'))
+                        && !name.includes('vi xử lý') && !name.includes('mainboard') && !name.includes('ram');
                 }
+
                 if (comp.key === 'psu') {
-                    return (name.includes('nguồn') || name.includes('psu') || name.includes('power') || name.includes('80 plus'));
+                    return (name.includes('nguồn') || name.includes('psu') || name.includes('power') || name.includes('80 plus')) && !name.includes('vỏ case');
                 }
+
                 if (comp.key === 'case') {
-                    return (name.includes('vỏ case') || name.includes('vỏ cây') || name.includes('case pc') || name.includes('bể cá') || name.includes('sama') || name.includes('nzxt'));
+                    return (name.includes('vỏ case') || name.includes('vỏ cây') || name.includes('case pc') || name.includes('bể cá') || name.includes('sama') || name.includes('nzxt')) && !name.includes('fan case');
                 }
+
                 if (comp.key === 'cooler') {
-                    return (name.includes('tản nhiệt') || name.includes('cooler') || name.includes('aio') || name.includes('cr-3000') || name.includes('thermalright'));
+                    return (name.includes('tản nhiệt') || name.includes('cooler') || name.includes('aio') || name.includes('cr-3000') || name.includes('thermalright')) && !name.includes('fan case');
                 }
+
                 if (comp.key === 'fan') {
                     return (name.includes('fan case') || name.includes('quạt case') || name.includes('fan led') || name.includes('120mm'));
                 }
+
                 if (comp.key === 'monitor') {
                     return (name.includes('màn hình') || name.includes('monitor') || catSlug.includes('man-hinh'));
                 }
+
                 if (comp.key === 'keyboard') {
                     return (name.includes('bàn phím') || name.includes('keyboard') || catSlug.includes('ban-phim'));
                 }
+
                 if (comp.key === 'mouse') {
                     return (name.includes('chuột') || name.includes('mouse') || catSlug.includes('chuot-lot'));
                 }
+
                 if (comp.key === 'headset') {
                     return (name.includes('tai nghe') || name.includes('headset') || catSlug.includes('tai-nghe'));
                 }
+
                 if (comp.key === 'chair') {
                     return (name.includes('ghế') || name.includes('bàn') || catSlug.includes('ghe-ban'));
                 }
