@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PC SHOP - Cửa hàng Linh kiện & PC Gaming</title>
+    <title>PC SHOP - Siêu Thị Máy Tính & Linh Kiện Gaming Chính Hãng</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -15,12 +15,12 @@
     <!-- 1. Top Bar -->
     <div class="top-bar">
         <div class="container-top">
-            <a href="#">Tất cả khuyến mãi</a>
-            <a href="#">Tin tức - Review</a>
-            <a href="#">Tra Cứu Bảo Hành</a>
-            <a href="#">Dịch vụ tận nhà</a>
-            <a href="#">Thu cũ đổi mới</a>
-            <a href="#">Hệ Thống Showroom</a>
+            <a href="#"><i class="fa-solid fa-tag blue-icon"></i> Tất cả khuyến mãi</a>
+            <a href="#"><i class="fa-solid fa-newspaper blue-icon"></i> Tin tức - Review</a>
+            <a href="#"><i class="fa-solid fa-wrench blue-icon"></i> Tra Cứu Bảo Hành</a>
+            <a href="#"><i class="fa-solid fa-truck-fast blue-icon"></i> Dịch vụ tận nhà</a>
+            <a href="#"><i class="fa-solid fa-rotate blue-icon"></i> Thu cũ đổi mới</a>
+            <a href="#"><i class="fa-solid fa-location-dot blue-icon"></i> Hệ Thống Showroom</a>
         </div>
     </div>
 
@@ -28,12 +28,13 @@
     <header class="header">
         <div class="container-header">
             <a href="index.html" class="logo">PC<span>SHOP</span></a>
-            <button class="btn-category" id="btnCategoryDropdown">☰ Danh mục</button>
+            <button class="btn-category" id="btnCategoryDropdown"><i class="fa-solid fa-bars"></i> Danh mục</button>
             <div class="search-wrap">
-                <input type="text" id="searchInput" placeholder="Bạn cần tìm gì...">
+                <input type="text" id="searchInput" placeholder="Bạn cần tìm linh kiện, laptop, PC gaming gì...">
+                <button class="btn-search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-            <button class="btn-cart" id="cartBtn">🛒 Giỏ (<span id="cartCount">0</span>)</button>
-            <button class="btn-login" id="loginBtn">Đăng nhập</button>
+            <button class="btn-cart" id="cartBtn"><i class="fa-solid fa-cart-shopping"></i> Giỏ (<span id="cartCount">0</span>)</button>
+            <button class="btn-login" id="loginBtn"><i class="fa-solid fa-user"></i> Đăng nhập</button>
         </div>
     </header>
 
@@ -52,50 +53,42 @@
                 </div>
             </div>
             <div class="cart-footer" id="cartFooter" style="display: none;">
-                <button class="btn-checkout">Thanh toán →</button>
+                <button class="btn-checkout">Thanh toán ngay →</button>
             </div>
         </div>
     </div>
 
-    <!-- 4. Body Content -->
+    <!-- 4. Body Main Layout -->
     <div class="main-wrapper">
 
-        <!-- Sidebar Categories with Full Mega Menu Submenus -->
+        <!-- Sidebar Categories Navigation -->
         <aside class="sidebar">
             <ul class="category-menu" id="categoryMenu">
                 
                 <!-- 1. Laptop -->
                 <li data-cat="laptop">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-laptop red-icon"></i> Laptop</span>
+                        <span class="menu-icon"><i class="fa-solid fa-laptop blue-icon"></i> Laptop</span>
                         <span>›</span>
                     </div>
                     <div class="mega-menu">
                         <div class="mega-header">
-                            <h3>Laptop</h3>
+                            <h3>Laptop Văn Phòng & Đồ Họa</h3>
                             <a href="category.html?slug=laptop">Xem tất cả &gt;</a>
                         </div>
                         <div class="mega-grid-4">
                             <div class="mega-col">
                                 <h4>Thương Hiệu Laptop</h4>
-                                <a href="category.html?slug=laptop&brand=ASUS">ASUS</a>
-                                <a href="category.html?slug=laptop&brand=Acer">Acer</a>
-                                <a href="category.html?slug=laptop&brand=MSI">MSI</a>
-                                <a href="category.html?slug=laptop&brand=Lenovo">Lenovo</a>
-                                <a href="category.html?slug=laptop&brand=Dell">Dell</a>
-                                <a href="category.html?slug=laptop&brand=Apple">Apple MacBook</a>
+                                <a href="category.html?slug=laptop&brand=ASUS">ASUS Zenbook / Vivobook</a>
+                                <a href="category.html?slug=laptop&brand=Acer">Acer Aspire / Swift</a>
+                                <a href="category.html?slug=laptop&brand=MSI">MSI Modern / Prestige</a>
+                                <a href="category.html?slug=laptop&brand=Apple">Apple MacBook Pro / Air</a>
                             </div>
                             <div class="mega-col">
                                 <h4>Nhu Cầu Sử Dụng</h4>
                                 <a href="category.html?slug=laptop">Laptop Văn Phòng</a>
                                 <a href="category.html?slug=laptop">Laptop Đồ Họa / Creator</a>
                                 <a href="category.html?slug=laptop">Laptop Mỏng Nhẹ High-end</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Khoảng Giá</h4>
-                                <a href="category.html?slug=laptop">Dưới 15 triệu</a>
-                                <a href="category.html?slug=laptop">15 - 25 triệu</a>
-                                <a href="category.html?slug=laptop">Trên 25 triệu</a>
                             </div>
                         </div>
                     </div>
@@ -104,28 +97,26 @@
                 <!-- 2. Laptop Gaming -->
                 <li data-cat="laptop-gaming">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-gamepad red-icon"></i> Laptop Gaming</span>
+                        <span class="menu-icon"><i class="fa-solid fa-gamepad blue-icon"></i> Laptop Gaming</span>
                         <span>›</span>
                     </div>
                     <div class="mega-menu">
                         <div class="mega-header">
-                            <h3>Laptop Gaming</h3>
+                            <h3>Laptop Gaming Cấu Hình Cao</h3>
                             <a href="category.html?slug=laptop-gaming">Xem tất cả &gt;</a>
                         </div>
                         <div class="mega-grid-4">
                             <div class="mega-col">
                                 <h4>Dòng Laptop Gaming</h4>
                                 <a href="category.html?slug=laptop-gaming&search=ROG">ASUS ROG / TUF Gaming</a>
-                                <a href="category.html?slug=laptop-gaming&search=Nitro">Acer Nitro / Predator</a>
+                                <a href="category.html?slug=laptop-gaming&search=Nitro">Acer Nitro 5 / Predator</a>
                                 <a href="category.html?slug=laptop-gaming&search=MSI">MSI Gaming Series</a>
-                                <a href="category.html?slug=laptop-gaming&search=Legion">Lenovo Legion / LOQ</a>
                             </div>
                             <div class="mega-col">
                                 <h4>Card Đồ Họa Laptop</h4>
-                                <a href="category.html?slug=laptop-gaming&search=3050">NVIDIA RTX 3050 Laptop</a>
-                                <a href="category.html?slug=laptop-gaming&search=4050">NVIDIA RTX 4050 Laptop</a>
-                                <a href="category.html?slug=laptop-gaming&search=4060">NVIDIA RTX 4060 Laptop</a>
-                                <a href="category.html?slug=laptop-gaming&search=4070">NVIDIA RTX 4070 Laptop</a>
+                                <a href="category.html?slug=laptop-gaming&search=3050">NVIDIA RTX 3050</a>
+                                <a href="category.html?slug=laptop-gaming&search=4060">NVIDIA RTX 4060</a>
+                                <a href="category.html?slug=laptop-gaming&search=4070">NVIDIA RTX 4070</a>
                             </div>
                         </div>
                     </div>
@@ -134,7 +125,7 @@
                 <!-- 3. PC GVN -->
                 <li data-cat="pc-gaming">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-desktop red-icon"></i> PC GVN</span>
+                        <span class="menu-icon"><i class="fa-solid fa-desktop blue-icon"></i> PC GVN</span>
                         <span>›</span>
                     </div>
                     <div class="mega-menu">
@@ -145,9 +136,8 @@
                         <div class="mega-grid-4">
                             <div class="mega-col">
                                 <h4>Cấu Hình PC Gaming</h4>
-                                <a href="category.html?slug=pc-gaming&search=i5">PC GVN Intel i5 / i7</a>
-                                <a href="category.html?slug=pc-gaming&search=ryzen">PC GVN AMD Ryzen 7 / 9</a>
-                                <a href="category.html?slug=pc-gaming&search=4070">PC RTX 4070 SUPER</a>
+                                <a href="category.html?slug=pc-gaming&search=i5">PC Intel Core i5 / i7</a>
+                                <a href="category.html?slug=pc-gaming&search=ryzen">PC AMD Ryzen 7 7800X3D</a>
                                 <a href="category.html?slug=pc-gaming&search=5080">PC High-End RTX 5080</a>
                             </div>
                         </div>
@@ -157,36 +147,29 @@
                 <!-- 4. Main, CPU, VGA -->
                 <li data-cat="main-cpu-vga">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-microchip red-icon"></i> Main, CPU, VGA</span>
+                        <span class="menu-icon"><i class="fa-solid fa-microchip blue-icon"></i> Main, CPU, VGA</span>
                         <span>›</span>
                     </div>
                     <div class="mega-menu">
                         <div class="mega-header">
-                            <h3>Main, CPU, VGA</h3>
+                            <h3>Mainboard, CPU, Card Màn Hình</h3>
                             <a href="category.html?slug=main-cpu-vga">Xem tất cả &gt;</a>
                         </div>
                         <div class="mega-grid-4">
                             <div class="mega-col">
-                                <h4>VGA RTX 50 SERIES</h4>
-                                <a href="category.html?slug=main-cpu-vga&search=5090" class="highlight-red">RTX 5090 (Mới)</a>
-                                <a href="category.html?slug=main-cpu-vga&search=5080">RTX 5080</a>
-                                <a href="category.html?slug=main-cpu-vga&search=5070">RTX 5070Ti</a>
+                                <h4>Card Màn Hình (VGA)</h4>
+                                <a href="category.html?slug=main-cpu-vga&search=5080">GeForce RTX 5080</a>
+                                <a href="category.html?slug=main-cpu-vga&search=4070">GeForce RTX 4070 SUPER</a>
+                                <a href="category.html?slug=main-cpu-vga&search=3050">GeForce RTX 3050 / 3060</a>
                             </div>
                             <div class="mega-col">
-                                <h4>VGA - Card màn hình</h4>
-                                <a href="category.html?slug=main-cpu-vga&search=rtx">NVIDIA GeForce RTX</a>
-                                <a href="category.html?slug=main-cpu-vga&search=radeon">AMD Radeon RX</a>
+                                <h4>CPU - Bộ Vi Xử Lý</h4>
+                                <a href="category.html?slug=main-cpu-vga&search=intel">Intel Core i5 / i7 / i9</a>
+                                <a href="category.html?slug=main-cpu-vga&search=ryzen">AMD Ryzen 5 / 7 / 9</a>
                             </div>
                             <div class="mega-col">
-                                <h4>Bo mạch chủ Intel</h4>
-                                <a href="category.html?slug=main-cpu-vga&search=z790">Z790 High-End</a>
-                                <a href="category.html?slug=main-cpu-vga&search=b760">B760 Mainstream</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>CPU - Bộ vi xử lý Intel</h4>
-                                <a href="category.html?slug=main-cpu-vga&search=intel">CPU Intel Core i5 / i7 / i9</a>
-                                <h4>CPU - Bộ vi xử lý AMD</h4>
-                                <a href="category.html?slug=main-cpu-vga&search=ryzen">CPU AMD Ryzen 5 / 7 / 9</a>
+                                <h4>Bo Mạch Chủ (Mainboard)</h4>
+                                <a href="category.html?slug=main-cpu-vga&search=b760">Mainboard Intel B760 / Z790</a>
                             </div>
                         </div>
                     </div>
@@ -195,309 +178,63 @@
                 <!-- 5. Case, Nguồn, Tản -->
                 <li data-cat="case-nguon-tan">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-box red-icon"></i> Case, Nguồn, Tản</span>
+                        <span class="menu-icon"><i class="fa-solid fa-box blue-icon"></i> Case, Nguồn, Tản</span>
                         <span>›</span>
-                    </div>
-                    <div class="mega-menu">
-                        <div class="mega-header">
-                            <h3>Case, Nguồn, Tản Nhiệt</h3>
-                            <a href="category.html?slug=case-nguon-tan">Xem tất cả &gt;</a>
-                        </div>
-                        <div class="mega-grid-4">
-                            <div class="mega-col">
-                                <h4>Case - Vỏ máy tính</h4>
-                                <a href="category.html?slug=case-nguon-tan&search=case">Vỏ Case Gaming Bể Kính</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Nguồn PC - PSU</h4>
-                                <a href="category.html?slug=case-nguon-tan&search=nguồn">Nguồn PC 650W - 1000W</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Loại Tản Nhiệt</h4>
-                                <a href="category.html?slug=case-nguon-tan&search=aio">Tản nhiệt nước AIO 240 / 360mm</a>
-                                <a href="category.html?slug=case-nguon-tan&search=tản">Tản nhiệt khí Tháp</a>
-                            </div>
-                        </div>
                     </div>
                 </li>
 
                 <!-- 6. Ổ cứng, RAM, Thẻ nhớ -->
                 <li data-cat="o-cung-ram">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-memory red-icon"></i> Ổ cứng, RAM, Thẻ nhớ</span>
+                        <span class="menu-icon"><i class="fa-solid fa-memory blue-icon"></i> Ổ cứng, RAM, Thẻ nhớ</span>
                         <span>›</span>
-                    </div>
-                    <div class="mega-menu">
-                        <div class="mega-header">
-                            <h3>Ổ cứng, RAM, Thẻ nhớ</h3>
-                            <a href="category.html?slug=o-cung-ram">Xem tất cả &gt;</a>
-                        </div>
-                        <div class="mega-grid-4">
-                            <div class="mega-col">
-                                <h4>Dung lượng RAM</h4>
-                                <a href="category.html?slug=o-cung-ram&search=16gb">16 GB DDR4/DDR5</a>
-                                <a href="category.html?slug=o-cung-ram&search=32gb">32 GB DDR5 High-Speed</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Hãng RAM</h4>
-                                <a href="category.html?slug=o-cung-ram&search=corsair">Corsair Vengeance</a>
-                                <a href="category.html?slug=o-cung-ram&search=kingston">Kingston FURY</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Dung lượng SSD</h4>
-                                <a href="category.html?slug=o-cung-ram&search=512gb">512GB SSD M.2</a>
-                                <a href="category.html?slug=o-cung-ram&search=1tb">1TB NVMe Gen4</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Hãng SSD</h4>
-                                <a href="category.html?slug=o-cung-ram&search=samsung">Samsung 980 PRO</a>
-                                <a href="category.html?slug=o-cung-ram&search=kingston">Kingston NV2</a>
-                            </div>
-                        </div>
                     </div>
                 </li>
 
                 <!-- 7. Loa, Micro, Webcam -->
                 <li data-cat="audio">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-volume-high red-icon"></i> Loa, Micro, Webcam</span>
+                        <span class="menu-icon"><i class="fa-solid fa-volume-high blue-icon"></i> Loa, Micro, Webcam</span>
                         <span>›</span>
-                    </div>
-                    <div class="mega-menu">
-                        <div class="mega-header">
-                            <h3>Loa, Micro, Webcam</h3>
-                            <a href="category.html?slug=audio">Xem tất cả &gt;</a>
-                        </div>
-                        <div class="mega-grid-4">
-                            <div class="mega-col">
-                                <h4>Thương hiệu loa</h4>
-                                <a href="category.html?slug=audio&search=edifier">Edifier</a>
-                                <a href="category.html?slug=audio&search=razer">Razer</a>
-                                <a href="category.html?slug=audio&search=logitech">Logitech</a>
-                                <a href="category.html?slug=audio&search=soundmax">SoundMax</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Kiểu Loa</h4>
-                                <a href="category.html?slug=audio">Loa vi tính</a>
-                                <a href="category.html?slug=audio">Loa Bluetooth</a>
-                                <a href="category.html?slug=audio">Loa Soundbar</a>
-                                <a href="category.html?slug=audio">Sub phụ (Loa trầm)</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Webcam</h4>
-                                <a href="category.html?slug=audio">Độ phân giải 4K</a>
-                                <a href="category.html?slug=audio">Độ phân giải Full HD (1080p)</a>
-                                <a href="category.html?slug=audio">Độ phân giải 720p</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Microphone</h4>
-                                <a href="category.html?slug=audio&search=hyperx">Micro HyperX QuadCast</a>
-                                <a href="category.html?slug=audio&search=razer">Micro Razer Seiren</a>
-                            </div>
-                        </div>
                     </div>
                 </li>
 
                 <!-- 8. Màn hình -->
                 <li data-cat="man-hinh">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-tv red-icon"></i> Màn hình</span>
+                        <span class="menu-icon"><i class="fa-solid fa-tv blue-icon"></i> Màn hình</span>
                         <span>›</span>
-                    </div>
-                    <div class="mega-menu">
-                        <div class="mega-header">
-                            <h3>Màn hình</h3>
-                            <a href="category.html?slug=man-hinh">Xem tất cả &gt;</a>
-                        </div>
-                        <div class="mega-grid-4">
-                            <div class="mega-col">
-                                <h4>Hãng sản xuất</h4>
-                                <a href="category.html?slug=man-hinh&brand=LG">LG UltraGear</a>
-                                <a href="category.html?slug=man-hinh&brand=ASUS">ASUS ROG / TUF</a>
-                                <a href="category.html?slug=man-hinh&brand=Dell">Dell UltraSharp</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Độ Phân giải</h4>
-                                <a href="category.html?slug=man-hinh">Màn hình Full HD</a>
-                                <a href="category.html?slug=man-hinh">Màn hình 2K 1440p</a>
-                                <a href="category.html?slug=man-hinh">Màn hình 4K UHD</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Tần số quét</h4>
-                                <a href="category.html?slug=man-hinh&search=165hz">165Hz IPS 1ms</a>
-                                <a href="category.html?slug=man-hinh&search=240hz">240Hz Gaming</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Kích thước</h4>
-                                <a href="category.html?slug=man-hinh">Màn hình 24" IPS</a>
-                                <a href="category.html?slug=man-hinh">Màn hình 27" 2K</a>
-                            </div>
-                        </div>
                     </div>
                 </li>
 
                 <!-- 9. Bàn phím -->
                 <li data-cat="ban-phim">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-keyboard red-icon"></i> Bàn phím</span>
+                        <span class="menu-icon"><i class="fa-solid fa-keyboard blue-icon"></i> Bàn phím</span>
                         <span>›</span>
-                    </div>
-                    <div class="mega-menu">
-                        <div class="mega-header">
-                            <h3>Bàn phím</h3>
-                            <a href="category.html?slug=ban-phim">Xem tất cả &gt;</a>
-                        </div>
-                        <div class="mega-grid-4">
-                            <div class="mega-col">
-                                <h4>Thương hiệu</h4>
-                                <a href="category.html?slug=ban-phim&brand=Keychron">Keychron</a>
-                                <a href="category.html?slug=ban-phim&brand=AKKO">AKKO</a>
-                                <a href="category.html?slug=ban-phim&brand=Logitech">Logitech G</a>
-                                <a href="category.html?slug=ban-phim&brand=Razer">Razer</a>
-                                <a href="category.html?slug=ban-phim&brand=Corsair">Corsair</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Giá tiền</h4>
-                                <a href="category.html?slug=ban-phim">Dưới 1 triệu</a>
-                                <a href="category.html?slug=ban-phim">1 triệu - 2 triệu</a>
-                                <a href="category.html?slug=ban-phim">Trên 2 triệu</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Kết nối</h4>
-                                <a href="category.html?slug=ban-phim">Bluetooth / Wireless</a>
-                                <a href="category.html?slug=ban-phim">Type-C Dây tháo rời</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Phụ kiện bàn phím cơ</h4>
-                                <a href="category.html?slug=ban-phim">Keycaps PBT Double-shot</a>
-                                <a href="category.html?slug=ban-phim">Switch Gateron / Cherry</a>
-                            </div>
-                        </div>
                     </div>
                 </li>
 
                 <!-- 10. Chuột + Lót chuột -->
                 <li data-cat="chuot-lot">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-mouse red-icon"></i> Chuột + Lót chuột</span>
+                        <span class="menu-icon"><i class="fa-solid fa-mouse blue-icon"></i> Chuột + Lót chuột</span>
                         <span>›</span>
-                    </div>
-                    <div class="mega-menu">
-                        <div class="mega-header">
-                            <h3>Chuột + Lót chuột</h3>
-                            <a href="category.html?slug=chuot-lot">Xem tất cả &gt;</a>
-                        </div>
-                        <div class="mega-grid-4">
-                            <div class="mega-col">
-                                <h4>Thương hiệu chuột</h4>
-                                <a href="category.html?slug=chuot-lot&brand=Logitech">Logitech G Superlight</a>
-                                <a href="category.html?slug=chuot-lot&brand=Razer">Razer DeathAdder / Viper</a>
-                                <a href="category.html?slug=chuot-lot&brand=ASUS">ASUS ROG Strix</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Loại Chuột</h4>
-                                <a href="category.html?slug=chuot-lot">Chuột chơi game Wireless</a>
-                                <a href="category.html?slug=chuot-lot">Chuột văn phòng Silent</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Thương hiệu lót chuột</h4>
-                                <a href="category.html?slug=chuot-lot">Lót chuột SteelSeries</a>
-                                <a href="category.html?slug=chuot-lot">Lót chuột Razer Sphex</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Lót chuột theo size</h4>
-                                <a href="category.html?slug=chuot-lot">Size Nhỏ / Vừa</a>
-                                <a href="category.html?slug=chuot-lot">Size Lớn Bo Viền LED</a>
-                            </div>
-                        </div>
                     </div>
                 </li>
 
                 <!-- 11. Tai Nghe -->
                 <li data-cat="tai-nghe">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-headset red-icon"></i> Tai Nghe</span>
+                        <span class="menu-icon"><i class="fa-solid fa-headset blue-icon"></i> Tai Nghe</span>
                         <span>›</span>
-                    </div>
-                    <div class="mega-menu">
-                        <div class="mega-header">
-                            <h3>Tai Nghe Gaming</h3>
-                            <a href="category.html?slug=tai-nghe">Xem tất cả &gt;</a>
-                        </div>
-                        <div class="mega-grid-4">
-                            <div class="mega-col">
-                                <h4>Thương hiệu tai nghe</h4>
-                                <a href="category.html?slug=tai-nghe&search=hyperx">HyperX Cloud II / III</a>
-                                <a href="category.html?slug=tai-nghe&search=logitech">Logitech G Pro X</a>
-                                <a href="category.html?slug=tai-nghe&search=razer">Razer BlackShark</a>
-                                <a href="category.html?slug=tai-nghe&search=asus">ASUS ROG Delta</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Kiểu tai nghe</h4>
-                                <a href="category.html?slug=tai-nghe">Tai nghe Over-ear</a>
-                                <a href="category.html?slug=tai-nghe">Tai nghe Gaming In-ear</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Kiểu kết nối</h4>
-                                <a href="category.html?slug=tai-nghe">Tai nghe Wireless 2.4GHz</a>
-                                <a href="category.html?slug=tai-nghe">Tai nghe Bluetooth 5.3</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Giá tiền</h4>
-                                <a href="category.html?slug=tai-nghe">Dưới 1 triệu</a>
-                                <a href="category.html?slug=tai-nghe">1 triệu - 3 triệu</a>
-                                <a href="category.html?slug=tai-nghe">Trên 3 triệu</a>
-                            </div>
-                        </div>
                     </div>
                 </li>
 
                 <!-- 12. Ghế - Bàn -->
                 <li data-cat="ghe-ban">
                     <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-chair red-icon"></i> Ghế - Bàn</span>
-                        <span>›</span>
-                    </div>
-                    <div class="mega-menu">
-                        <div class="mega-header">
-                            <h3>Ghế - Bàn Công Thái Học</h3>
-                            <a href="category.html?slug=ghe-ban">Xem tất cả &gt;</a>
-                        </div>
-                        <div class="mega-grid-4">
-                            <div class="mega-col">
-                                <h4>Ghế Công Thái Học</h4>
-                                <a href="category.html?slug=ghe-ban&brand=Sihoo">Sihoo M57 / M18</a>
-                                <a href="category.html?slug=ghe-ban">Ghế Ergonomic Cao Cấp</a>
-                            </div>
-                            <div class="mega-col">
-                                <h4>Bàn Gaming</h4>
-                                <a href="category.html?slug=ghe-ban">Bàn Gaming Chữ Z / K</a>
-                                <a href="category.html?slug=ghe-ban">Bàn Nâng Hạ Chiều Cao</a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-
-                <!-- 13. Phần mềm, mạng -->
-                <li data-cat="phan-mem">
-                    <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-circle-question red-icon"></i> Phần mềm, mạng</span>
-                        <span>›</span>
-                    </div>
-                </li>
-
-                <!-- 14. Phụ kiện - Console -->
-                <li data-cat="phu-kien">
-                    <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-plug red-icon"></i> Phụ kiện - Console</span>
-                        <span>›</span>
-                    </div>
-                </li>
-
-                <!-- 15. Thu cũ đổi mới -->
-                <li data-cat="thu-cu-doi-moi">
-                    <div class="menu-item-content">
-                        <span class="menu-icon"><i class="fa-solid fa-arrows-rotate red-icon"></i> Thu cũ đổi mới</span>
+                        <span class="menu-icon"><i class="fa-solid fa-chair blue-icon"></i> Ghế - Bàn</span>
                         <span>›</span>
                     </div>
                 </li>
@@ -505,113 +242,181 @@
             </ul>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Landing Content -->
         <main class="main-content">
 
-            <!-- Hero Banner + 4 Ad Grid -->
-            <div class="hero-section">
+            <!-- Hero Section: Main Slider + 4 Feature Banners -->
+            <div class="hero-landing-grid">
                 
-                <!-- Dynamic Slider -->
-                <div class="hero-slider" id="heroSlider">
-                    <div class="slide-tint" id="slideTint"></div>
-                    <div class="slide-content">
-                        <div class="slide-text">
-                            <p class="slide-label" id="slideLabel">Flash Sale · 22.09 – 30.09.2026</p>
-                            <h2 class="slide-title" id="slideTitle">Chào Năm Học Mới.<br>Giảm đến 54%.</h2>
-                            <p class="slide-desc" id="slideDesc">PC gaming, laptop và phụ kiện chính hãng. Bảo hành 24 tháng.</p>
-                            <button class="slide-cta" id="slideCta">Xem khuyến mãi →</button>
-                        </div>
-                        <div class="slide-img-wrap">
-                            <img id="slideImg" src="https://images.unsplash.com/photo-1593640408182-31c228f8a9e3?w=560&h=320&fit=crop&auto=format" alt="Banner">
-                        </div>
+                <!-- Left Main Slider -->
+                <div class="main-slider" id="heroSlider">
+                    <img id="slideImg" src="https://images.unsplash.com/photo-1593640408182-31c228f8a9e3?w=800&h=420&fit=crop" alt="Hero Banner">
+                    <div class="slider-overlay">
+                        <span class="slider-badge" id="slideLabel">TUẦN LỄ KHAI TRƯƠNG · SẮM GEAR XỊN</span>
+                        <h2 id="slideTitle">Chào Năm Học Mới.<br>Giảm Đến 54%.</h2>
+                        <button class="btn-slider-cta" id="slideCta">Xem ngay →</button>
                     </div>
-
-                    <!-- Slide Controls -->
-                    <div class="slide-dots" id="slideDots"></div>
-                    <button class="slide-arrow prev" id="prevSlide">‹</button>
-                    <button class="slide-arrow next" id="nextSlide">›</button>
+                    <button class="slide-nav prev" id="prevSlide">‹</button>
+                    <button class="slide-nav next" id="nextSlide">›</button>
+                    <div class="slider-dots" id="slideDots"></div>
                 </div>
 
-                <!-- 4 Small Ad Cards -->
-                <div class="ad-cards">
-                    <div class="ad-card" style="background-color: #1e3a5f;" onclick="window.location.href='category.html?slug=pc-gaming'">
-                        <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?w=300&h=130&fit=crop&auto=format" alt="Ad 1">
-                        <div class="ad-info">
-                            <p class="ad-label">Build PC</p>
-                            <p class="ad-sub" style="color: #3b82f6;">Tặng Màn Hình 240Hz</p>
+                <!-- Right 4 Ad Cards (Grid 2x2) -->
+                <div class="ad-cards-grid">
+                    <div class="ad-card-item card-blue" onclick="window.location.href='category.html?slug=pc-gaming'">
+                        <div class="ad-text">
+                            <h3>Build PC</h3>
+                            <p>Tặng Màn Hình 240Hz</p>
                         </div>
+                        <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?w=200" alt="Build PC">
                     </div>
-                    <div class="ad-card" style="background-color: #1a0a0a;" onclick="window.location.href='category.html?slug=ban-phim'">
-                        <img src="https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=300&h=130&fit=crop&auto=format" alt="Ad 2">
-                        <div class="ad-info">
-                            <p class="ad-label">Bàn Phím Cơ</p>
-                            <p class="ad-sub" style="color: #ef4444;">Giảm đến 26%</p>
+
+                    <div class="ad-card-item card-cyan" onclick="window.location.href='category.html?slug=ban-phim'">
+                        <div class="ad-text">
+                            <h3>Bàn Phím Cơ</h3>
+                            <p>Giảm đến 26%</p>
                         </div>
+                        <img src="https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=200" alt="Bàn phím cơ">
                     </div>
-                    <div class="ad-card" style="background-color: #0c1a0e;" onclick="window.location.href='category.html?slug=pc-gaming'">
-                        <img src="https://images.unsplash.com/photo-1587202372583-49330a15584d?w=300&h=130&fit=crop&auto=format" alt="Ad 3">
-                        <div class="ad-info">
-                            <p class="ad-label">PC i5 / RTX 5060</p>
-                            <p class="ad-sub" style="color: #22c55e;">Từ 23.000.000đ</p>
+
+                    <div class="ad-card-item card-purple" onclick="window.location.href='category.html?slug=pc-gaming'">
+                        <div class="ad-text">
+                            <h3>PC i5 / RTX 5060</h3>
+                            <p>Giá từ 23.000.000đ</p>
                         </div>
+                        <img src="https://images.unsplash.com/photo-1587202372583-49330a15584d?w=200" alt="PC i5">
                     </div>
-                    <div class="ad-card" style="background-color: #1a0a2e;" onclick="window.location.href='category.html?slug=laptop-gaming'">
-                        <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=300&h=130&fit=crop&auto=format" alt="Ad 4">
-                        <div class="ad-info">
-                            <p class="ad-label">Laptop Gaming</p>
-                            <p class="ad-sub" style="color: #a855f7;">Tặng màn hình 200Hz</p>
+
+                    <div class="ad-card-item card-sky" onclick="window.location.href='category.html?slug=laptop-gaming'">
+                        <div class="ad-text">
+                            <h3>Laptop Gaming</h3>
+                            <p>Tặng màn hình 200Hz</p>
                         </div>
+                        <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=200" alt="Laptop Gaming">
                     </div>
                 </div>
 
             </div>
 
-            <!-- Product Section Header Tabs -->
-            <div class="section-top">
-                <div class="tabs-group" id="tabsGroup">
-                    <button class="tab-btn active" data-tab="Tất cả">Tất cả</button>
-                    <button class="tab-btn" data-tab="PC">PC</button>
-                    <button class="tab-btn" data-tab="Laptop">Laptop</button>
-                    <button class="tab-btn" data-tab="Màn hình">Màn hình</button>
-                    <button class="tab-btn" data-tab="Phụ kiện">Phụ kiện</button>
+            <!-- Mid Banners Section (4 Cards Row + 2 Big Banners Row) -->
+            <div class="mid-banners-section">
+                <!-- Row 1: 4 Promo Cards -->
+                <div class="promo-4-grid">
+                    <div class="promo-card bg-sky" onclick="window.location.href='category.html?slug=audio'">
+                        <div class="promo-info">
+                            <h4>Bắt Beat Cực Chuẩn</h4>
+                            <p>Deal giảm tới 40%</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=150" alt="Audio">
+                    </div>
+
+                    <div class="promo-card bg-indigo" onclick="window.location.href='category.html?slug=man-hinh'">
+                        <div class="promo-info">
+                            <h4>Monitor Chính Hãng</h4>
+                            <p>Giảm đến 51%</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=150" alt="Monitor">
+                    </div>
+
+                    <div class="promo-card bg-blue" onclick="window.location.href='category.html?slug=chuot-lot'">
+                        <div class="promo-info">
+                            <h4>Gaming Mouse</h4>
+                            <p>Ưu đãi từ 80.000đ</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=150" alt="Mouse">
+                    </div>
+
+                    <div class="promo-card bg-teal" onclick="window.location.href='category.html?slug=main-cpu-vga'">
+                        <div class="promo-info">
+                            <h4>PC RTX 5090</h4>
+                            <p>Tặng Màn Hình OLED</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=150" alt="RTX 5090">
+                    </div>
                 </div>
-                <span class="product-count" id="productCount">0 sản phẩm</span>
+
+                <!-- Row 2: 2 Large Banners -->
+                <div class="promo-2-grid">
+                    <div class="big-banner banner-blue" onclick="window.location.href='category.html?slug=pc-gaming'">
+                        <div class="big-banner-content">
+                            <h2>Build PC Tặng Màn Hình</h2>
+                            <p>Giá chỉ từ 11.990.000đ · Quà Tặng 240Hz</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400" alt="Build PC Big">
+                    </div>
+
+                    <div class="big-banner banner-sky" onclick="window.location.href='category.html?slug=laptop-gaming'">
+                        <div class="big-banner-content">
+                            <h2>Pack Laptop Tặng Gear</h2>
+                            <p>Quà tặng lên đến 15.000.000đ · Mua 1 Được 3</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400" alt="Laptop Pack Big">
+                    </div>
+                </div>
             </div>
 
-            <!-- Current Category Title Banner -->
-            <div id="categoryActiveBanner" class="category-active-banner" style="display: none;">
-                <span id="categoryActiveTitle">Đang xem: Tất cả</span>
-                <button onclick="resetCategoryFilter()">Hiển thị tất cả ✕</button>
-            </div>
+            <!-- SECTION 1: PC BÁN CHẠY -->
+            <section class="home-product-section">
+                <div class="section-title-bar">
+                    <div class="title-group">
+                        <h2><i class="fa-solid fa-fire blue-icon"></i> PC Bán Chạy</h2>
+                        <span class="sub-badge">🎁 Tặng Màn hình 240Hz</span>
+                    </div>
+                    <div class="filter-sub-tabs">
+                        <a href="category.html?slug=pc-gaming&search=i3">PC i3</a>
+                        <a href="category.html?slug=pc-gaming&search=i5">PC i5</a>
+                        <a href="category.html?slug=pc-gaming&search=i7">PC i7</a>
+                        <a href="category.html?slug=pc-gaming&search=i9">PC i9</a>
+                        <a href="category.html?slug=pc-gaming&search=ryzen">PC R7</a>
+                        <a href="category.html?slug=pc-gaming" class="view-all-link">Xem tất cả &gt;</a>
+                    </div>
+                </div>
 
-            <!-- Product Grid -->
-            <div class="product-grid" id="productGrid">
-                <!-- JS render sản phẩm ở đây -->
-            </div>
+                <div class="home-product-grid" id="pcGrid">
+                    <!-- JS Rendering PC -->
+                </div>
+            </section>
 
-            <!-- Why Us Features -->
-            <div class="why-us">
-                <div class="why-item">
-                    <div class="why-icon">🛡️</div>
-                    <p class="why-title">Bảo hành chính hãng</p>
-                    <p class="why-desc">24 tháng tại hãng, hỗ trợ 1 đổi 1</p>
+            <!-- SECTION 2: LAPTOP GAMING BÁN CHẠY -->
+            <section class="home-product-section">
+                <div class="section-title-bar">
+                    <div class="title-group">
+                        <h2><i class="fa-solid fa-bolt blue-icon"></i> Laptop Gaming Bán Chạy</h2>
+                        <span class="sub-badge">🎁 Tặng Combo Gear đến 15 triệu</span>
+                    </div>
+                    <div class="filter-sub-tabs">
+                        <a href="category.html?slug=laptop-gaming&brand=Acer">ACER</a>
+                        <a href="category.html?slug=laptop-gaming&brand=MSI">MSI</a>
+                        <a href="category.html?slug=laptop-gaming&brand=Lenovo">LENOVO</a>
+                        <a href="category.html?slug=laptop-gaming&brand=ASUS">ASUS</a>
+                        <a href="category.html?slug=laptop-gaming" class="view-all-link">Xem tất cả &gt;</a>
+                    </div>
                 </div>
-                <div class="why-item">
-                    <div class="why-icon">🚚</div>
-                    <p class="why-title">Giao hàng 24h</p>
-                    <p class="why-desc">Toàn quốc, miễn phí đơn trên 500K</p>
+
+                <div class="home-product-grid" id="laptopGamingGrid">
+                    <!-- JS Rendering Laptop Gaming -->
                 </div>
-                <div class="why-item">
-                    <div class="why-icon">🔧</div>
-                    <p class="why-title">Sửa chữa tận nhà</p>
-                    <p class="why-desc">Kỹ thuật viên chuyên nghiệp</p>
+            </section>
+
+            <!-- SECTION 3: LAPTOP VĂN PHÒNG BÁN CHẠY -->
+            <section class="home-product-section">
+                <div class="section-title-bar">
+                    <div class="title-group">
+                        <h2><i class="fa-solid fa-laptop-code blue-icon"></i> Laptop Văn Phòng Bán Chạy</h2>
+                        <span class="sub-badge">🎁 Tặng Chuột Silent không dây</span>
+                    </div>
+                    <div class="filter-sub-tabs">
+                        <a href="category.html?slug=laptop&brand=ASUS">ASUS</a>
+                        <a href="category.html?slug=laptop&brand=Apple">MACBOOK</a>
+                        <a href="category.html?slug=laptop&brand=Dell">DELL</a>
+                        <a href="category.html?slug=laptop" class="view-all-link">Xem tất cả &gt;</a>
+                    </div>
                 </div>
-                <div class="why-item">
-                    <div class="why-icon">💳</div>
-                    <p class="why-title">Trả góp 0%</p>
-                    <p class="why-desc">Qua Visa, Mastercard, ATM nội địa</p>
+
+                <div class="home-product-grid" id="laptopOfficeGrid">
+                    <!-- JS Rendering Laptop Văn Phòng -->
                 </div>
-            </div>
+            </section>
 
         </main>
     </div>

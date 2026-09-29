@@ -160,105 +160,89 @@ function initTabs() {
 
 // Nạp toàn bộ 200 linh kiện từ REST API Laravel Backend (Không giới hạn phân trang 15 item)
 async function loadProducts() {
-    const grid = document.getElementById('productGrid');
-    grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #666;">Đang nạp linh kiện thực tế từ Server Backend...</div>';
-
     try {
         const res = await api.getProducts({ per_page: 250 });
         if (res.status === 'success' && res.data) {
-            // Xử lý cả dạng Paginated response (res.data.data) lẫn Array (res.data)
             liveProducts = Array.isArray(res.data) ? res.data : (res.data.data || []);
-            renderProducts();
+            renderLandingSections();
             return;
         }
     } catch (e) {
         console.error('Lỗi khi nạp API Backend:', e);
     }
-    grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #ef4444;">Không thể kết nối đến Backend Server. Hãy chắc chắn php artisan serve đang chạy.</div>';
 }
 
-function renderProducts() {
-    const grid = document.getElementById('productGrid');
-    grid.innerHTML = '';
+function renderLandingSections() {
+    const pcGrid = document.getElementById('pcGrid');
+    const laptopGamingGrid = document.getElementById('laptopGamingGrid');
+    const laptopOfficeGrid = document.getElementById('laptopOfficeGrid');
 
-    const filtered = liveProducts.filter(p => {
-        // Lọc linh hoạt theo Từ khóa danh mục (Tên, Category Slug, Brand, Specs)
-        if (selectedCategoryFilter) {
-            const keyword = selectedCategoryFilter.toLowerCase().trim();
-            const pName = p.name ? p.name.toLowerCase() : '';
-            const pCat = p.category ? (p.category.name || p.category.slug || '').toLowerCase() : '';
-            const pBrand = p.brand ? p.brand.toLowerCase() : '';
-            const pSpecs = JSON.stringify(p.specs || {}).toLowerCase();
+    if (!pcGrid || !laptopGamingGrid || !laptopOfficeGrid) return;
 
-            // Tách từ khóa chính để match chính xác
-            if (keyword.includes('laptop')) return pName.includes('laptop') || pCat.includes('laptop');
-            if (keyword.includes('pc')) return pName.includes('pc') || pCat.includes('pc');
-            if (keyword.includes('màn')) return pName.includes('màn') || pCat.includes('man-hinh');
-            if (keyword.includes('phím')) return pName.includes('phím') || pCat.includes('ban-phim');
-            if (keyword.includes('chuột')) return pName.includes('chuột') || pCat.includes('chuot');
-            if (keyword.includes('ghế')) return pName.includes('ghế') || pCat.includes('ghe');
-            if (keyword.includes('main') || keyword.includes('cpu') || keyword.includes('vga')) return pCat.includes('main-cpu-vga') || pName.includes('cpu') || pName.includes('rtx') || pName.includes('mainboard');
-            if (keyword.includes('case') || keyword.includes('nguồn') || keyword.includes('tản')) return pCat.includes('case-nguon-tan') || pName.includes('nguồn') || pName.includes('tản');
-            if (keyword.includes('ổ cứng') || keyword.includes('ram')) return pCat.includes('o-cung-ram') || pName.includes('ram') || pName.includes('ssd');
+    // Lọc các sản phẩm theo từng nhóm
+    const pcProducts = liveProducts.filter(p => {
+        const cat = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
+        const name = (p.name || '').toLowerCase();
+        return cat.includes('pc-gaming') || name.includes('pc gvn') || (name.includes('pc ') && !name.includes('laptop'));
+    }).slice(0, 5);
 
-            return pName.includes(keyword) || pCat.includes(keyword) || pBrand.includes(keyword) || pSpecs.includes(keyword);
-        }
+    const gamingLaptopProducts = liveProducts.filter(p => {
+        const cat = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
+        const name = (p.name || '').toLowerCase();
+        return cat.includes('laptop-gaming') || (name.includes('laptop') && (name.includes('gaming') || name.includes('rog') || name.includes('tuf') || name.includes('nitro') || name.includes('rtx')));
+    }).slice(0, 5);
 
-        // Lọc theo Tab trên cùng
-        if (activeTab === 'Tất cả') return true;
-        if (activeTab === 'PC') return p.name.toLowerCase().includes('pc');
-        if (activeTab === 'Laptop') return p.name.toLowerCase().includes('laptop') || p.name.toLowerCase().includes('macbook');
-        if (activeTab === 'Màn hình') return p.name.toLowerCase().includes('màn');
-        if (activeTab === 'Phụ kiện') return !p.name.toLowerCase().includes('pc') && !p.name.toLowerCase().includes('laptop') && !p.name.toLowerCase().includes('màn');
-        return true;
-    });
+    const officeLaptopProducts = liveProducts.filter(p => {
+        const cat = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
+        const name = (p.name || '').toLowerCase();
+        return cat === 'laptop' || (name.includes('laptop') && !name.includes('gaming') && !name.includes('nitro') && !name.includes('rog'));
+    }).slice(0, 5);
 
-    document.getElementById('productCount').textContent = `${filtered.length} sản phẩm`;
+    renderProductCardsToContainer(pcGrid, pcProducts.length > 0 ? pcProducts : liveProducts.slice(0, 5));
+    renderProductCardsToContainer(laptopGamingGrid, gamingLaptopProducts.length > 0 ? gamingLaptopProducts : liveProducts.slice(5, 10));
+    renderProductCardsToContainer(laptopOfficeGrid, officeLaptopProducts.length > 0 ? officeLaptopProducts : liveProducts.slice(10, 15));
+}
 
-    if (filtered.length === 0) {
-        grid.innerHTML = `
-            <div style="grid-column: 1 / -1; padding: 60px; text-align: center; background: #fff; color: #999;">
-                <p style="font-size: 16px; margin-bottom: 8px;">Không tìm thấy linh kiện / sản phẩm thuộc danh mục "${selectedCategoryFilter || activeTab}".</p>
-                <button onclick="resetCategoryFilter()" style="padding: 8px 16px; background: #111; color: #fff; border: none; cursor: pointer; font-size: 12px;">Xem tất cả sản phẩm</button>
-            </div>
-        `;
-        return;
-    }
-
-    filtered.forEach(p => {
+function renderProductCardsToContainer(container, products) {
+    container.innerHTML = '';
+    products.forEach(p => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = 'home-product-card';
+        card.onclick = () => {
+            window.location.href = `category.html?slug=${p.category ? (p.category.slug || 'pc-gaming') : 'pc-gaming'}`;
+        };
 
-        // Format giá VND chuẩn
         const priceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price);
+        const oldPriceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price * 1.15);
         const specs = p.specs || {};
-        
+
         let specsHtml = '';
-        if (specs.cpu) specsHtml += `<div>CPU: ${specs.cpu}</div>`;
-        if (specs.ram && specs.ssd) specsHtml += `<div>RAM ${specs.ram} · SSD ${specs.ssd}</div>`;
-        if (specs.gpu) specsHtml += `<div>GPU: ${specs.gpu}</div>`;
+        if (specs.cpu) specsHtml += `<div>• CPU: ${specs.cpu}</div>`;
+        if (specs.ram && specs.ssd) specsHtml += `<div>• RAM: ${specs.ram} | SSD: ${specs.ssd}</div>`;
+        if (specs.gpu) specsHtml += `<div>• VGA: ${specs.gpu}</div>`;
+        if (!specsHtml) {
+            specsHtml = `<div>• Hàng chính hãng 100%</div><div>• Bảo hành 24 tháng</div>`;
+        }
 
         const imgUrl = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
 
         card.innerHTML = `
-            <div class="card-img-wrap">
-                <img src="${imgUrl}" alt="${p.name}">
-                <span class="card-tag">Chính hãng</span>
+            <span class="home-card-tag">-13%</span>
+            <img class="home-card-img" src="${imgUrl}" alt="${p.name}">
+            <h3 class="home-card-title">${p.name}</h3>
+            <div class="home-card-specs-box">
+                ${specsHtml}
             </div>
-            <div class="card-body">
-                <p class="card-title">${p.name}</p>
-                <div class="card-specs">
-                    ${specsHtml || `<div>Thương hiệu: ${p.brand || 'PC SHOP'}</div>`}
-                </div>
-                <div class="card-price-box">
-                    <div class="current-price">${priceVnd}</div>
-                </div>
-                <button class="btn-add-cart" onclick="addToCart('${p.name}')">+ Thêm vào giỏ</button>
+            <div class="home-card-prices">
+                <span class="home-old-price">${oldPriceVnd}</span>
+                <span class="home-cur-price">${priceVnd}</span>
             </div>
+            <button class="home-btn-cart" onclick="event.stopPropagation(); addToCart('${p.name.replace(/'/g, "\\'")}')">+ Thêm vào giỏ</button>
         `;
-        grid.appendChild(card);
+        container.appendChild(card);
     });
 }
+
 
 // Cart Drawer
 function initCartDrawer() {
