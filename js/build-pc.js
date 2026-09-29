@@ -21,7 +21,9 @@ const COMPONENT_TYPES = [
 // Trạng thái cấu hình được chọn
 let selectedComponents = {}; // e.g. { cpu: { product: {...}, quantity: 1 } }
 let activeModalComponentKey = null;
-let currentModalProducts = [];
+
+let modalCategoryProducts = []; // Raw products matching current component category
+let filteredModalProducts = [];  // Filtered products after brand, price, search filters
 
 document.addEventListener('DOMContentLoaded', () => {
     initBuildPcPage();
@@ -149,7 +151,7 @@ function updateTotalCostDisplay() {
     if (bottomElem) bottomElem.textContent = totalVnd;
 }
 
-// MỞ POPUP MODAL CHỌN LINH KIỆN (Exact Match to Image 1)
+// MỞ POPUP MODAL CHỌN LINH KIỆN
 async function openComponentModal(key) {
     activeModalComponentKey = key;
     const comp = COMPONENT_TYPES.find(c => c.key === key);
@@ -161,7 +163,7 @@ async function openComponentModal(key) {
     const modal = document.getElementById('pcBuilderModal');
     modal.classList.add('open');
 
-    // Gọi API lấy danh sách linh kiện
+    // Gọi API lấy danh sách linh kiện chuẩn 100%
     await loadModalProducts(comp);
 }
 
@@ -170,47 +172,78 @@ function closeModal() {
     if (modal) modal.classList.remove('open');
 }
 
-// Gọi API nạp sản phẩm cho Modal Chọn Linh Kiện
+// Gọi API nạp sản phẩm chuẩn từng loại linh kiện cho Modal
 async function loadModalProducts(comp) {
     const listContainer = document.getElementById('modalProductList');
     listContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b;">Đang nạp danh sách sản phẩm từ hệ thống...</div>';
 
     try {
-        const res = await api.getProducts({ category: comp.catSlug, per_page: 250 });
+        const res = await api.getProducts({ per_page: 500 });
         if (res.status === 'success' && res.data) {
             const allProducts = Array.isArray(res.data) ? res.data : (res.data.data || []);
 
-            // Lọc theo từ khóa loại linh kiện
-            currentModalProducts = allProducts.filter(p => {
+            // Lọc NGHIÊM NGẶT 100% theo loại linh kiện (CẤM lẫn loại khác)
+            modalCategoryProducts = allProducts.filter(p => {
                 const name = (p.name || '').toLowerCase();
                 const catSlug = (p.category_slug || (p.category ? (p.category.slug || '') : '')).toLowerCase();
-                const brand = (p.brand || '').toLowerCase();
 
                 if (comp.key === 'cpu') {
-                    return (name.includes('vi xử lý') || name.includes('cpu') || name.includes('intel core') || name.includes('amd ryzen')) && !name.includes('mainboard');
+                    return (name.includes('vi xử lý') || name.includes('cpu') || name.includes('intel core') || name.includes('amd ryzen')) 
+                        && !name.includes('mainboard') && !name.includes('laptop') && !name.includes('pc gaming') && !name.includes('tản nhiệt');
                 }
                 if (comp.key === 'mainboard') {
-                    return (name.includes('mainboard') || name.includes('bo mạch') || name.includes('z790') || name.includes('b760') || name.includes('b650'));
+                    return (name.includes('mainboard') || name.includes('bo mạch') || name.includes('z790') || name.includes('b760') || name.includes('b650') || name.includes('x670') || name.includes('a620') || name.includes('h610'))
+                        && !name.includes('laptop') && !name.includes('vi xử lý') && !name.includes('cpu');
                 }
                 if (comp.key === 'ram') {
-                    return (name.includes('ram') || name.includes('ddr4') || name.includes('ddr5'));
+                    return (name.includes('ram') || name.includes('ddr4') || name.includes('ddr5') || name.includes('kingbank'))
+                        && !name.includes('laptop') && !name.includes('vga') && !name.includes('ssd');
                 }
                 if (comp.key === 'ssd') {
-                    return (name.includes('ssd') || name.includes('nvme') || name.includes('m.2'));
+                    return (name.includes('ssd') || name.includes('nvme') || name.includes('m.2')) && !name.includes('laptop') && !name.includes('ram');
+                }
+                if (comp.key === 'hdd') {
+                    return (name.includes('hdd') || name.includes('ổ cứng hdd') || name.includes('western digital purple') || name.includes('barracuda')) && !name.includes('ssd');
                 }
                 if (comp.key === 'vga') {
-                    return (name.includes('card màn hình') || name.includes('rtx') || name.includes('gtx') || name.includes('vga') || name.includes('radeon'));
+                    return (name.includes('card màn hình') || name.includes('rtx') || name.includes('gtx') || name.includes('vga') || name.includes('radeon') || name.includes('geforce'))
+                        && !name.includes('laptop') && !name.includes('pc gaming') && !name.includes('vi xử lý');
+                }
+                if (comp.key === 'psu') {
+                    return (name.includes('nguồn') || name.includes('psu') || name.includes('power') || name.includes('80 plus'));
+                }
+                if (comp.key === 'case') {
+                    return (name.includes('vỏ case') || name.includes('vỏ cây') || name.includes('case pc') || name.includes('bể cá') || name.includes('sama') || name.includes('nzxt'));
+                }
+                if (comp.key === 'cooler') {
+                    return (name.includes('tản nhiệt') || name.includes('cooler') || name.includes('aio') || name.includes('cr-3000') || name.includes('thermalright'));
+                }
+                if (comp.key === 'fan') {
+                    return (name.includes('fan case') || name.includes('quạt case') || name.includes('fan led') || name.includes('120mm'));
+                }
+                if (comp.key === 'monitor') {
+                    return (name.includes('màn hình') || name.includes('monitor') || catSlug.includes('man-hinh'));
+                }
+                if (comp.key === 'keyboard') {
+                    return (name.includes('bàn phím') || name.includes('keyboard') || catSlug.includes('ban-phim'));
+                }
+                if (comp.key === 'mouse') {
+                    return (name.includes('chuột') || name.includes('mouse') || catSlug.includes('chuot-lot'));
+                }
+                if (comp.key === 'headset') {
+                    return (name.includes('tai nghe') || name.includes('headset') || catSlug.includes('tai-nghe'));
+                }
+                if (comp.key === 'chair') {
+                    return (name.includes('ghế') || name.includes('bàn') || catSlug.includes('ghe-ban'));
                 }
 
-                return name.includes(comp.filterKeyword) || catSlug.includes(comp.filterKeyword) || brand.includes(comp.filterKeyword);
+                return name.includes(comp.filterKeyword) || catSlug.includes(comp.filterKeyword);
             });
 
-            // Nếu danh mục chưa có sản phẩm khớp trực tiếp, hiển thị danh sách chung
-            if (currentModalProducts.length === 0) {
-                currentModalProducts = allProducts;
-            }
+            // Tự động tạo danh sách Checkbox Hãng sản xuất động dựa trên các hãng thực tế của sản phẩm
+            renderModalBrandFilters(modalCategoryProducts);
 
-            renderModalProducts(currentModalProducts);
+            applyModalFilters();
             return;
         }
     } catch (e) {
@@ -220,12 +253,156 @@ async function loadModalProducts(comp) {
     listContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #ef4444;">Không thể kết nối Server Backend.</div>';
 }
 
+// Tạo danh sách thương hiệu động theo linh kiện hiện tại
+function renderModalBrandFilters(products) {
+    const brandContainer = document.getElementById('modalBrandFilterGroup');
+    if (!brandContainer) return;
+
+    const brandsSet = new Set();
+    products.forEach(p => {
+        if (p.brand) brandsSet.add(p.brand.trim());
+        const nameUpper = (p.name || '').toUpperCase();
+        if (nameUpper.includes('INTEL')) brandsSet.add('Intel');
+        if (nameUpper.includes('AMD')) brandsSet.add('AMD');
+        if (nameUpper.includes('ASUS')) brandsSet.add('ASUS');
+        if (nameUpper.includes('GIGABYTE')) brandsSet.add('Gigabyte');
+        if (nameUpper.includes('MSI')) brandsSet.add('MSI');
+        if (nameUpper.includes('KINGSTON')) brandsSet.add('Kingston');
+        if (nameUpper.includes('COLORFUL')) brandsSet.add('Colorful');
+        if (nameUpper.includes('CRUCIAL')) brandsSet.add('Crucial');
+        if (nameUpper.includes('WESTERN')) brandsSet.add('Western');
+    });
+
+    const brands = Array.from(brandsSet).sort();
+
+    let html = `<h4>Hãng sản xuất</h4>`;
+    html += `<label class="modal-filter-checkbox"><input type="checkbox" class="modal-brand-cb" value="all" checked onchange="onModalBrandCheckboxChange(this)"> Tất cả</label>`;
+
+    brands.forEach(b => {
+        const count = products.filter(p => (p.brand || '').toLowerCase().includes(b.toLowerCase()) || (p.name || '').toLowerCase().includes(b.toLowerCase())).length;
+        html += `<label class="modal-filter-checkbox"><input type="checkbox" class="modal-brand-cb" value="${b.toLowerCase()}" onchange="onModalBrandCheckboxChange(this)"> ${b} (${count})</label>`;
+    });
+
+    brandContainer.innerHTML = html;
+}
+
+function onModalBrandCheckboxChange(elem) {
+    if (elem.value === 'all' && elem.checked) {
+        document.querySelectorAll('.modal-brand-cb').forEach(cb => {
+            if (cb.value !== 'all') cb.checked = false;
+        });
+    } else if (elem.value !== 'all' && elem.checked) {
+        const allCb = document.querySelector('.modal-brand-cb[value="all"]');
+        if (allCb) allCb.checked = false;
+    }
+
+    const checkedCount = document.querySelectorAll('.modal-brand-cb:checked').length;
+    if (checkedCount === 0) {
+        const allCb = document.querySelector('.modal-brand-cb[value="all"]');
+        if (allCb) allCb.checked = true;
+    }
+
+    applyModalFilters();
+}
+
+function onModalPriceCheckboxChange(elem) {
+    if (elem.value === 'all' && elem.checked) {
+        document.querySelectorAll('.modal-price-cb').forEach(cb => {
+            if (cb.value !== 'all') cb.checked = false;
+        });
+    } else if (elem.value !== 'all' && elem.checked) {
+        const allCb = document.querySelector('.modal-price-cb[value="all"]');
+        if (allCb) allCb.checked = false;
+    }
+
+    const checkedCount = document.querySelectorAll('.modal-price-cb:checked').length;
+    if (checkedCount === 0) {
+        const allCb = document.querySelector('.modal-price-cb[value="all"]');
+        if (allCb) allCb.checked = true;
+    }
+
+    applyModalFilters();
+}
+
+function applyModalFilters() {
+    const searchQuery = (document.getElementById('modalSearchInput')?.value || '').toLowerCase().trim();
+    const sortVal = document.getElementById('modalSortSelect')?.value || 'newest';
+
+    const selectedBrandCbs = Array.from(document.querySelectorAll('.modal-brand-cb:checked')).map(cb => cb.value);
+    const selectedPriceCbs = Array.from(document.querySelectorAll('.modal-price-cb:checked')).map(cb => cb.value);
+
+    filteredModalProducts = modalCategoryProducts.filter(p => {
+        const name = (p.name || '').toLowerCase();
+        const brand = (p.brand || '').toLowerCase();
+        const price = Number(p.price) || 0;
+
+        // 1. Lọc theo ô tìm kiếm
+        if (searchQuery && !name.includes(searchQuery) && !brand.includes(searchQuery)) {
+            return false;
+        }
+
+        // 2. Lọc theo Checkbox Hãng sản xuất
+        if (selectedBrandCbs.length > 0 && !selectedBrandCbs.includes('all')) {
+            const matchBrand = selectedBrandCbs.some(b => brand.includes(b) || name.includes(b));
+            if (!matchBrand) return false;
+        }
+
+        // 3. Lọc theo Checkbox Khoảng giá
+        if (selectedPriceCbs.length > 0 && !selectedPriceCbs.includes('all')) {
+            const matchPrice = selectedPriceCbs.some(pVal => {
+                if (pVal === 'under-3') return price < 3000000;
+                if (pVal === '3-7') return price >= 3000000 && price <= 7000000;
+                if (pVal === '7-15') return price > 7000000 && price <= 15000000;
+                if (pVal === 'over-15') return price > 15000000;
+                return true;
+            });
+            if (!matchPrice) return false;
+        }
+
+        return true;
+    });
+
+    // Sắp xếp danh sách
+    if (sortVal === 'price-asc') {
+        filteredModalProducts.sort((a, b) => a.price - b.price);
+    } else if (sortVal === 'price-desc') {
+        filteredModalProducts.sort((a, b) => b.price - a.price);
+    } else {
+        filteredModalProducts.sort((a, b) => b.id - a.id);
+    }
+
+    renderModalProducts(filteredModalProducts);
+}
+
+function resetModalFilters() {
+    const searchInput = document.getElementById('modalSearchInput');
+    if (searchInput) searchInput.value = '';
+
+    document.querySelectorAll('.modal-brand-cb').forEach(cb => {
+        cb.checked = (cb.value === 'all');
+    });
+
+    document.querySelectorAll('.modal-price-cb').forEach(cb => {
+        cb.checked = (cb.value === 'all');
+    });
+
+    const sortSelect = document.getElementById('modalSortSelect');
+    if (sortSelect) sortSelect.value = 'newest';
+
+    applyModalFilters();
+}
+
 function renderModalProducts(products) {
     const listContainer = document.getElementById('modalProductList');
     listContainer.innerHTML = '';
 
     if (products.length === 0) {
-        listContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #94a3b8;">Không tìm thấy linh kiện nào phù hợp.</div>';
+        listContainer.innerHTML = `
+            <div style="padding: 50px; text-align: center; color: #64748b;">
+                <p style="font-size: 15px; margin-bottom: 10px;">Không tìm thấy linh kiện nào phù hợp với bộ lọc hiện tại.</p>
+                <button onclick="resetModalFilters()" style="padding: 6px 14px; background: #0284c7; color: #fff; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">Đặt lại bộ lọc</button>
+            </div>
+        `;
         return;
     }
 
@@ -263,7 +440,7 @@ function renderModalProducts(products) {
 
 // Chọn linh kiện đưa vào cấu hình
 function selectComponentForBuild(productId) {
-    const p = currentModalProducts.find(item => item.id === productId);
+    const p = modalCategoryProducts.find(item => item.id === productId);
     if (!p || !activeModalComponentKey) return;
 
     selectedComponents[activeModalComponentKey] = {
@@ -275,33 +452,12 @@ function selectComponentForBuild(productId) {
     renderComponentRows();
 }
 
-// Xử lý Lọc & Tìm kiếm trong Modal
+// Xử lý Sự kiện Tìm kiếm & Sắp xếp trong Modal
 function initModalEvents() {
     const searchInput = document.getElementById('modalSearchInput');
     if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            if (!query) {
-                renderModalProducts(currentModalProducts);
-                return;
-            }
-            const filtered = currentModalProducts.filter(p => (p.name || '').toLowerCase().includes(query) || (p.brand || '').toLowerCase().includes(query));
-            renderModalProducts(filtered);
-        });
-    }
-
-    const sortSelect = document.getElementById('modalSortSelect');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', (e) => {
-            const sortVal = e.target.value;
-            if (sortVal === 'price-asc') {
-                currentModalProducts.sort((a, b) => a.price - b.price);
-            } else if (sortVal === 'price-desc') {
-                currentModalProducts.sort((a, b) => b.price - a.price);
-            } else {
-                currentModalProducts.sort((a, b) => b.id - a.id);
-            }
-            renderModalProducts(currentModalProducts);
+        searchInput.addEventListener('input', () => {
+            applyModalFilters();
         });
     }
 }

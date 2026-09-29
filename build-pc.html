@@ -122,24 +122,18 @@
                 <aside class="modal-sidebar-filter">
                     <div class="modal-sidebar-title">LỌC SẢN PHẨM THEO</div>
                     
-                    <div class="modal-filter-group">
+                    <div class="modal-filter-group" id="modalBrandFilterGroup">
                         <h4>Hãng sản xuất</h4>
-                        <label class="modal-filter-checkbox"><input type="checkbox" checked> Tất cả</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> Intel</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> AMD</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> ASUS</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> Gigabyte</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> MSI</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> Kingston</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox" class="modal-brand-cb" value="all" checked onchange="onModalBrandCheckboxChange(this)"> Tất cả</label>
                     </div>
 
-                    <div class="modal-filter-group">
+                    <div class="modal-filter-group" id="modalPriceFilterGroup">
                         <h4>Khoảng giá</h4>
-                        <label class="modal-filter-checkbox"><input type="checkbox" checked> Tất cả</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> Dưới 3 triệu</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> 3 triệu - 7 triệu</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> 7 triệu - 15 triệu</label>
-                        <label class="modal-filter-checkbox"><input type="checkbox"> Trên 15 triệu</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox" class="modal-price-cb" value="all" checked onchange="onModalPriceCheckboxChange(this)"> Tất cả</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox" class="modal-price-cb" value="under-3" onchange="onModalPriceCheckboxChange(this)"> Dưới 3 triệu</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox" class="modal-price-cb" value="3-7" onchange="onModalPriceCheckboxChange(this)"> 3 triệu - 7 triệu</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox" class="modal-price-cb" value="7-15" onchange="onModalPriceCheckboxChange(this)"> 7 triệu - 15 triệu</label>
+                        <label class="modal-filter-checkbox"><input type="checkbox" class="modal-price-cb" value="over-15" onchange="onModalPriceCheckboxChange(this)"> Trên 15 triệu</label>
                     </div>
                 </aside>
 
@@ -149,13 +143,13 @@
                     <div class="modal-sort-bar">
                         <div class="modal-sort-left">
                             <span>Sắp xếp:</span>
-                            <select id="modalSortSelect">
+                            <select id="modalSortSelect" onchange="applyModalFilters()">
                                 <option value="newest">Mới nhất</option>
                                 <option value="price-asc">Giá tăng dần</option>
                                 <option value="price-desc">Giá giảm dần</option>
                             </select>
                         </div>
-                        <button class="btn-modal-clear-filter" onclick="loadModalProducts(activeModalComponentKey)">Xóa bộ lọc</button>
+                        <button class="btn-modal-clear-filter" onclick="resetModalFilters()">Xóa bộ lọc</button>
                     </div>
 
                     <!-- Products List Container -->
