@@ -164,12 +164,12 @@ body {
 .container-top {
     max-width: 1440px;
     margin: 0 auto;
-    padding: 0 32px;
+    padding: 0 32px 0 252px; /* 32px padding + 220px sidebar width alignment */
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
-    gap: 28px;
 }
+
 
 
 .top-bar a {
