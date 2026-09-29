@@ -166,9 +166,11 @@ body {
     margin: 0 auto;
     padding: 0 32px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 28px;
 }
+
 
 .top-bar a {
     font-size: 13px;

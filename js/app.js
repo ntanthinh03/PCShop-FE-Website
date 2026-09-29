@@ -179,11 +179,15 @@ function renderLandingSections() {
 
     if (!pcGrid || !laptopGamingGrid || !laptopOfficeGrid) return;
 
-    // Lọc lấy 10-12 sản phẩm mỗi nhóm để hiển thị slider cuộn mượt
+    // Lọc lấy sản phẩm thuộc đúng danh mục PC Bán Chạy (Không dính Nguồn, SSD, RAM, Card)
     const pcProducts = liveProducts.filter(p => {
         const cat = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
         const name = (p.name || '').toLowerCase();
-        return cat.includes('pc-gaming') || name.includes('pc gvn') || (name.includes('pc ') && !name.includes('laptop'));
+        // Loại bỏ các linh kiện lẻ
+        if (name.includes('nguồn') || name.includes('ram') || name.includes('ssd') || name.includes('vga') || name.includes('mainboard') || name.includes('tản')) {
+            return false;
+        }
+        return cat.includes('pc-gaming') || name.includes('pc gvn') || name.includes('pc gaming') || name.startsWith('pc ');
     }).slice(0, 10);
 
     const gamingLaptopProducts = liveProducts.filter(p => {
@@ -198,9 +202,10 @@ function renderLandingSections() {
         return cat === 'laptop' || (name.includes('laptop') && !name.includes('gaming') && !name.includes('nitro') && !name.includes('rog'));
     }).slice(0, 10);
 
-    renderProductCardsToContainer(pcGrid, pcProducts.length > 0 ? pcProducts : liveProducts.slice(0, 10));
-    renderProductCardsToContainer(laptopGamingGrid, gamingLaptopProducts.length > 0 ? gamingLaptopProducts : liveProducts.slice(10, 20));
-    renderProductCardsToContainer(laptopOfficeGrid, officeLaptopProducts.length > 0 ? officeLaptopProducts : liveProducts.slice(20, 30));
+    renderProductCardsToContainer(pcGrid, pcProducts.length > 0 ? pcProducts : liveProducts.filter(p => (p.name||'').toLowerCase().includes('pc')).slice(0, 10));
+    renderProductCardsToContainer(laptopGamingGrid, gamingLaptopProducts.length > 0 ? gamingLaptopProducts : liveProducts.filter(p => (p.name||'').toLowerCase().includes('laptop')).slice(0, 10));
+    renderProductCardsToContainer(laptopOfficeGrid, officeLaptopProducts.length > 0 ? officeLaptopProducts : liveProducts.filter(p => (p.name||'').toLowerCase().includes('laptop')).slice(0, 10));
+
 
     // Khởi tạo Tự động trượt nhẹ sản phẩm theo định kỳ
     initAutoSectionSliders();
