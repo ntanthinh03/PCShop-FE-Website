@@ -108,21 +108,33 @@ function initCategoryClickListeners() {
     });
 }
 
-// Lọc sản phẩm theo Category khi click từ Menu linh kiện / Submenu
+// Chuyển sang Trang Danh Mục Sản Phẩm riêng biệt (category.html?slug=...)
 function filterByCategory(catKeyword, event) {
     if (event) {
-        event.preventDefault(); // Ngăn chặn thẻ <a> nhảy # trên URL
+        event.preventDefault();
     }
     
-    selectedCategoryFilter = catKeyword;
-    const banner = document.getElementById('categoryActiveBanner');
-    const title = document.getElementById('categoryActiveTitle');
-    
-    banner.style.display = 'flex';
-    title.textContent = `Đang lọc sản phẩm: ${catKeyword}`;
+    // Map từ khóa sang slug chuẩn
+    const slugMap = {
+        'Laptop': 'laptop',
+        'Laptop Gaming': 'laptop-gaming',
+        'PC GVN': 'pc-gaming',
+        'PC': 'pc-gaming',
+        'Main, CPU, VGA': 'main-cpu-vga',
+        'Main': 'main-cpu-vga',
+        'Case, Nguồn, Tản': 'case-nguon-tan',
+        'Tản': 'case-nguon-tan',
+        'Ổ cứng, RAM': 'o-cung-ram',
+        'RAM': 'o-cung-ram',
+        'Màn hình': 'man-hinh',
+        'Bàn phím': 'ban-phim',
+        'Chuột + Lót chuột': 'chuot-lot',
+        'Tai Nghe': 'tai-nghe',
+        'Ghế - Bàn': 'ghe-ban'
+    };
 
-    renderProducts();
-    document.getElementById('productGrid').scrollIntoView({ behavior: 'smooth' });
+    const targetSlug = slugMap[catKeyword] || encodeURIComponent(catKeyword.toLowerCase().replace(/,/g, '').replace(/\s+/g, '-'));
+    window.location.href = `category.html?slug=${targetSlug}`;
 }
 
 function resetCategoryFilter() {

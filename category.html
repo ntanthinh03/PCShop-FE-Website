@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Danh mục sản phẩm - PC SHOP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. Top Bar -->
+    <div class="top-bar">
+        <div class="container-top">
+            <a href="#">Tất cả khuyến mãi</a>
+            <a href="#">Tin tức - Review</a>
+            <a href="#">Tra Cứu Bảo Hành</a>
+            <a href="#">Dịch vụ tận nhà</a>
+            <a href="#">Thu cũ đổi mới</a>
+            <a href="#">Hệ Thống Showroom</a>
+        </div>
+    </div>
+
+    <!-- 2. Header -->
+    <header class="header">
+        <div class="container-header">
+            <a href="index.html" class="logo">PC<span>SHOP</span></a>
+            <a href="index.html" class="btn-category" style="text-decoration: none; color: inherit;">☰ Danh mục</a>
+            <div class="search-wrap">
+                <input type="text" id="searchInput" placeholder="Bạn cần tìm gì...">
+            </div>
+            <button class="btn-cart" id="cartBtn">🛒 Giỏ (<span id="cartCount">0</span>)</button>
+            <button class="btn-login" id="loginBtn">Đăng nhập</button>
+        </div>
+    </header>
+
+    <!-- 3. Cart Drawer -->
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-overlay" id="cartOverlay"></div>
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Giỏ hàng (<span id="cartDrawerCount">0</span>)</h3>
+                <button class="close-cart" id="closeCart">✕</button>
+            </div>
+            <div class="cart-body" id="cartBody">
+                <div class="cart-empty">
+                    <div class="empty-icon">🛒</div>
+                    <p>Giỏ hàng trống</p>
+                </div>
+            </div>
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <button class="btn-checkout">Thanh toán →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Main Collection Category Layout -->
+    <div class="container-category-page">
+        
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb">
+            <a href="index.html">Trang chủ</a> / <span id="breadcrumbCategoryName">Danh mục</span>
+        </div>
+
+        <!-- Category Big Heading -->
+        <h1 class="category-page-title" id="categoryTitle">Laptop</h1>
+
+        <!-- Category Banner -->
+        <div class="category-banner">
+            <div class="banner-text">
+                <h2>GIAN HÀNG <span id="bannerCatName">LAPTOP</span></h2>
+                <p class="banner-sub">MUA 1 ĐƯỢC 2+ · Giá chỉ từ 14.xx0.000đ</p>
+                <p class="banner-desc">*Giá sản phẩm có thể thay đổi tùy thuộc vào thời điểm</p>
+            </div>
+            <div class="banner-img">
+                <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600" alt="Banner Category">
+            </div>
+        </div>
+
+        <!-- Filter & Product Content Layout -->
+        <div class="category-layout">
+            
+            <!-- Left Sidebar Filter -->
+            <aside class="filter-sidebar">
+                <div class="filter-box">
+                    <div class="filter-header">
+                        <i class="fa-solid fa-sliders"></i> <h3>Bộ lọc tìm kiếm</h3>
+                    </div>
+
+                    <!-- Price Filter Group -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">Khoảng giá</h4>
+                        <label class="filter-checkbox"><input type="checkbox" name="price" value="all" checked> Tất cả</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="price" value="under-15"> Dưới 15 triệu</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="price" value="15-25"> Từ 15 triệu - 25 triệu</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="price" value="25-40"> Từ 25 triệu - 40 triệu</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="price" value="over-40"> Trên 40 triệu</label>
+                    </div>
+
+                    <!-- Brand Filter Group -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">Hãng sản xuất</h4>
+                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="ASUS"> ASUS</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="Acer"> Acer</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="MSI"> MSI</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="Intel"> Intel</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="NVIDIA"> NVIDIA</label>
+                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="LG"> LG</label>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Product List Area -->
+            <main class="category-main-content">
+                
+                <!-- Sort Bar -->
+                <div class="sort-bar">
+                    <span class="found-count">Tìm thấy <strong id="productFoundCount">0</strong> kết quả</span>
+                    <div class="sort-options">
+                        <span>Sắp xếp:</span>
+                        <select id="sortSelect" onchange="sortProducts()">
+                            <option value="newest">Mới nhất</option>
+                            <option value="price-asc">Giá tăng dần</option>
+                            <option value="price-desc">Giá giảm dần</option>
+                            <option value="name-asc">Tên A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+                <div class="product-grid" id="categoryProductGrid">
+                    <!-- Products will be loaded from API -->
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- 5. Footer -->
+    <footer class="footer">
+        <div class="container-footer">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <p class="footer-title">PCSHOP</p>
+                    <a href="#">Giới thiệu</a>
+                    <a href="#">Tuyển dụng</a>
+                    <a href="#">Tin tức</a>
+                    <a href="#">Liên hệ</a>
+                </div>
+                <div class="footer-col">
+                    <p class="footer-title">HỖ TRỢ</p>
+                    <a href="#">Tra cứu bảo hành</a>
+                    <a href="#">Hướng dẫn mua hàng</a>
+                    <a href="#">Chính sách đổi trả</a>
+                    <a href="#">Dịch vụ tận nhà</a>
+                </div>
+                <div class="footer-col">
+                    <p class="footer-title">SẢN PHẨM</p>
+                    <a href="category.html?slug=pc-gaming">PC Gaming</a>
+                    <a href="category.html?slug=laptop-gaming">Laptop Gaming</a>
+                    <a href="category.html?slug=man-hinh">Màn hình</a>
+                    <a href="category.html?slug=ban-phim">Phụ kiện</a>
+                </div>
+                <div class="footer-col">
+                    <p class="footer-title">THEO DÕI</p>
+                    <a href="#">Facebook</a>
+                    <a href="#">YouTube</a>
+                    <a href="#">TikTok</a>
+                    <a href="#">Zalo OA</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 PCShop. Tất cả quyền được bảo lưu.</p>
+                <p>Hotline: 1800 6975 · support@pcshop.vn</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App JS -->
+    <script src="js/api.js"></script>
+    <script src="js/category.js"></script>
+</body>
+</html>
