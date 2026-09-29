@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xây dựng Cấu hình PC - PC SHOP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. Header Main Bar -->
+    <header class="header">
+        <div class="container-header">
+            <a href="index.html" class="logo"><i class="fa-solid fa-desktop blue-logo-icon"></i> PCSHOP</a>
+            <div class="header-category-wrapper" id="headerCategoryWrapper">
+                <button class="btn-category" id="btnHeaderCategory" type="button">
+                    <i class="fa-solid fa-bars" id="headerCategoryIcon"></i> <span id="headerCategoryText">Danh mục</span>
+                </button>
+            </div>
+            <div class="search-wrap">
+                <input type="text" id="searchInput" placeholder="Bạn cần tìm gì?">
+                <button class="btn-search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <a href="build-pc.html" class="btn-build-pc">
+                <i class="fa-solid fa-desktop blue-build-icon"></i>
+                <div class="build-pc-text">
+                    <span>Xây dựng</span>
+                    <strong>Cấu hình PC</strong>
+                </div>
+            </a>
+            <button class="btn-cart" id="cartBtn"><i class="fa-solid fa-cart-shopping"></i><span id="cartCount">0</span></button>
+            <button class="btn-login" id="loginBtn"><i class="fa-solid fa-user"></i> Đăng nhập</button>
+        </div>
+    </header>
+
+    <!-- 2. Sub Navigation Bar -->
+    <div class="top-bar">
+        <div class="container-top">
+            <a href="#"><i class="fa-solid fa-tag blue-icon"></i> Tất cả khuyến mãi</a>
+            <a href="#"><i class="fa-solid fa-newspaper blue-icon"></i> Tin tức - Review</a>
+            <a href="#"><i class="fa-solid fa-wrench blue-icon"></i> Tra Cứu Bảo Hành</a>
+            <a href="#"><i class="fa-solid fa-truck-fast blue-icon"></i> Dịch vụ tận nhà</a>
+            <a href="#"><i class="fa-solid fa-rotate blue-icon"></i> Thu cũ đổi mới</a>
+            <a href="#"><i class="fa-solid fa-location-dot blue-icon"></i> Hệ Thống Showroom</a>
+        </div>
+    </div>
+
+    <!-- 3. PC Builder Main Content -->
+    <div class="container-category-page" style="max-width: 1280px; padding: 24px 16px;">
+        <div class="breadcrumb">
+            <a href="index.html">Trang chủ</a> / <span>Xây dựng cấu hình PC</span>
+        </div>
+
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 28px; margin-top: 16px;">
+            <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-desktop" style="color: #0284c7;"></i> Công Cụ Xây Dựng Cấu Hình PC Tự Chọn
+            </h1>
+            <p style="font-size: 13.5px; color: #64748b; margin-bottom: 24px;">Tự do lựa chọn linh kiện phù hợp với ngân sách và nhu cầu của bạn. Hệ thống tự động kiểm tra tương thích 100%.</p>
+
+            <!-- Component Selection Table -->
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
+                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-microchip"></i></span>
+                        <strong style="font-size: 14px; color: #1e293b;">1. Bộ vi xử lý (CPU)</strong>
+                    </div>
+                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn CPU...</div>
+                    <a href="category.html?slug=main-cpu-vga" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn CPU</a>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
+                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-hard-drive"></i></span>
+                        <strong style="font-size: 14px; color: #1e293b;">2. Bo mạch chủ (Main)</strong>
+                    </div>
+                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn Mainboard...</div>
+                    <a href="category.html?slug=main-cpu-vga" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn Mainboard</a>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
+                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-memory"></i></span>
+                        <strong style="font-size: 14px; color: #1e293b;">3. Bộ nhớ RAM</strong>
+                    </div>
+                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn RAM...</div>
+                    <a href="category.html?slug=o-cung-ram" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn RAM</a>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
+                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-tv"></i></span>
+                        <strong style="font-size: 14px; color: #1e293b;">4. Card màn hình (VGA)</strong>
+                    </div>
+                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn VGA...</div>
+                    <a href="category.html?slug=main-cpu-vga" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn VGA</a>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 14px; min-width: 180px;">
+                        <span style="font-size: 20px; color: #0284c7;"><i class="fa-solid fa-box"></i></span>
+                        <strong style="font-size: 14px; color: #1e293b;">5. Vỏ Case & Nguồn</strong>
+                    </div>
+                    <div style="flex: 1; text-align: center; color: #94a3b8; font-size: 13px;">Vui lòng chọn Case & Nguồn...</div>
+                    <a href="category.html?slug=case-nguon-tan" style="padding: 8px 16px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 6px; font-size: 12.5px; font-weight: 600;">+ Chọn Case & Nguồn</a>
+                </div>
+
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="font-size: 14px; color: #64748b;">Tổng tiền cấu hình:</span>
+                    <strong style="font-size: 22px; color: #0284c7; margin-left: 8px;">0 đ</strong>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button style="padding: 10px 20px; background: #ef4444; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">Tạo lại cấu hình</button>
+                    <button style="padding: 10px 24px; background: #0284c7; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">Thêm vào giỏ hàng →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Footer -->
+    <footer class="footer">
+        <div class="container-footer">
+            <div class="footer-bottom">
+                <p>© 2026 PCShop. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
