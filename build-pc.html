@@ -16,11 +16,167 @@
     <header class="header">
         <div class="container-header">
             <a href="index.html" class="logo"><i class="fa-solid fa-desktop blue-logo-icon"></i> PCSHOP</a>
+            
             <div class="header-category-wrapper" id="headerCategoryWrapper">
                 <button class="btn-category" id="btnHeaderCategory" type="button">
                     <i class="fa-solid fa-bars" id="headerCategoryIcon"></i> <span id="headerCategoryText">Danh mục</span>
                 </button>
+                <div class="header-category-dropdown" id="headerCategoryDropdown">
+                    <ul class="category-menu nav-popup-menu">
+                        <li data-cat="laptop">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-laptop blue-icon"></i> Laptop</span>
+                                <span>›</span>
+                            </div>
+                            <div class="mega-menu">
+                                <div class="mega-header">
+                                    <h3>Laptop Văn Phòng & Đồ Họa</h3>
+                                    <a href="category.html?slug=laptop">Xem tất cả &gt;</a>
+                                </div>
+                                <div class="mega-grid-4">
+                                    <div class="mega-col">
+                                        <h4>Thương Hiệu Laptop</h4>
+                                        <a href="category.html?slug=laptop&brand=ASUS">ASUS Zenbook / Vivobook</a>
+                                        <a href="category.html?slug=laptop&brand=Acer">Acer Aspire / Swift</a>
+                                        <a href="category.html?slug=laptop&brand=MSI">MSI Modern / Prestige</a>
+                                        <a href="category.html?slug=laptop&brand=Apple">Apple MacBook Pro / Air</a>
+                                    </div>
+                                    <div class="mega-col">
+                                        <h4>Nhu Cầu Sử Dụng</h4>
+                                        <a href="category.html?slug=laptop">Laptop Văn Phòng</a>
+                                        <a href="category.html?slug=laptop">Laptop Đồ Họa / Creator</a>
+                                        <a href="category.html?slug=laptop">Laptop Mỏng Nhẹ High-end</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li data-cat="laptop-gaming">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-gamepad blue-icon"></i> Laptop Gaming</span>
+                                <span>›</span>
+                            </div>
+                            <div class="mega-menu">
+                                <div class="mega-header">
+                                    <h3>Laptop Gaming Cấu Hình Cao</h3>
+                                    <a href="category.html?slug=laptop-gaming">Xem tất cả &gt;</a>
+                                </div>
+                                <div class="mega-grid-4">
+                                    <div class="mega-col">
+                                        <h4>Dòng Laptop Gaming</h4>
+                                        <a href="category.html?slug=laptop-gaming&search=ROG">ASUS ROG / TUF Gaming</a>
+                                        <a href="category.html?slug=laptop-gaming&search=Nitro">Acer Nitro 5 / Predator</a>
+                                        <a href="category.html?slug=laptop-gaming&search=MSI">MSI Gaming Series</a>
+                                    </div>
+                                    <div class="mega-col">
+                                        <h4>Card Đồ Họa Laptop</h4>
+                                        <a href="category.html?slug=laptop-gaming&search=3050">NVIDIA RTX 3050</a>
+                                        <a href="category.html?slug=laptop-gaming&search=4060">NVIDIA RTX 4060</a>
+                                        <a href="category.html?slug=laptop-gaming&search=4070">NVIDIA RTX 4070</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li data-cat="pc-gaming">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-desktop blue-icon"></i> PC GVN</span>
+                                <span>›</span>
+                            </div>
+                            <div class="mega-menu">
+                                <div class="mega-header">
+                                    <h3>PC Gaming Lắp Sẵn</h3>
+                                    <a href="category.html?slug=pc-gaming">Xem tất cả &gt;</a>
+                                </div>
+                                <div class="mega-grid-4">
+                                    <div class="mega-col">
+                                        <h4>Cấu Hình PC Gaming</h4>
+                                        <a href="category.html?slug=pc-gaming&search=i5">PC Intel Core i5 / i7</a>
+                                        <a href="category.html?slug=pc-gaming&search=ryzen">PC AMD Ryzen 7 7800X3D</a>
+                                        <a href="category.html?slug=pc-gaming&search=5080">PC High-End RTX 5080</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li data-cat="main-cpu-vga">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-microchip blue-icon"></i> Main, CPU, VGA</span>
+                                <span>›</span>
+                            </div>
+                            <div class="mega-menu">
+                                <div class="mega-header">
+                                    <h3>Mainboard, CPU, Card Màn Hình</h3>
+                                    <a href="category.html?slug=main-cpu-vga">Xem tất cả &gt;</a>
+                                </div>
+                                <div class="mega-grid-4">
+                                    <div class="mega-col">
+                                        <h4>Card Màn Hình (VGA)</h4>
+                                        <a href="category.html?slug=main-cpu-vga&search=5080">GeForce RTX 5080</a>
+                                        <a href="category.html?slug=main-cpu-vga&search=4070">GeForce RTX 4070 SUPER</a>
+                                        <a href="category.html?slug=main-cpu-vga&search=3050">GeForce RTX 3050 / 3060</a>
+                                    </div>
+                                    <div class="mega-col">
+                                        <h4>CPU - Bộ Vi Xử Lý</h4>
+                                        <a href="category.html?slug=main-cpu-vga&search=intel">Intel Core i5 / i7 / i9</a>
+                                        <a href="category.html?slug=main-cpu-vga&search=ryzen">AMD Ryzen 5 / 7 / 9</a>
+                                    </div>
+                                    <div class="mega-col">
+                                        <h4>Bo Mạch Chủ (Mainboard)</h4>
+                                        <a href="category.html?slug=main-cpu-vga&search=b760">Mainboard Intel B760 / Z790</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li data-cat="case-nguon-tan">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-box blue-icon"></i> Case, Nguồn, Tản</span>
+                                <span>›</span>
+                            </div>
+                        </li>
+                        <li data-cat="o-cung-ram">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-memory blue-icon"></i> Ổ cứng, RAM, Thẻ nhớ</span>
+                                <span>›</span>
+                            </div>
+                        </li>
+                        <li data-cat="audio">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-volume-high blue-icon"></i> Loa, Micro, Webcam</span>
+                                <span>›</span>
+                            </div>
+                        </li>
+                        <li data-cat="man-hinh">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-tv blue-icon"></i> Màn hình</span>
+                                <span>›</span>
+                            </div>
+                        </li>
+                        <li data-cat="ban-phim">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-keyboard blue-icon"></i> Bàn phím</span>
+                                <span>›</span>
+                            </div>
+                        </li>
+                        <li data-cat="chuot-lot">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-mouse blue-icon"></i> Chuột + Lót chuột</span>
+                                <span>›</span>
+                            </div>
+                        </li>
+                        <li data-cat="tai-nghe">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-headset blue-icon"></i> Tai Nghe</span>
+                                <span>›</span>
+                            </div>
+                        </li>
+                        <li data-cat="ghe-ban">
+                            <div class="menu-item-content">
+                                <span class="menu-icon"><i class="fa-solid fa-chair blue-icon"></i> Ghế - Bàn</span>
+                                <span>›</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
+
             <div class="search-wrap">
                 <input type="text" id="searchInput" placeholder="Bạn cần tìm gì?">
                 <button class="btn-search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -49,7 +205,27 @@
         </div>
     </div>
 
-    <!-- 3. PC Builder Main Page Container -->
+    <!-- 3. Cart Drawer -->
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-overlay" id="cartOverlay"></div>
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Giỏ hàng (<span id="cartDrawerCount">0</span>)</h3>
+                <button class="close-cart" id="closeCart">✕</button>
+            </div>
+            <div class="cart-body" id="cartBody">
+                <div class="cart-empty">
+                    <div class="empty-icon">🛒</div>
+                    <p>Giỏ hàng trống</p>
+                </div>
+            </div>
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <button class="btn-checkout">Thanh toán →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. PC Builder Main Page Container -->
     <div class="build-pc-container">
         
         <!-- Breadcrumb -->
@@ -101,7 +277,7 @@
 
     </div>
 
-    <!-- 4. POPUP MODAL CHỌN LINH KIỆN (Exact Match to Image 1) -->
+    <!-- 5. POPUP MODAL CHỌN LINH KIỆN (Exact Match to Image 1) -->
     <div class="pc-builder-modal-overlay" id="pcBuilderModal">
         <div class="pc-builder-modal">
             
@@ -164,7 +340,7 @@
         </div>
     </div>
 
-    <!-- 5. RESET CONFIRMATION MODAL -->
+    <!-- 6. RESET CONFIRMATION MODAL -->
     <div class="confirm-modal-overlay" id="resetConfirmModal">
         <div class="confirm-modal-box">
             <h3><i class="fa-solid fa-triangle-exclamation" style="color: #0284c7;"></i> Xác nhận làm mới</h3>
@@ -173,6 +349,94 @@
                 <button class="btn-modal-cancel" onclick="closeResetConfirmModal()">HỦY</button>
                 <button class="btn-modal-confirm" onclick="confirmResetBuild()">ĐỒNG Ý</button>
             </div>
+        </div>
+    </div>
+
+    <!-- 7. Auth Modal (Đăng nhập / Đăng ký / Quên mật khẩu) -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-overlay" id="authOverlay"></div>
+        <div class="auth-box">
+            <button class="close-auth" id="closeAuth">✕</button>
+
+            <!-- Google Quick Auth Button -->
+            <button class="btn-google-auth" onclick="handleGoogleLogin()">
+                <svg width="18" height="18" viewBox="0 0 18 18">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.259h2.908c1.702-1.567 2.684-3.874 2.684-6.617z" />
+                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" />
+                    <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" />
+                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" />
+                </svg>
+                Tiếp tục sử dụng dịch vụ bằng Google
+            </button>
+
+            <div class="auth-divider"><span>HOẶC</span></div>
+
+            <div class="auth-tabs" id="authTabsHeader">
+                <button class="auth-tab active" id="tabLoginBtn" onclick="switchAuthTab('login')">Đăng nhập</button>
+                <button class="auth-tab" id="tabRegisterBtn" onclick="switchAuthTab('register')">Đăng ký tài khoản</button>
+            </div>
+
+            <!-- Form Đăng nhập -->
+            <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email / Số điện thoại</label>
+                    <input type="email" id="loginEmail" placeholder="Nhập email của bạn..." required>
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="loginPassword" placeholder="Nhập mật khẩu..." required>
+                </div>
+                <div class="form-row-remember">
+                    <label class="checkbox-remember">
+                        <input type="checkbox" id="rememberMe" checked> Ghi nhớ đăng nhập
+                    </label>
+                    <a href="javascript:void(0)" class="forgot-pass-link" onclick="switchAuthTab('forgot')">Quên mật khẩu?</a>
+                </div>
+                <button type="submit" class="btn-auth-submit">Đăng nhập ngay</button>
+                <p class="auth-switch-footer">Chưa có tài khoản? <a href="javascript:void(0)" onclick="switchAuthTab('register')">Đăng ký ngay</a></p>
+            </form>
+
+            <!-- Form Đăng ký -->
+            <form class="auth-form" id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Họ và tên</label>
+                    <input type="text" id="regName" placeholder="Nhập họ tên đầy đủ..." required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="Nhập địa chỉ email..." required>
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="regPassword" placeholder="Tạo mật khẩu (tối thiểu 6 ký tự)..." required>
+                </div>
+                <button type="submit" class="btn-auth-submit">Đăng ký ngay</button>
+                <p class="auth-switch-footer">Đã có tài khoản? <a href="javascript:void(0)" onclick="switchAuthTab('login')">Đăng nhập ngay</a></p>
+            </form>
+
+            <!-- Form Quên Mật Khẩu -->
+            <form class="auth-form" id="forgotForm" style="display: none;" onsubmit="handleForgotPassword(event)">
+                <h4 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Khôi Phục Mật Khẩu</h4>
+                <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">Vui lòng nhập Email đã đăng ký để nhận liên kết đặt lại mật khẩu mới.</p>
+                <div class="form-group">
+                    <label>Email đăng ký</label>
+                    <input type="email" id="forgotEmail" placeholder="Nhập địa chỉ email của bạn..." required>
+                </div>
+                <button type="submit" class="btn-auth-submit">Gửi yêu cầu đặt lại mật khẩu</button>
+                <p class="auth-switch-footer"><a href="javascript:void(0)" onclick="switchAuthTab('login')">← Quay lại Đăng nhập</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- 8. Orders Modal -->
+    <div class="orders-modal" id="ordersModal">
+        <div class="orders-overlay" id="ordersOverlay"></div>
+        <div class="orders-box">
+            <div class="orders-header">
+                <h3><i class="fa-solid fa-clock-rotate-left blue-icon"></i> Lịch Sử Đơn Hàng Của Bạn</h3>
+                <button class="close-orders" id="closeOrders">✕</button>
+            </div>
+            <div class="orders-body" id="ordersListBody"></div>
         </div>
     </div>
 
