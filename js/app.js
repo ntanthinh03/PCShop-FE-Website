@@ -109,7 +109,11 @@ function initCategoryClickListeners() {
 }
 
 // Lọc sản phẩm theo Category khi click từ Menu linh kiện / Submenu
-function filterByCategory(catKeyword) {
+function filterByCategory(catKeyword, event) {
+    if (event) {
+        event.preventDefault(); // Ngăn chặn thẻ <a> nhảy # trên URL
+    }
+    
     selectedCategoryFilter = catKeyword;
     const banner = document.getElementById('categoryActiveBanner');
     const title = document.getElementById('categoryActiveTitle');
@@ -142,15 +146,16 @@ function initTabs() {
     });
 }
 
-// Nạp danh sách sản phẩm THẬT từ REST API Laravel Backend
+// Nạp toàn bộ 200 linh kiện từ REST API Laravel Backend (Không giới hạn phân trang 15 item)
 async function loadProducts() {
     const grid = document.getElementById('productGrid');
     grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #666;">Đang nạp linh kiện thực tế từ Server Backend...</div>';
 
     try {
-        const res = await api.getProducts({ per_page: 50 });
-        if (res.status === 'success' && res.data && res.data.data) {
-            liveProducts = res.data.data;
+        const res = await api.getProducts({ per_page: 250 });
+        if (res.status === 'success' && res.data) {
+            // Xử lý cả dạng Paginated response (res.data.data) lẫn Array (res.data)
+            liveProducts = Array.isArray(res.data) ? res.data : (res.data.data || []);
             renderProducts();
             return;
         }
@@ -165,15 +170,26 @@ function renderProducts() {
     grid.innerHTML = '';
 
     const filtered = liveProducts.filter(p => {
-        // Lọc theo Category Filter được chọn từ Sidebar/Submenu
+        // Lọc linh hoạt theo Từ khóa danh mục (Tên, Category Slug, Brand, Specs)
         if (selectedCategoryFilter) {
-            const keyword = selectedCategoryFilter.toLowerCase();
-            const pCat = p.category ? p.category.name.toLowerCase() : '';
+            const keyword = selectedCategoryFilter.toLowerCase().trim();
+            const pName = p.name ? p.name.toLowerCase() : '';
+            const pCat = p.category ? (p.category.name || p.category.slug || '').toLowerCase() : '';
             const pBrand = p.brand ? p.brand.toLowerCase() : '';
-            return p.name.toLowerCase().includes(keyword) || 
-                   pCat.includes(keyword) ||
-                   pBrand.includes(keyword) ||
-                   JSON.stringify(p.specs || {}).toLowerCase().includes(keyword);
+            const pSpecs = JSON.stringify(p.specs || {}).toLowerCase();
+
+            // Tách từ khóa chính để match chính xác
+            if (keyword.includes('laptop')) return pName.includes('laptop') || pCat.includes('laptop');
+            if (keyword.includes('pc')) return pName.includes('pc') || pCat.includes('pc');
+            if (keyword.includes('màn')) return pName.includes('màn') || pCat.includes('man-hinh');
+            if (keyword.includes('phím')) return pName.includes('phím') || pCat.includes('ban-phim');
+            if (keyword.includes('chuột')) return pName.includes('chuột') || pCat.includes('chuot');
+            if (keyword.includes('ghế')) return pName.includes('ghế') || pCat.includes('ghe');
+            if (keyword.includes('main') || keyword.includes('cpu') || keyword.includes('vga')) return pCat.includes('main-cpu-vga') || pName.includes('cpu') || pName.includes('rtx') || pName.includes('mainboard');
+            if (keyword.includes('case') || keyword.includes('nguồn') || keyword.includes('tản')) return pCat.includes('case-nguon-tan') || pName.includes('nguồn') || pName.includes('tản');
+            if (keyword.includes('ổ cứng') || keyword.includes('ram')) return pCat.includes('o-cung-ram') || pName.includes('ram') || pName.includes('ssd');
+
+            return pName.includes(keyword) || pCat.includes(keyword) || pBrand.includes(keyword) || pSpecs.includes(keyword);
         }
 
         // Lọc theo Tab trên cùng
