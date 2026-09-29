@@ -1,0 +1,6 @@
+# AI Rules & Local Agent Files (Do NOT push to git)
+.ai/
+.claude/
+.agents/
+AGENTS.md
+CLAUDE.md
