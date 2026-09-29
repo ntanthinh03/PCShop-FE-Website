@@ -9,14 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initFilterEvents();
 });
 
-// Lấy tham số slug/query từ URL (VD: category.html?slug=laptop hoặc ?search=asus)
 function initCategoryPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('slug') || urlParams.get('cat') || 'laptop';
     const search = urlParams.get('search') || '';
+    const brandParam = urlParams.get('brand') || '';
 
-    // Chuẩn hóa tên danh mục từ slug
-    currentCategoryName = formatCategoryTitle(slug, search);
+    currentCategoryName = formatCategoryTitle(slug, search || brandParam);
 
     document.getElementById('categoryTitle').textContent = currentCategoryName;
     document.getElementById('breadcrumbCategoryName').textContent = currentCategoryName;
@@ -24,11 +23,11 @@ function initCategoryPage() {
     document.getElementById('pageTitle').textContent = `${currentCategoryName} chính hãng - PC SHOP`;
 
     // Gọi API nạp sản phẩm
-    loadCategoryProducts(slug, search);
+    loadCategoryProducts(slug, search, brandParam);
 }
 
 function formatCategoryTitle(slug, search) {
-    if (search) return `Tìm kiếm: ${search}`;
+    if (search) return `Danh mục: ${search}`;
     const titles = {
         'laptop': 'Laptop',
         'laptop-gaming': 'Laptop Gaming',
@@ -36,6 +35,7 @@ function formatCategoryTitle(slug, search) {
         'main-cpu-vga': 'Main, CPU, VGA',
         'case-nguon-tan': 'Case, Nguồn, Tản Nhiệt',
         'o-cung-ram': 'Ổ cứng, RAM, Thẻ nhớ',
+        'audio': 'Loa, Micro, Webcam',
         'man-hinh': 'Màn hình Gaming',
         'ban-phim': 'Bàn phím cơ',
         'chuot-lot': 'Chuột + Lót chuột',
@@ -46,7 +46,7 @@ function formatCategoryTitle(slug, search) {
 }
 
 // Gọi REST API Backend nạp danh mục
-async function loadCategoryProducts(slug, search) {
+async function loadCategoryProducts(slug, search, brandParam) {
     const grid = document.getElementById('categoryProductGrid');
     grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #666;">Đang nạp danh sách linh kiện từ Server Backend...</div>';
 
@@ -55,24 +55,59 @@ async function loadCategoryProducts(slug, search) {
         if (res.status === 'success' && res.data) {
             const allProducts = Array.isArray(res.data) ? res.data : (res.data.data || []);
             
-            // Lọc sản phẩm theo Slug hoặc Search
+            // Phân loại chính xác 100% không bị lẫn lộn giữa các mục
             categoryProducts = allProducts.filter(p => {
                 const pCatSlug = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
-                const pName = p.name ? p.name.toLowerCase() : '';
-                const pBrand = p.brand ? p.brand.toLowerCase() : '';
+                const pName = (p.name || '').toLowerCase();
+                const pBrand = (p.brand || '').toLowerCase();
 
-                if (search) {
-                    return pName.includes(search.toLowerCase()) || pBrand.includes(search.toLowerCase());
+                // Lọc theo Hãng nếu có param ?brand=ASUS
+                if (brandParam && !pBrand.includes(brandParam.toLowerCase()) && !pName.includes(brandParam.toLowerCase())) {
+                    return false;
                 }
 
-                if (slug === 'laptop') return pName.includes('laptop') || pCatSlug.includes('laptop');
-                if (slug === 'laptop-gaming') return pName.includes('laptop') && (pName.includes('rtx') || pName.includes('rog') || pName.includes('nitro'));
-                if (slug === 'pc-gaming') return pName.includes('pc') || pCatSlug.includes('pc');
-                if (slug === 'main-cpu-vga') return pCatSlug.includes('main-cpu-vga') || pName.includes('cpu') || pName.includes('rtx') || pName.includes('mainboard');
-                if (slug === 'case-nguon-tan') return pCatSlug.includes('case-nguon-tan') || pName.includes('nguồn') || pName.includes('tản') || pName.includes('case');
-                if (slug === 'o-cung-ram') return pCatSlug.includes('o-cung-ram') || pName.includes('ram') || pName.includes('ssd');
-                if (slug === 'man-hinh') return pName.includes('màn') || pCatSlug.includes('man-hinh');
-                if (slug === 'ban-phim') return pName.includes('phím') || pCatSlug.includes('ban-phim');
+                // Lọc theo từ khóa tìm kiếm nếu có param ?search=i5
+                if (search && !pName.includes(search.toLowerCase()) && !pBrand.includes(search.toLowerCase())) {
+                    return false;
+                }
+
+                // Phân loại nghiêm ngặt theo Slug danh mục
+                if (slug === 'laptop') {
+                    return (pCatSlug.includes('laptop') || pName.includes('laptop') || pName.includes('macbook')) && !pName.includes('rtx') && !pName.includes('nitro') && !pName.includes('rog');
+                }
+                if (slug === 'laptop-gaming') {
+                    return pCatSlug.includes('laptop-gaming') || (pName.includes('laptop') && (pName.includes('gaming') || pName.includes('rtx') || pName.includes('rog') || pName.includes('nitro')));
+                }
+                if (slug === 'pc-gaming') {
+                    return pCatSlug.includes('pc-gaming') || (pName.includes('pc') && !pName.includes('laptop') && !pName.includes('case'));
+                }
+                if (slug === 'main-cpu-vga') {
+                    return pCatSlug.includes('main-cpu-vga') || pName.includes('cpu') || pName.includes('rtx') || pName.includes('mainboard') || pName.includes('card màn hình');
+                }
+                if (slug === 'case-nguon-tan') {
+                    return pCatSlug.includes('case-nguon-tan') || pName.includes('nguồn') || pName.includes('tản') || pName.includes('case') || pName.includes('aio');
+                }
+                if (slug === 'o-cung-ram') {
+                    return pCatSlug.includes('o-cung-ram') || pName.includes('ram') || pName.includes('ssd') || pName.includes('hdd');
+                }
+                if (slug === 'audio') {
+                    return pCatSlug.includes('audio') || pName.includes('loa') || pName.includes('micro') || pName.includes('webcam');
+                }
+                if (slug === 'man-hinh') {
+                    return pCatSlug.includes('man-hinh') || pName.includes('màn hình');
+                }
+                if (slug === 'ban-phim') {
+                    return pCatSlug.includes('ban-phim') || pName.includes('bàn phím');
+                }
+                if (slug === 'chuot-lot') {
+                    return pCatSlug.includes('chuot-lot') || pName.includes('chuột') || pName.includes('lót chuột');
+                }
+                if (slug === 'tai-nghe') {
+                    return pCatSlug.includes('tai-nghe') || pName.includes('tai nghe');
+                }
+                if (slug === 'ghe-ban') {
+                    return pCatSlug.includes('ghe-ban') || pName.includes('ghế') || pName.includes('bàn');
+                }
 
                 return pCatSlug.includes(slug) || pName.includes(slug);
             });
@@ -97,7 +132,7 @@ function renderCategoryGrid() {
     if (filteredCategoryProducts.length === 0) {
         grid.innerHTML = `
             <div style="grid-column: 1 / -1; padding: 80px; text-align: center; background: #fff; border: 1px solid #eee; border-radius: 8px; color: #999;">
-                <p style="font-size: 16px; margin-bottom: 12px;">Chưa có sản phẩm nào thuộc danh mục này.</p>
+                <p style="font-size: 16px; margin-bottom: 12px;">Chưa có sản phẩm nào thuộc danh mục "${currentCategoryName}".</p>
                 <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 4px; font-size: 13px;">Trở về trang chủ</a>
             </div>
         `;
@@ -138,7 +173,6 @@ function renderCategoryGrid() {
     });
 }
 
-// Bắt sự kiện Lọc giá & Hãng bên Sidebar Filter
 function initFilterEvents() {
     const checkboxes = document.querySelectorAll('.filter-checkbox input');
     checkboxes.forEach(cb => {
@@ -151,7 +185,6 @@ function applyCategoryFilters() {
     const selectedPrice = document.querySelector('input[name="price"]:checked')?.value || 'all';
 
     filteredCategoryProducts = categoryProducts.filter(p => {
-        // Lọc Hãng
         if (selectedBrands.length > 0) {
             const pBrand = (p.brand || '').toLowerCase();
             const pName = (p.name || '').toLowerCase();
@@ -159,7 +192,6 @@ function applyCategoryFilters() {
             if (!matchBrand) return false;
         }
 
-        // Lọc Giá
         const price = p.price;
         if (selectedPrice === 'under-15' && price >= 15000000) return false;
         if (selectedPrice === '15-25' && (price < 15000000 || price > 25000000)) return false;
@@ -172,7 +204,6 @@ function applyCategoryFilters() {
     renderCategoryGrid();
 }
 
-// Sắp xếp sản phẩm
 function sortProducts() {
     const sortVal = document.getElementById('sortSelect').value;
 
@@ -189,7 +220,6 @@ function sortProducts() {
     renderCategoryGrid();
 }
 
-// Cart Drawer Controller
 let cartItemsCat = [];
 
 function initCartDrawer() {
