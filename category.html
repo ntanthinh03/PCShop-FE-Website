@@ -12,30 +12,31 @@
 </head>
 <body>
 
-    <!-- 1. Top Bar -->
-    <div class="top-bar">
-        <div class="container-top">
-            <a href="#">Tất cả khuyến mãi</a>
-            <a href="#">Tin tức - Review</a>
-            <a href="#">Tra Cứu Bảo Hành</a>
-            <a href="#">Dịch vụ tận nhà</a>
-            <a href="#">Thu cũ đổi mới</a>
-            <a href="#">Hệ Thống Showroom</a>
-        </div>
-    </div>
-
-    <!-- 2. Header -->
+    <!-- 1. Header Main Bar -->
     <header class="header">
         <div class="container-header">
-            <a href="index.html" class="logo">PC<span>SHOP</span></a>
-            <a href="index.html" class="btn-category" style="text-decoration: none; color: inherit;">☰ Danh mục</a>
+            <a href="index.html" class="logo"><i class="fa-solid fa-desktop blue-logo-icon"></i> PCSHOP</a>
+            <a href="index.html" class="btn-category" style="text-decoration: none; color: inherit;"><i class="fa-solid fa-bars"></i> Danh mục</a>
             <div class="search-wrap">
-                <input type="text" id="searchInput" placeholder="Bạn cần tìm gì...">
+                <input type="text" id="searchInput" placeholder="Bạn cần tìm gì?">
+                <button class="btn-search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-            <button class="btn-cart" id="cartBtn">🛒 Giỏ (<span id="cartCount">0</span>)</button>
-            <button class="btn-login" id="loginBtn">Đăng nhập</button>
+            <button class="btn-cart" id="cartBtn"><i class="fa-solid fa-cart-shopping"></i><span id="cartCount">0</span></button>
+            <button class="btn-login" id="loginBtn"><i class="fa-solid fa-user"></i> Đăng nhập</button>
         </div>
     </header>
+
+    <!-- 2. Sub Navigation Bar (Khuyến mãi, Tra cứu, Showroom) -->
+    <div class="top-bar">
+        <div class="container-top">
+            <a href="#"><i class="fa-solid fa-tag blue-icon"></i> Tất cả khuyến mãi</a>
+            <a href="#"><i class="fa-solid fa-newspaper blue-icon"></i> Tin tức - Review</a>
+            <a href="#"><i class="fa-solid fa-wrench blue-icon"></i> Tra Cứu Bảo Hành</a>
+            <a href="#"><i class="fa-solid fa-truck-fast blue-icon"></i> Dịch vụ tận nhà</a>
+            <a href="#"><i class="fa-solid fa-rotate blue-icon"></i> Thu cũ đổi mới</a>
+            <a href="#"><i class="fa-solid fa-location-dot blue-icon"></i> Hệ Thống Showroom</a>
+        </div>
+    </div>
 
     <!-- 3. Cart Drawer -->
     <div class="cart-drawer" id="cartDrawer">
