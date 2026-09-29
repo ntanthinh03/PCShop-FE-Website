@@ -55,13 +55,13 @@ async function loadCategoryProducts(slug, search, brandParam) {
     grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #666;">Đang nạp danh sách linh kiện từ Server Backend...</div>';
 
     try {
-        const res = await api.getProducts({ per_page: 250 });
+        const res = await api.getProducts({ category: slug, per_page: 250 });
         if (res.status === 'success' && res.data) {
             const allProducts = Array.isArray(res.data) ? res.data : (res.data.data || []);
             
             // Phân loại chính xác 100% không bị lẫn lộn giữa các mục
             categoryProducts = allProducts.filter(p => {
-                const pCatSlug = p.category ? (p.category.slug || p.category.name || '').toLowerCase() : '';
+                const pCatSlug = (p.category_slug || (p.category ? (p.category.slug || p.category.name || '') : '')).toLowerCase();
                 const pName = (p.name || '').toLowerCase();
                 const pBrand = (p.brand || '').toLowerCase();
 
@@ -73,41 +73,27 @@ async function loadCategoryProducts(slug, search, brandParam) {
                     return false;
                 }
 
+                // Nếu có thông tin category slug chuẩn
+                if (pCatSlug) {
+                    if (pCatSlug === slug) return true;
+                    // Nếu thuộc danh mục khác rõ ràng (như laptop-gaming, pc-gaming...) thì loại trừ ngay
+                    if (['laptop', 'laptop-gaming', 'pc-gaming', 'case-nguon-tan', 'o-cung-ram', 'man-hinh', 'ban-phim', 'chuot-lot', 'tai-nghe', 'ghe-ban', 'phan-mem', 'phu-kien'].includes(pCatSlug)) {
+                        return false;
+                    }
+                }
+
+                // Fallback nếu chưa có category slug
                 if (slug === 'laptop') {
-                    return (pCatSlug.includes('laptop') || pName.includes('laptop') || pName.includes('macbook')) && !pName.includes('rtx') && !pName.includes('nitro') && !pName.includes('rog');
+                    return (pName.includes('laptop') || pName.includes('macbook')) && !pName.includes('gaming') && !pName.includes('rtx');
                 }
                 if (slug === 'laptop-gaming') {
-                    return pCatSlug.includes('laptop-gaming') || (pName.includes('laptop') && (pName.includes('gaming') || pName.includes('rtx') || pName.includes('rog') || pName.includes('nitro')));
+                    return pName.includes('laptop') && (pName.includes('gaming') || pName.includes('rtx') || pName.includes('rog') || pName.includes('nitro'));
                 }
                 if (slug === 'pc-gaming') {
-                    return pCatSlug.includes('pc-gaming') || (pName.includes('pc') && !pName.includes('laptop') && !pName.includes('case'));
+                    return (pName.includes('pc gaming') || pName.includes('pcshop ultra')) && !pName.includes('laptop');
                 }
                 if (slug === 'main-cpu-vga') {
-                    return pCatSlug.includes('main-cpu-vga') || pName.includes('cpu') || pName.includes('rtx') || pName.includes('mainboard') || pName.includes('card màn hình');
-                }
-                if (slug === 'case-nguon-tan') {
-                    return pCatSlug.includes('case-nguon-tan') || pName.includes('nguồn') || pName.includes('tản') || pName.includes('case') || pName.includes('aio');
-                }
-                if (slug === 'o-cung-ram') {
-                    return pCatSlug.includes('o-cung-ram') || pName.includes('ram') || pName.includes('ssd') || pName.includes('hdd');
-                }
-                if (slug === 'audio') {
-                    return pCatSlug.includes('audio') || pName.includes('loa') || pName.includes('micro') || pName.includes('webcam');
-                }
-                if (slug === 'man-hinh') {
-                    return pCatSlug.includes('man-hinh') || pName.includes('màn hình');
-                }
-                if (slug === 'ban-phim') {
-                    return pCatSlug.includes('ban-phim') || pName.includes('bàn phím');
-                }
-                if (slug === 'chuot-lot') {
-                    return pCatSlug.includes('chuot-lot') || pName.includes('chuột') || pName.includes('lót chuột');
-                }
-                if (slug === 'tai-nghe') {
-                    return pCatSlug.includes('tai-nghe') || pName.includes('tai nghe');
-                }
-                if (slug === 'ghe-ban') {
-                    return pCatSlug.includes('ghe-ban') || pName.includes('ghế') || pName.includes('bàn');
+                    return (pName.includes('vi xử lý') || pName.includes('intel core') || pName.includes('amd ryzen') || pName.includes('mainboard') || pName.includes('bo mạch') || pName.includes('card màn hình')) && !pName.includes('laptop') && !pName.includes('pc gaming') && !pName.includes('pcshop ultra');
                 }
 
                 return pCatSlug.includes(slug) || pName.includes(slug);
