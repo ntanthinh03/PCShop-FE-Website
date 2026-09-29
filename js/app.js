@@ -29,62 +29,11 @@ const slides = [
     }
 ];
 
-// Mockup dữ liệu đa dạng theo từng loại linh kiện
-const mockProducts = [
-    {
-        id: 1, name: 'PC Intel i5-12400F / RTX 3050', category: 'PC Gaming',
-        cpu: 'Intel i5-12400F', ram: '16 GB', ssd: '512 GB', gpu: 'RTX 3050 6GB',
-        price: '18.690.000đ', old: '20.620.000đ', tag: '-9%',
-        img: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&h=260&fit=crop&auto=format'
-    },
-    {
-        id: 2, name: 'PC Intel i5-12400F / RX 6500XT', category: 'PC Gaming',
-        cpu: 'Intel i5-12400F', ram: '16 GB', ssd: '512 GB', gpu: 'RX 6500XT 4GB',
-        price: '17.390.000đ', old: '19.320.000đ', tag: '-10%',
-        img: 'https://images.unsplash.com/photo-1587202372583-49330a15584d?w=400&h=260&fit=crop&auto=format'
-    },
-    {
-        id: 3, name: 'PC Intel i7-14700F / RTX 5070Ti', category: 'PC High-End',
-        cpu: 'Intel i7-14700F', ram: '16 GB', ssd: '1024 GB', gpu: 'RTX 5070 Ti',
-        price: '72.990.000đ', old: '74.020.000đ', tag: '-1%',
-        img: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=400&h=260&fit=crop&auto=format'
-    },
-    {
-        id: 4, name: 'PC AMD Ryzen 7 7800X3D / RTX 5080', category: 'PC High-End',
-        cpu: 'Ryzen 7-7800X3D', ram: '16 GB', ssd: '1024 GB', gpu: 'RTX 5080',
-        price: '84.990.000đ', old: '86.310.000đ', tag: '-2%',
-        img: 'https://images.unsplash.com/photo-1593640408182-31c228f8a9e3?w=400&h=260&fit=crop&auto=format'
-    },
-    {
-        id: 5, name: 'Laptop Acer Aspire 7 / RTX 3050', category: 'Laptop Acer',
-        cpu: 'Core 5-210H', ram: '16 GB', ssd: '512 GB', gpu: 'RTX 3050 4GB',
-        price: '24.490.000đ', old: '27.990.000đ', tag: '-13%',
-        img: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=400&h=260&fit=crop&auto=format'
-    },
-    {
-        id: 6, name: 'Laptop ASUS V16 / RTX 3050', category: 'Laptop ASUS',
-        cpu: 'Core 5-210H', ram: '16 GB', ssd: '512 GB', gpu: 'RTX 3050',
-        price: '26.490.000đ', old: '29.990.000đ', tag: '-12%',
-        img: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=260&fit=crop&auto=format'
-    },
-    {
-        id: 7, name: 'Màn hình LG 27" 165Hz IPS', category: 'Màn hình 165Hz',
-        cpu: '27 inch', ram: '165Hz', ssd: '1ms', gpu: 'IPS Panel',
-        price: '6.490.000đ', old: '7.200.000đ', tag: '-10%',
-        img: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=260&fit=crop&auto=format'
-    },
-    {
-        id: 8, name: 'Bàn phím cơ Keychron K2 Pro', category: 'Keychron',
-        cpu: 'TKL Layout', ram: 'Hot-swap', ssd: 'Wireless', gpu: 'RGB LED',
-        price: '2.190.000đ', old: '2.890.000đ', tag: '-24%',
-        img: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=400&h=260&fit=crop&auto=format'
-    }
-];
-
 let currentSlide = 0;
 let cartItems = [];
 let activeTab = 'Tất cả';
 let selectedCategoryFilter = null;
+let liveProducts = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     initSlider();
@@ -148,14 +97,12 @@ function initCategoryClickListeners() {
     const categoryItems = document.querySelectorAll('.category-menu li');
     categoryItems.forEach(item => {
         item.addEventListener('click', (e) => {
-            // Tránh trigger khi click vào submenu item
             if (e.target.tagName === 'A') return;
             const categoryName = item.querySelector('.menu-item-content span:first-child').textContent;
             filterByCategory(categoryName);
         });
     });
 
-    // Header Danh mục button toggle scroll to sidebar
     document.getElementById('btnCategoryDropdown').addEventListener('click', () => {
         document.querySelector('.sidebar').scrollIntoView({ behavior: 'smooth' });
     });
@@ -171,8 +118,6 @@ function filterByCategory(catKeyword) {
     title.textContent = `Đang lọc sản phẩm: ${catKeyword}`;
 
     renderProducts();
-
-    // Cuộn mượt xuống phần danh sách sản phẩm
     document.getElementById('productGrid').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -197,40 +142,46 @@ function initTabs() {
     });
 }
 
-// Render Products
+// Nạp danh sách sản phẩm THẬT từ REST API Laravel Backend
 async function loadProducts() {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #666;">Đang nạp linh kiện thực tế từ Server Backend...</div>';
+
     try {
-        const res = await api.getProducts();
-        if (res.status === 'success' && res.data && res.data.data && res.data.data.length > 0) {
-            renderApiProducts(res.data.data);
+        const res = await api.getProducts({ per_page: 50 });
+        if (res.status === 'success' && res.data && res.data.data) {
+            liveProducts = res.data.data;
+            renderProducts();
             return;
         }
     } catch (e) {
-        console.log('Chưa kết nối API Backend, nạp mockup Figma...');
+        console.error('Lỗi khi nạp API Backend:', e);
     }
-    renderProducts();
+    grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #ef4444;">Không thể kết nối đến Backend Server. Hãy chắc chắn php artisan serve đang chạy.</div>';
 }
 
 function renderProducts() {
     const grid = document.getElementById('productGrid');
     grid.innerHTML = '';
 
-    const filtered = mockProducts.filter(p => {
+    const filtered = liveProducts.filter(p => {
         // Lọc theo Category Filter được chọn từ Sidebar/Submenu
         if (selectedCategoryFilter) {
             const keyword = selectedCategoryFilter.toLowerCase();
+            const pCat = p.category ? p.category.name.toLowerCase() : '';
+            const pBrand = p.brand ? p.brand.toLowerCase() : '';
             return p.name.toLowerCase().includes(keyword) || 
-                   (p.category && p.category.toLowerCase().includes(keyword)) ||
-                   p.cpu.toLowerCase().includes(keyword) ||
-                   p.gpu.toLowerCase().includes(keyword);
+                   pCat.includes(keyword) ||
+                   pBrand.includes(keyword) ||
+                   JSON.stringify(p.specs || {}).toLowerCase().includes(keyword);
         }
 
         // Lọc theo Tab trên cùng
         if (activeTab === 'Tất cả') return true;
-        if (activeTab === 'PC') return p.name.toLowerCase().startsWith('pc');
-        if (activeTab === 'Laptop') return p.name.toLowerCase().startsWith('laptop');
-        if (activeTab === 'Màn hình') return p.name.toLowerCase().startsWith('màn');
-        if (activeTab === 'Phụ kiện') return !p.name.toLowerCase().startsWith('pc') && !p.name.toLowerCase().startsWith('laptop') && !p.name.toLowerCase().startsWith('màn');
+        if (activeTab === 'PC') return p.name.toLowerCase().includes('pc');
+        if (activeTab === 'Laptop') return p.name.toLowerCase().includes('laptop') || p.name.toLowerCase().includes('macbook');
+        if (activeTab === 'Màn hình') return p.name.toLowerCase().includes('màn');
+        if (activeTab === 'Phụ kiện') return !p.name.toLowerCase().includes('pc') && !p.name.toLowerCase().includes('laptop') && !p.name.toLowerCase().includes('màn');
         return true;
     });
 
@@ -249,21 +200,30 @@ function renderProducts() {
     filtered.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
+
+        // Format giá VND chuẩn
+        const priceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price);
+        const specs = p.specs || {};
+        
+        let specsHtml = '';
+        if (specs.cpu) specsHtml += `<div>CPU: ${specs.cpu}</div>`;
+        if (specs.ram && specs.ssd) specsHtml += `<div>RAM ${specs.ram} · SSD ${specs.ssd}</div>`;
+        if (specs.gpu) specsHtml += `<div>GPU: ${specs.gpu}</div>`;
+
+        const imgUrl = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
+
         card.innerHTML = `
             <div class="card-img-wrap">
-                <img src="${p.img}" alt="${p.name}">
-                ${p.tag ? `<span class="card-tag">${p.tag}</span>` : ''}
+                <img src="${imgUrl}" alt="${p.name}">
+                <span class="card-tag">Chính hãng</span>
             </div>
             <div class="card-body">
                 <p class="card-title">${p.name}</p>
                 <div class="card-specs">
-                    <div>CPU: ${p.cpu}</div>
-                    <div>RAM ${p.ram} · SSD ${p.ssd}</div>
-                    <div>GPU: ${p.gpu}</div>
+                    ${specsHtml || `<div>Thương hiệu: ${p.brand || 'PC SHOP'}</div>`}
                 </div>
                 <div class="card-price-box">
-                    <div class="old-price">${p.old}</div>
-                    <div class="current-price">${p.price}</div>
+                    <div class="current-price">${priceVnd}</div>
                 </div>
                 <button class="btn-add-cart" onclick="addToCart('${p.name}')">+ Thêm vào giỏ</button>
             </div>
