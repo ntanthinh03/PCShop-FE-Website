@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCShop - Cửa hàng Linh kiện & PC Gaming</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar Header -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-microchip logo-icon"></i>
+                <span>PC<span class="highlight">Shop</span></span>
+            </a>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm linh kiện, CPU, RTX 4090...">
+                <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <div class="nav-actions">
+                <a href="cart.html" class="cart-btn">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a>
+                <div id="userSection">
+                    <a href="login.html" class="btn btn-outline" id="loginBtn">Đăng nhập</a>
+                    <a href="register.html" class="btn btn-primary" id="registerBtn">Đăng ký</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Banner Hero -->
+    <section class="hero-banner">
+        <div class="container hero-content">
+            <span class="badge">CHÍNH HÃNG 100%</span>
+            <h1>Linh Kiện PC & Gaming Gear Đỉnh Cao</h1>
+            <p>Trải nghiệm mua sắm mượt mà, giá cả tốt nhất thị trường và bảo hành uy tín.</p>
+            <a href="#productsSection" class="btn btn-primary btn-lg">Khám phá ngay</a>
+        </div>
+    </section>
+
+    <!-- Main Store Content -->
+    <main class="container main-layout">
+        <!-- Sidebar Filter -->
+        <aside class="sidebar">
+            <h3><i class="fa-solid fa-filter"></i> Danh mục</h3>
+            <ul class="category-list" id="categoryList">
+                <li class="active" data-id="all">Tất cả sản phẩm</li>
+                <!-- Danh mục sẽ được tải động từ API -->
+            </ul>
+        </aside>
+
+        <!-- Product Grid Section -->
+        <section class="products-section" id="productsSection">
+            <div class="section-header">
+                <h2 id="sectionTitle">Tất cả sản phẩm</h2>
+                <div class="sort-box">
+                    <label for="sortSelect">Sắp xếp:</label>
+                    <select id="sortSelect">
+                        <option value="newest">Mới nhất</option>
+                        <option value="price-asc">Giá: Thấp đến Cao</option>
+                        <option value="price-desc">Giá: Cao đến Thấp</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid chứa các thẻ Sản phẩm -->
+            <div class="product-grid" id="productGrid">
+                <!-- Sẽ nạp dữ liệu bằng JS từ API http://127.0.0.1:8000/api/v1/products -->
+                <div class="loading-spinner">Đang tải sản phẩm...</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; 2026 PCShop. Powered by Modern Laravel REST API Backend.</p>
+        </div>
+    </footer>
+
+    <!-- App JS -->
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
