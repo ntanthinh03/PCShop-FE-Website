@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initCategoryPage() {
     const urlParams = new URLSearchParams(window.location.search);
-    const slug = urlParams.get('slug') || urlParams.get('cat') || 'laptop';
+    let rawSlug = urlParams.get('slug') || urlParams.get('cat') || 'laptop';
+    const slug = rawSlug.replace(/^-+|-+$/g, '').trim() || 'laptop';
     const search = urlParams.get('search') || '';
     const brandParam = urlParams.get('brand') || '';
 

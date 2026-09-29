@@ -98,14 +98,25 @@ function initCategoryClickListeners() {
     categoryItems.forEach(item => {
         item.addEventListener('click', (e) => {
             if (e.target.tagName === 'A') return;
-            const categoryName = item.querySelector('.menu-item-content span:first-child').textContent;
-            filterByCategory(categoryName);
+            const catSlug = item.getAttribute('data-cat');
+            if (catSlug) {
+                window.location.href = `category.html?slug=${catSlug}`;
+                return;
+            }
+            const categorySpan = item.querySelector('.menu-item-content span:first-child');
+            if (categorySpan) {
+                const categoryName = categorySpan.textContent.trim();
+                filterByCategory(categoryName);
+            }
         });
     });
 
-    document.getElementById('btnCategoryDropdown').addEventListener('click', () => {
-        document.querySelector('.sidebar').scrollIntoView({ behavior: 'smooth' });
-    });
+    const btnDropdown = document.getElementById('btnCategoryDropdown');
+    if (btnDropdown) {
+        btnDropdown.addEventListener('click', () => {
+            document.querySelector('.sidebar').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
 }
 
 // Chuyển sang Trang Danh Mục Sản Phẩm riêng biệt (category.html?slug=...)
@@ -114,27 +125,40 @@ function filterByCategory(catKeyword, event) {
         event.preventDefault();
     }
     
+    const cleanKeyword = (catKeyword || '').trim();
+
     // Map từ khóa sang slug chuẩn
     const slugMap = {
         'Laptop': 'laptop',
         'Laptop Gaming': 'laptop-gaming',
         'PC GVN': 'pc-gaming',
+        'PC Gaming': 'pc-gaming',
         'PC': 'pc-gaming',
         'Main, CPU, VGA': 'main-cpu-vga',
         'Main': 'main-cpu-vga',
         'Case, Nguồn, Tản': 'case-nguon-tan',
+        'Case, Nguồn, Tản Nhiệt': 'case-nguon-tan',
         'Tản': 'case-nguon-tan',
         'Ổ cứng, RAM': 'o-cung-ram',
+        'Ổ cứng, RAM, Thẻ nhớ': 'o-cung-ram',
         'RAM': 'o-cung-ram',
         'Màn hình': 'man-hinh',
         'Bàn phím': 'ban-phim',
         'Chuột + Lót chuột': 'chuot-lot',
+        'Chuột + Lót': 'chuot-lot',
         'Tai Nghe': 'tai-nghe',
         'Ghế - Bàn': 'ghe-ban'
     };
 
-    const targetSlug = slugMap[catKeyword] || encodeURIComponent(catKeyword.toLowerCase().replace(/,/g, '').replace(/\s+/g, '-'));
-    window.location.href = `category.html?slug=${targetSlug}`;
+    let targetSlug = slugMap[cleanKeyword];
+    if (!targetSlug) {
+        targetSlug = cleanKeyword.toLowerCase()
+            .replace(/,/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-');
+    }
+    window.location.href = `category.html?slug=${targetSlug || 'laptop'}`;
 }
 
 function resetCategoryFilter() {
