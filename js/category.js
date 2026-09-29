@@ -40,7 +40,10 @@ function formatCategoryTitle(slug, search) {
         'ban-phim': 'Bàn phím cơ',
         'chuot-lot': 'Chuột + Lót chuột',
         'tai-nghe': 'Tai nghe Gaming',
-        'ghe-ban': 'Ghế - Bàn công thái học'
+        'ghe-ban': 'Ghế - Bàn công thái học',
+        'phan-mem': 'Phần mềm, Mạng',
+        'phu-kien': 'Phụ kiện - Console',
+        'thu-cu-doi-moi': 'Thu cũ đổi mới'
     };
     return titles[slug] || (slug.charAt(0).toUpperCase() + slug.slice(1));
 }
@@ -61,17 +64,14 @@ async function loadCategoryProducts(slug, search, brandParam) {
                 const pName = (p.name || '').toLowerCase();
                 const pBrand = (p.brand || '').toLowerCase();
 
-                // Lọc theo Hãng nếu có param ?brand=ASUS
                 if (brandParam && !pBrand.includes(brandParam.toLowerCase()) && !pName.includes(brandParam.toLowerCase())) {
                     return false;
                 }
 
-                // Lọc theo từ khóa tìm kiếm nếu có param ?search=i5
                 if (search && !pName.includes(search.toLowerCase()) && !pBrand.includes(search.toLowerCase())) {
                     return false;
                 }
 
-                // Phân loại nghiêm ngặt theo Slug danh mục
                 if (slug === 'laptop') {
                     return (pCatSlug.includes('laptop') || pName.includes('laptop') || pName.includes('macbook')) && !pName.includes('rtx') && !pName.includes('nitro') && !pName.includes('rog');
                 }
@@ -133,7 +133,7 @@ function renderCategoryGrid() {
         grid.innerHTML = `
             <div style="grid-column: 1 / -1; padding: 80px; text-align: center; background: #fff; border: 1px solid #eee; border-radius: 8px; color: #999;">
                 <p style="font-size: 16px; margin-bottom: 12px;">Chưa có sản phẩm nào thuộc danh mục "${currentCategoryName}".</p>
-                <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 4px; font-size: 13px;">Trở về trang chủ</a>
+                <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 4px; font-size: 13px;">Trở về trang chủ</a>
             </div>
         `;
         return;
@@ -180,11 +180,15 @@ function initFilterEvents() {
     });
 }
 
+// SỬA LỖI LỌC GIÁ CỰC KỲ CHÍNH XÁC (Dưới 15 tr -> Chỉ hiện sản phẩm < 15.000.000đ)
 function applyCategoryFilters() {
     const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value.toLowerCase());
-    const selectedPrice = document.querySelector('input[name="price"]:checked')?.value || 'all';
+    
+    // Lấy Radio/Checkbox giá được tích chọn
+    const selectedPriceInputs = Array.from(document.querySelectorAll('input[name="price"]:checked')).map(cb => cb.value);
 
     filteredCategoryProducts = categoryProducts.filter(p => {
+        // 1. Lọc theo Thương hiệu
         if (selectedBrands.length > 0) {
             const pBrand = (p.brand || '').toLowerCase();
             const pName = (p.name || '').toLowerCase();
@@ -192,11 +196,18 @@ function applyCategoryFilters() {
             if (!matchBrand) return false;
         }
 
-        const price = p.price;
-        if (selectedPrice === 'under-15' && price >= 15000000) return false;
-        if (selectedPrice === '15-25' && (price < 15000000 || price > 25000000)) return false;
-        if (selectedPrice === '25-40' && (price < 25000000 || price > 40000000)) return false;
-        if (selectedPrice === 'over-40' && price <= 40000000) return false;
+        // 2. Lọc theo Khoảng Giá (Nghiêm ngặt 100%)
+        if (selectedPriceInputs.length > 0 && !selectedPriceInputs.includes('all')) {
+            const price = Number(p.price);
+            const matchPrice = selectedPriceInputs.some(priceVal => {
+                if (priceVal === 'under-15') return price < 15000000;
+                if (priceVal === '15-25') return price >= 15000000 && price <= 25000000;
+                if (priceVal === '25-40') return price > 25000000 && price <= 40000000;
+                if (priceVal === 'over-40') return price > 40000000;
+                return true;
+            });
+            if (!matchPrice) return false;
+        }
 
         return true;
     });
