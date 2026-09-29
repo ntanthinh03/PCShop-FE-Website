@@ -301,6 +301,150 @@ function removeFromCart(idx) {
     updateCartUI();
 }
 
+// Quản lý Đăng nhập & Đơn hàng
+let currentUser = JSON.parse(localStorage.getItem('pcshop_user')) || null;
+let userOrders = JSON.parse(localStorage.getItem('pcshop_orders')) || [
+    {
+        id: 'ORD-2026-9812',
+        date: '28/09/2026',
+        items: ['PC Gaming PCShop Ultra V198 (RTX 5070 Ti 16GB)', 'Bàn Phím Cơ Gaming Akko Mod007'],
+        total: '17.149.000đ',
+        status: 'Đã giao hàng thành công'
+    }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    initAuthEvents();
+    initOrdersModal();
+    updateUserHeaderUI();
+});
+
+function initAuthEvents() {
+    const loginBtn = document.getElementById('loginBtn');
+    const authModal = document.getElementById('authModal');
+    const closeAuth = document.getElementById('closeAuth');
+    const authOverlay = document.getElementById('authOverlay');
+
+    if (loginBtn && authModal) {
+        loginBtn.addEventListener('click', () => {
+            if (currentUser) {
+                openOrdersModal();
+            } else {
+                authModal.classList.add('open');
+            }
+        });
+        closeAuth.addEventListener('click', () => authModal.classList.remove('open'));
+        authOverlay.addEventListener('click', () => authModal.classList.remove('open'));
+    }
+}
+
+function switchAuthTab(type) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const tabLoginBtn = document.getElementById('tabLoginBtn');
+    const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+
+    if (type === 'login') {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        tabLoginBtn.classList.add('active');
+        tabRegisterBtn.classList.remove('active');
+    } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        tabRegisterBtn.classList.add('active');
+        tabLoginBtn.classList.remove('active');
+    }
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const name = email.split('@')[0];
+    currentUser = { email, name };
+    localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
+
+    document.getElementById('authModal').classList.remove('open');
+    updateUserHeaderUI();
+    alert(`Xin chào mừng ${name}, bạn đã đăng nhập thành công!`);
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    currentUser = { email, name };
+    localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
+
+    document.getElementById('authModal').classList.remove('open');
+    updateUserHeaderUI();
+    alert(`Chúc mừng ${name}, tài khoản của bạn đã được đăng ký thành công!`);
+}
+
+function handleLogout() {
+    currentUser = null;
+    localStorage.removeItem('pcshop_user');
+    updateUserHeaderUI();
+    alert('Bạn đã đăng xuất tài khoản.');
+}
+
+function updateUserHeaderUI() {
+    const loginBtn = document.getElementById('loginBtn');
+    if (!loginBtn) return;
+
+    if (currentUser) {
+        loginBtn.innerHTML = `<i class="fa-solid fa-user-check" style="color: #38bdf8;"></i> ${currentUser.name} (Đơn hàng)`;
+        loginBtn.title = "Bấm để xem lịch sử đơn hàng đã đặt";
+    } else {
+        loginBtn.innerHTML = `<i class="fa-solid fa-user"></i> Đăng nhập`;
+    }
+}
+
+// Modal Lịch Sử Đơn Hàng Của User
+function initOrdersModal() {
+    const ordersModal = document.getElementById('ordersModal');
+    const closeOrders = document.getElementById('closeOrders');
+    const ordersOverlay = document.getElementById('ordersOverlay');
+
+    if (closeOrders && ordersModal) {
+        closeOrders.addEventListener('click', () => ordersModal.classList.remove('open'));
+        ordersOverlay.addEventListener('click', () => ordersModal.classList.remove('open'));
+    }
+}
+
+function openOrdersModal() {
+    const ordersModal = document.getElementById('ordersModal');
+    renderOrdersList();
+    ordersModal.classList.add('open');
+}
+
+function renderOrdersList() {
+    const body = document.getElementById('ordersListBody');
+    body.innerHTML = '';
+
+    if (userOrders.length === 0) {
+        body.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b;">Bạn chưa có đơn hàng nào trước đây.</div>';
+        return;
+    }
+
+    userOrders.forEach(ord => {
+        const card = document.createElement('div');
+        card.className = 'order-item-card';
+
+        let itemsHtml = ord.items.map(it => `<div class="order-product-line">• ${it}</div>`).join('');
+
+        card.innerHTML = `
+            <div class="order-item-header">
+                <span>Mã đơn: <strong>${ord.id}</strong> (${ord.date})</span>
+                <span class="order-status">${ord.status}</span>
+            </div>
+            <div style="margin: 8px 0;">${itemsHtml}</div>
+            <div class="order-total-price">Tổng cộng: ${ord.total}</div>
+        `;
+        body.appendChild(card);
+    });
+}
+
 function updateCartUI() {
     const count = cartItems.length;
     document.getElementById('cartCount').textContent = count;
@@ -333,5 +477,32 @@ function updateCartUI() {
             `;
             cartBody.appendChild(item);
         });
+
+        cartFooter.innerHTML = `
+            <button class="btn-checkout" onclick="checkoutCurrentCart()">Thanh toán ngay (${count} sản phẩm) →</button>
+        `;
     }
 }
+
+function checkoutCurrentCart() {
+    if (cartItems.length === 0) return;
+
+    const newOrder = {
+        id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+        date: new Date().toLocaleDateString('vi-VN'),
+        items: [...cartItems],
+        total: 'Đã xác nhận đặt hàng',
+        status: 'Đang xử lý & Giao hàng'
+    };
+
+    userOrders.unshift(newOrder);
+    localStorage.setItem('pcshop_orders', JSON.stringify(userOrders));
+
+    cartItems = [];
+    updateCartUI();
+    document.getElementById('cartDrawer').classList.remove('open');
+
+    alert(`Đặt hàng thành công! Mã đơn hàng của bạn là ${newOrder.id}.`);
+    openOrdersModal();
+}
+
