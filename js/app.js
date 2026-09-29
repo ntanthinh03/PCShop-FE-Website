@@ -245,11 +245,11 @@ function renderProductCardsToContainer(container, products) {
                 <span class="home-old-price">${oldPriceVnd}</span>
                 <span class="home-cur-price">${priceVnd}</span>
             </div>
-            <button class="home-btn-cart" onclick="event.stopPropagation(); addToCart('${p.name.replace(/'/g, "\\'")}')">+ Thêm vào giỏ</button>
         `;
         container.appendChild(card);
     });
 }
+
 
 // Hàm cuộn Slider cho từng Section bằng nút bấm ‹ ›
 function scrollSection(containerId, direction) {

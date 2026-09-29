@@ -166,12 +166,12 @@ function renderCategoryGrid() {
                 <div class="card-price-box">
                     <div class="current-price">${priceVnd}</div>
                 </div>
-                <button class="btn-add-cart" onclick="addToCartCategory('${p.name}')">+ Thêm vào giỏ</button>
             </div>
         `;
         grid.appendChild(card);
     });
 }
+
 
 function initFilterEvents() {
     const checkboxes = document.querySelectorAll('.filter-checkbox input');
