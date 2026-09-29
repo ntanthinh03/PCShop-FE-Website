@@ -754,10 +754,58 @@ body {
     position: relative;
     width: 440px;
     background: #fff;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 32px;
     z-index: 10;
     box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.btn-google-auth {
+    width: 100%;
+    padding: 10px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 18px;
+}
+
+.btn-google-auth:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.auth-divider {
+    text-align: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.auth-divider span {
+    position: relative;
+    background: #fff;
+    padding: 0 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
 }
 
 .close-auth, .close-orders {
@@ -775,14 +823,14 @@ body {
     display: flex;
     gap: 12px;
     border-bottom: 2px solid #f1f5f9;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .auth-tab {
     padding: 8px 16px;
     border: none;
     background: none;
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 700;
     color: #64748b;
     cursor: pointer;
@@ -808,17 +856,65 @@ body {
     margin-bottom: 6px;
 }
 
-.auth-form input {
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
     width: 100%;
     padding: 10px 14px;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     font-size: 13.5px;
     outline: none;
+    background: #f8fafc;
 }
 
 .auth-form input:focus {
     border-color: #0284c7;
+    background: #fff;
+}
+
+.form-row-remember {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    font-size: 12.5px;
+}
+
+.checkbox-remember {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #475569;
+    cursor: pointer;
+    font-weight: 500 !important;
+}
+
+.forgot-pass-link {
+    color: #0284c7;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.forgot-pass-link:hover {
+    text-decoration: underline;
+}
+
+.auth-switch-footer {
+    text-align: center;
+    font-size: 12.5px;
+    color: #64748b;
+    margin-top: 16px;
+}
+
+.auth-switch-footer a {
+    color: #0284c7;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-switch-footer a:hover {
+    text-decoration: underline;
 }
 
 .btn-auth-submit {
@@ -831,13 +927,13 @@ body {
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 8px;
     transition: background 0.2s;
 }
 
 .btn-auth-submit:hover {
     background: #0369a1;
 }
+
 
 /* Modal Lịch sử Đơn Hàng */
 .orders-box {

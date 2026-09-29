@@ -341,20 +341,47 @@ function initAuthEvents() {
 function switchAuthTab(type) {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
+    const forgotForm = document.getElementById('forgotForm');
     const tabLoginBtn = document.getElementById('tabLoginBtn');
     const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+    const authTabsHeader = document.getElementById('authTabsHeader');
 
     if (type === 'login') {
         loginForm.style.display = 'block';
         registerForm.style.display = 'none';
+        forgotForm.style.display = 'none';
+        authTabsHeader.style.display = 'flex';
         tabLoginBtn.classList.add('active');
         tabRegisterBtn.classList.remove('active');
-    } else {
+    } else if (type === 'register') {
         loginForm.style.display = 'none';
         registerForm.style.display = 'block';
+        forgotForm.style.display = 'none';
+        authTabsHeader.style.display = 'flex';
         tabRegisterBtn.classList.add('active');
         tabLoginBtn.classList.remove('active');
+    } else if (type === 'forgot') {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'none';
+        forgotForm.style.display = 'block';
+        authTabsHeader.style.display = 'none';
     }
+}
+
+function handleGoogleLogin() {
+    currentUser = { email: 'user.google@gmail.com', name: 'Google User' };
+    localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
+
+    document.getElementById('authModal').classList.remove('open');
+    updateUserHeaderUI();
+    alert('Đăng nhập thành công bằng tài khoản Google!');
+}
+
+function handleForgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgotEmail').value;
+    alert(`Yêu cầu thành công! Liên kết đặt lại mật khẩu đã được gửi đến email ${email}. Vui lòng kiểm tra hộp thư.`);
+    switchAuthTab('login');
 }
 
 function handleLogin(e) {
@@ -368,6 +395,7 @@ function handleLogin(e) {
     updateUserHeaderUI();
     alert(`Xin chào mừng ${name}, bạn đã đăng nhập thành công!`);
 }
+
 
 function handleRegister(e) {
     e.preventDefault();
