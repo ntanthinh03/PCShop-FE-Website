@@ -1916,4 +1916,71 @@ body {
     border-color: #0284c7;
 }
 
+/* Circular Pagination Controls (Exact Match to User Screenshot) */
+.kcc-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 36px;
+    margin-bottom: 24px;
+    padding: 10px 0;
+}
+
+.kcc-pagination-page {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #b0b0b0;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.kcc-pagination-page:hover {
+    background: #949494;
+    transform: translateY(-2px);
+}
+
+.kcc-pagination-page.active {
+    background: #ff7700;
+    color: #ffffff;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(255, 119, 0, 0.35);
+}
+
+.kcc-pagination-nav {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.kcc-pagination-nav:hover {
+    background: #cbd5e1;
+    color: #0f172a;
+}
+
+.kcc-pagination-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+
 

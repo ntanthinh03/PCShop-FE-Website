@@ -1,4 +1,4 @@
-// JavaScript điều khiển cho trang Danh mục sản phẩm (category.html - KCC Design)
+// JavaScript điều khiển cho trang Danh mục sản phẩm (category.html - KCC Design với Phân Trang)
 let categoryProducts = [];
 let filteredCategoryProducts = [];
 let currentCategoryName = 'Danh mục sản phẩm';
@@ -6,6 +6,10 @@ let currentCategoryName = 'Danh mục sản phẩm';
 let activeBrandTab = 'all';
 let activePricePill = 'all';
 let activeSortOption = 'newest';
+
+// Cấu hình Phân trang (Pagination)
+let currentPage = 1;
+const itemsPerPage = 15; // 15 sản phẩm trên 1 trang (3 hàng x 5 cột)
 
 document.addEventListener('DOMContentLoaded', () => {
     initCategoryPage();
@@ -103,6 +107,7 @@ async function loadCategoryProducts(slug, search, brandParam) {
                 return pCatSlug.includes(slug) || pName.includes(slug);
             });
 
+            currentPage = 1;
             applyCategoryFilters();
             return;
         }
@@ -117,19 +122,30 @@ function renderCategoryGrid() {
     const grid = document.getElementById('categoryProductGrid');
     grid.innerHTML = '';
 
-    document.getElementById('productFoundCount').textContent = filteredCategoryProducts.length;
+    const totalItems = filteredCategoryProducts.length;
+    document.getElementById('productFoundCount').textContent = totalItems;
 
-    if (filteredCategoryProducts.length === 0) {
+    if (totalItems === 0) {
         grid.innerHTML = `
             <div style="grid-column: 1 / -1; padding: 60px; text-align: center; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; color: #64748b;">
                 <p style="font-size: 15px; margin-bottom: 12px; font-weight: 600;">Không tìm thấy sản phẩm nào phù hợp với bộ lọc hiện tại.</p>
                 <button onclick="resetAllCategoryFilters()" style="padding: 8px 18px; background: #0284c7; color: #fff; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 600;">Xóa bộ lọc để xem lại tất cả</button>
             </div>
         `;
+        renderPaginationControls(0);
         return;
     }
 
-    filteredCategoryProducts.forEach(p => {
+    // Tính toán phân trang
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    if (currentPage > totalPages) {
+        currentPage = 1;
+    }
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const pageProducts = filteredCategoryProducts.slice(startIndex, startIndex + itemsPerPage);
+
+    pageProducts.forEach(p => {
         const card = document.createElement('div');
         card.className = 'kcc-card';
 
@@ -177,6 +193,56 @@ function renderCategoryGrid() {
 
         grid.appendChild(card);
     });
+
+    renderPaginationControls(totalPages);
+}
+
+// Render các nút phân trang hình tròn (Orange Active / Gray Inactive)
+function renderPaginationControls(totalPages) {
+    const container = document.getElementById('paginationContainer');
+    if (!container) return;
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+
+    // Nút Trước (Prev)
+    html += `
+        <button class="kcc-pagination-nav" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+    `;
+
+    // Các nút trang tròn (1, 2, 3...)
+    for (let i = 1; i <= totalPages; i++) {
+        const isActive = i === currentPage ? 'active' : '';
+        html += `<button class="kcc-pagination-page ${isActive}" onclick="goToPage(${i})">${i}</button>`;
+    }
+
+    // Nút Tiếp theo (Next)
+    html += `
+        <button class="kcc-pagination-nav" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    `;
+
+    container.innerHTML = html;
+}
+
+function goToPage(page) {
+    const totalPages = Math.ceil(filteredCategoryProducts.length / itemsPerPage);
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderCategoryGrid();
+
+    // Cuộn mượt lên vị trí sản phẩm
+    const target = document.getElementById('categoryProductGrid');
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 function initFilterEvents() {
@@ -187,6 +253,7 @@ function initFilterEvents() {
             brandTabs.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             activeBrandTab = btn.getAttribute('data-brand');
+            currentPage = 1;
             applyCategoryFilters();
         });
     });
@@ -198,6 +265,7 @@ function initFilterEvents() {
             pricePills.forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
             activePricePill = pill.getAttribute('data-price');
+            currentPage = 1;
             applyCategoryFilters();
         });
     });
@@ -209,6 +277,7 @@ function initFilterEvents() {
             sortBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             activeSortOption = btn.getAttribute('data-sort');
+            currentPage = 1;
             applyCategoryFilters();
         });
     });
@@ -291,6 +360,7 @@ function resetAllCategoryFilters() {
     activeBrandTab = 'all';
     activePricePill = 'all';
     activeSortOption = 'newest';
+    currentPage = 1;
 
     document.querySelectorAll('.brand-tab-btn').forEach(b => {
         b.classList.toggle('active', b.getAttribute('data-brand') === 'all');
@@ -330,4 +400,5 @@ function initCartDrawer() {
         overlay.addEventListener('click', () => drawer.classList.remove('open'));
     }
 }
+
 
