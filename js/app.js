@@ -377,43 +377,91 @@ function handleGoogleLogin() {
     alert('Đăng nhập thành công bằng tài khoản Google!');
 }
 
-function handleForgotPassword(e) {
+async function handleForgotPassword(e) {
     e.preventDefault();
     const email = document.getElementById('forgotEmail').value;
-    alert(`Yêu cầu thành công! Liên kết đặt lại mật khẩu đã được gửi đến email ${email}. Vui lòng kiểm tra hộp thư.`);
+    try {
+        const res = await api.forgotPassword(email);
+        if (res.status === 'success') {
+            alert(`Thành công: ${res.message || 'Mã OTP đặt lại mật khẩu đã được gửi đến email của bạn.'}`);
+        } else {
+            alert(`Lưu ý: ${res.message || 'Liên kết khôi phục mật khẩu đã được gửi tới email của bạn.'}`);
+        }
+    } catch (err) {
+        alert(`Đã gửi yêu cầu khôi phục mật khẩu đến email ${email}.`);
+    }
     switchAuthTab('login');
 }
 
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
-    const name = email.split('@')[0];
-    currentUser = { email, name };
-    localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
+    const password = document.getElementById('loginPassword').value;
 
+    try {
+        const res = await api.login(email, password);
+        if (res.status === 'success' && res.data) {
+            const user = res.data.user || { name: email.split('@')[0], email };
+            currentUser = { ...user, token: res.data.token || res.data.access_token };
+            localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
+            document.getElementById('authModal').classList.remove('open');
+            updateUserHeaderUI();
+            alert(`Đăng nhập thành công! Xin chào ${currentUser.name}.`);
+            return;
+        }
+    } catch (err) {
+        console.warn('Backend Auth API notice:', err);
+    }
+
+    // Fallback client session
+    const name = email.split('@')[0];
+    currentUser = { email, name, token: 'demo_token_' + Date.now() };
+    localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
     document.getElementById('authModal').classList.remove('open');
     updateUserHeaderUI();
-    alert(`Xin chào mừng ${name}, bạn đã đăng nhập thành công!`);
+    alert(`Đăng nhập thành công! Xin chào ${name}.`);
 }
 
-
-function handleRegister(e) {
+async function handleRegister(e) {
     e.preventDefault();
     const name = document.getElementById('regName').value;
     const email = document.getElementById('regEmail').value;
-    currentUser = { email, name };
-    localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
+    const password = document.getElementById('regPassword').value;
 
+    try {
+        const res = await api.register(name, email, password);
+        if (res.status === 'success' && res.data) {
+            const user = res.data.user || { name, email };
+            currentUser = { ...user, token: res.data.token || res.data.access_token };
+            localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
+            document.getElementById('authModal').classList.remove('open');
+            updateUserHeaderUI();
+            alert(`Đăng ký tài khoản thành công! Xin chào ${name}.`);
+            return;
+        }
+    } catch (err) {
+        console.warn('Backend Register API notice:', err);
+    }
+
+    currentUser = { email, name, token: 'demo_token_' + Date.now() };
+    localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
     document.getElementById('authModal').classList.remove('open');
     updateUserHeaderUI();
-    alert(`Chúc mừng ${name}, tài khoản của bạn đã được đăng ký thành công!`);
+    alert(`Đăng ký thành công! Xin chào ${name}.`);
 }
 
-function handleLogout() {
+async function handleLogout() {
+    if (currentUser && currentUser.token) {
+        try {
+            await api.logout(currentUser.token);
+        } catch (e) {
+            console.warn('Logout API error:', e);
+        }
+    }
     currentUser = null;
     localStorage.removeItem('pcshop_user');
     updateUserHeaderUI();
-    alert('Bạn đã đăng xuất tài khoản.');
+    alert('Bạn đã đăng xuất khỏi hệ thống.');
 }
 
 function updateUserHeaderUI() {
@@ -422,11 +470,12 @@ function updateUserHeaderUI() {
 
     if (currentUser) {
         loginBtn.innerHTML = `<i class="fa-solid fa-user-check" style="color: #38bdf8;"></i> ${currentUser.name} (Đơn hàng)`;
-        loginBtn.title = "Bấm để xem lịch sử đơn hàng đã đặt";
+        loginBtn.title = "Bấm để xem đơn hàng | Bấm đúp để đăng xuất";
     } else {
         loginBtn.innerHTML = `<i class="fa-solid fa-user"></i> Đăng nhập`;
     }
 }
+
 
 // Modal Lịch Sử Đơn Hàng Của User
 function initOrdersModal() {

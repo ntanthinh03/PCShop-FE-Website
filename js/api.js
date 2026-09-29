@@ -40,5 +40,91 @@ const api = {
             console.error('Lỗi lấy chi tiết sản phẩm:', error);
             return { status: 'error', data: null };
         }
+    },
+
+    // 🔐 AUTHENTICATION REST APIS (Kết nối Laravel Backend v1/auth)
+    login: async (email, password) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi kết nối API Login:', error);
+            return { status: 'error', message: 'Không thể kết nối đến máy chủ Backend.' };
+        }
+    },
+
+    register: async (name, email, password) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ name, email, password })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi kết nối API Register:', error);
+            return { status: 'error', message: 'Không thể kết nối đến máy chủ Backend.' };
+        }
+    },
+
+    logout: async (token) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi kết nối API Logout:', error);
+            return { status: 'error', message: 'Lỗi khi đăng xuất.' };
+        }
+    },
+
+    forgotPassword: async (email) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi gửi mail Quên mật khẩu:', error);
+            return { status: 'error', message: 'Không thể kết nối đến máy chủ Backend.' };
+        }
+    },
+
+    // 📦 ORDER REST APIS
+    getOrderHistory: async (token) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/orders/history`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi nạp lịch sử đơn hàng từ Backend:', error);
+            return { status: 'error', data: [] };
+        }
     }
 };
+
