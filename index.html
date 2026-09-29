@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -59,146 +60,365 @@
     <!-- 4. Body Content -->
     <div class="main-wrapper">
 
-        <!-- Sidebar Categories with Submenus -->
+        <!-- Sidebar Categories with Full Mega Menu Submenus -->
         <aside class="sidebar">
             <ul class="category-menu" id="categoryMenu">
+                
+                <!-- 1. Laptop -->
                 <li data-cat="laptop">
-                    <div class="menu-item-content"><span>Laptop</span><span>›</span></div>
-                    <!-- Submenu Popup -->
-                    <div class="submenu">
-                        <div class="submenu-column">
-                            <h4>Thương Hiệu Laptop</h4>
-                            <a href="#" onclick="filterByCategory('Laptop ASUS')">Laptop ASUS</a>
-                            <a href="#" onclick="filterByCategory('Laptop Acer')">Laptop Acer</a>
-                            <a href="#" onclick="filterByCategory('Laptop MSI')">Laptop MSI</a>
-                            <a href="#" onclick="filterByCategory('Laptop Lenovo')">Laptop Lenovo</a>
-                            <a href="#" onclick="filterByCategory('Laptop Dell')">Laptop Dell</a>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-laptop red-icon"></i> Laptop</span>
+                        <span>›</span>
+                    </div>
+                    <div class="mega-menu">
+                        <div class="mega-header">
+                            <h3>Laptop</h3>
+                            <a href="#" onclick="filterByCategory('Laptop', event)">Xem tất cả &gt;</a>
                         </div>
-                        <div class="submenu-column">
-                            <h4>Nhu Cầu Sử Dụng</h4>
-                            <a href="#" onclick="filterByCategory('Laptop Văn Phòng')">Laptop Văn Phòng</a>
-                            <a href="#" onclick="filterByCategory('Laptop Đồ Họa')">Laptop Đồ Họa / Creator</a>
-                            <a href="#" onclick="filterByCategory('Laptop Mỏng Nhẹ')">Laptop Mỏng Nhẹ High-end</a>
+                        <div class="mega-grid-4">
+                            <div class="mega-col">
+                                <h4>Thương Hiệu Laptop</h4>
+                                <a href="#" onclick="filterByCategory('ASUS', event)">ASUS</a>
+                                <a href="#" onclick="filterByCategory('Acer', event)">Acer</a>
+                                <a href="#" onclick="filterByCategory('MSI', event)">MSI</a>
+                                <a href="#" onclick="filterByCategory('Lenovo', event)">Lenovo</a>
+                                <a href="#" onclick="filterByCategory('Dell', event)">Dell</a>
+                                <a href="#" onclick="filterByCategory('Apple', event)">Apple MacBook</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Nhu Cầu Sử Dụng</h4>
+                                <a href="#" onclick="filterByCategory('Văn Phòng', event)">Laptop Văn Phòng</a>
+                                <a href="#" onclick="filterByCategory('Đồ Họa', event)">Laptop Đồ Họa / Creator</a>
+                                <a href="#" onclick="filterByCategory('Mỏng Nhẹ', event)">Laptop Mỏng Nhẹ High-end</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Khoảng Giá</h4>
+                                <a href="#" onclick="filterByCategory('Laptop', event)">Dưới 15 triệu</a>
+                                <a href="#" onclick="filterByCategory('Laptop', event)">15 - 25 triệu</a>
+                                <a href="#" onclick="filterByCategory('Laptop', event)">Trên 25 triệu</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Kích Thước Màn Hình</h4>
+                                <a href="#" onclick="filterByCategory('Laptop', event)">13.3" - 14.0"</a>
+                                <a href="#" onclick="filterByCategory('Laptop', event)">15.6" - 16.0"</a>
+                            </div>
                         </div>
                     </div>
                 </li>
+
+                <!-- 2. Laptop Gaming -->
                 <li data-cat="laptop-gaming">
-                    <div class="menu-item-content"><span>Laptop Gaming</span><span>›</span></div>
-                    <div class="submenu">
-                        <div class="submenu-column">
-                            <h4>Dòng Laptop Gaming</h4>
-                            <a href="#" onclick="filterByCategory('ASUS ROG / TUF')">ASUS ROG / TUF Gaming</a>
-                            <a href="#" onclick="filterByCategory('Acer Nitro / Predator')">Acer Nitro / Predator</a>
-                            <a href="#" onclick="filterByCategory('MSI Gaming')">MSI Gaming Series</a>
-                            <a href="#" onclick="filterByCategory('Lenovo Legion / LOQ')">Lenovo Legion / LOQ</a>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-gamepad red-icon"></i> Laptop Gaming</span>
+                        <span>›</span>
+                    </div>
+                    <div class="mega-menu">
+                        <div class="mega-header">
+                            <h3>Laptop Gaming</h3>
+                            <a href="#" onclick="filterByCategory('Laptop Gaming', event)">Xem tất cả &gt;</a>
                         </div>
-                        <div class="submenu-column">
-                            <h4>Card Đồ Họa Laptop</h4>
-                            <a href="#" onclick="filterByCategory('RTX 4050')">NVIDIA RTX 4050 Laptop</a>
-                            <a href="#" onclick="filterByCategory('RTX 4060')">NVIDIA RTX 4060 Laptop</a>
-                            <a href="#" onclick="filterByCategory('RTX 4070')">NVIDIA RTX 4070 Laptop</a>
+                        <div class="mega-grid-4">
+                            <div class="mega-col">
+                                <h4>Dòng Laptop Gaming</h4>
+                                <a href="#" onclick="filterByCategory('ROG', event)">ASUS ROG / TUF Gaming</a>
+                                <a href="#" onclick="filterByCategory('Nitro', event)">Acer Nitro / Predator</a>
+                                <a href="#" onclick="filterByCategory('MSI', event)">MSI Gaming Series</a>
+                                <a href="#" onclick="filterByCategory('Legion', event)">Lenovo Legion / LOQ</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Card Đồ Họa Laptop</h4>
+                                <a href="#" onclick="filterByCategory('RTX 3050', event)">NVIDIA RTX 3050 Laptop</a>
+                                <a href="#" onclick="filterByCategory('RTX 4050', event)">NVIDIA RTX 4050 Laptop</a>
+                                <a href="#" onclick="filterByCategory('RTX 4060', event)">NVIDIA RTX 4060 Laptop</a>
+                                <a href="#" onclick="filterByCategory('RTX 4070', event)">NVIDIA RTX 4070 Laptop</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Tần Số Quét</h4>
+                                <a href="#" onclick="filterByCategory('144Hz', event)">144Hz Full HD</a>
+                                <a href="#" onclick="filterByCategory('165Hz', event)">165Hz 2K QHD</a>
+                                <a href="#" onclick="filterByCategory('240Hz', event)">240Hz IPS</a>
+                            </div>
                         </div>
                     </div>
                 </li>
+
+                <!-- 3. PC GVN -->
                 <li data-cat="pc-gaming">
-                    <div class="menu-item-content"><span>PC Gaming</span><span>›</span></div>
-                    <div class="submenu">
-                        <div class="submenu-column">
-                            <h4>Cấu Hình PC Gaming</h4>
-                            <a href="#" onclick="filterByCategory('PC GVN Intel')">PC GVN Intel i5 / i7</a>
-                            <a href="#" onclick="filterByCategory('PC GVN AMD')">PC GVN AMD Ryzen 7 / 9</a>
-                            <a href="#" onclick="filterByCategory('PC RTX 40-Series')">PC RTX 4060 / 4070 Ti</a>
-                            <a href="#" onclick="filterByCategory('PC High-End RTX 5080')">PC High-End RTX 5080</a>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-desktop red-icon"></i> PC GVN</span>
+                        <span>›</span>
+                    </div>
+                    <div class="mega-menu">
+                        <div class="mega-header">
+                            <h3>PC Gaming Lắp Sẵn</h3>
+                            <a href="#" onclick="filterByCategory('PC', event)">Xem tất cả &gt;</a>
+                        </div>
+                        <div class="mega-grid-4">
+                            <div class="mega-col">
+                                <h4>Cấu Hình PC Gaming</h4>
+                                <a href="#" onclick="filterByCategory('Intel i5', event)">PC GVN Intel i5 / i7</a>
+                                <a href="#" onclick="filterByCategory('Ryzen 7', event)">PC GVN AMD Ryzen 7 / 9</a>
+                                <a href="#" onclick="filterByCategory('RTX 4070', event)">PC RTX 4070 SUPER</a>
+                                <a href="#" onclick="filterByCategory('RTX 5080', event)">PC High-End RTX 5080</a>
+                            </div>
                         </div>
                     </div>
                 </li>
-                <li data-cat="components">
-                    <div class="menu-item-content"><span>Main, CPU, VGA</span><span>›</span></div>
-                    <div class="submenu">
-                        <div class="submenu-column">
-                            <h4>Vi Xử Lý (CPU)</h4>
-                            <a href="#" onclick="filterByCategory('Intel Core i5')">Intel Core i5 / i7 / i9</a>
-                            <a href="#" onclick="filterByCategory('AMD Ryzen')">AMD Ryzen 5 / 7 / 9</a>
+
+                <!-- 4. Main, CPU, VGA -->
+                <li data-cat="main-cpu-vga">
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-microchip red-icon"></i> Main, CPU, VGA</span>
+                        <span>›</span>
+                    </div>
+                    <div class="mega-menu">
+                        <div class="mega-header">
+                            <h3>Main, CPU, VGA</h3>
+                            <a href="#" onclick="filterByCategory('Main', event)">Xem tất cả &gt;</a>
                         </div>
-                        <div class="submenu-column">
-                            <h4>Card Màn Hình (VGA)</h4>
-                            <a href="#" onclick="filterByCategory('NVIDIA RTX 3050')">NVIDIA GeForce RTX 3050 / 4060</a>
-                            <a href="#" onclick="filterByCategory('NVIDIA RTX 5070 Ti')">NVIDIA GeForce RTX 5070 Ti / 5080</a>
-                            <a href="#" onclick="filterByCategory('AMD Radeon')">AMD Radeon RX 6500XT / 7700XT</a>
-                        </div>
-                        <div class="submenu-column">
-                            <h4>Bo Mạch Chủ (Mainboard)</h4>
-                            <a href="#" onclick="filterByCategory('Mainboard Intel')">Mainboard Intel B760 / Z790</a>
-                            <a href="#" onclick="filterByCategory('Mainboard AMD')">Mainboard AMD B650 / X670</a>
+                        <div class="mega-grid-4">
+                            <div class="mega-col">
+                                <h4>VGA RTX 50 SERIES</h4>
+                                <a href="#" class="highlight-red" onclick="filterByCategory('RTX 5090', event)">RTX 5090 (Mới)</a>
+                                <a href="#" onclick="filterByCategory('RTX 5080', event)">RTX 5080</a>
+                                <a href="#" onclick="filterByCategory('RTX 5070Ti', event)">RTX 5070Ti</a>
+                                <a href="#" onclick="filterByCategory('RTX 5070', event)">RTX 5070</a>
+                                <a href="#" onclick="filterByCategory('RTX 5060Ti', event)">RTX 5060Ti</a>
+                                <a href="#" onclick="filterByCategory('RTX 5060', event)">RTX 5060</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>VGA (Dưới 12 GB VRAM)</h4>
+                                <a href="#" onclick="filterByCategory('RTX 3060', event)">RTX 3060 (12GB)</a>
+                                <a href="#" onclick="filterByCategory('RTX 3050', event)">RTX 3050 (6 - 8GB)</a>
+                                <h4>VGA - Card màn hình</h4>
+                                <a href="#" onclick="filterByCategory('NVIDIA', event)">NVIDIA Quadro / RTX</a>
+                                <a href="#" onclick="filterByCategory('AMD Radeon', event)">AMD Radeon RX</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Bo mạch chủ Intel</h4>
+                                <a href="#" onclick="filterByCategory('Z890', event)">Z890 (Mới)</a>
+                                <a href="#" onclick="filterByCategory('Z790', event)">Z790 High-End</a>
+                                <a href="#" onclick="filterByCategory('B760', event)">B760 Mainstream</a>
+                                <a href="#" onclick="filterByCategory('H610', event)">H610 Entry</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>CPU - Bộ vi xử lý Intel</h4>
+                                <a href="#" onclick="filterByCategory('Core Ultra', event)">CPU Intel Core Ultra (Mới)</a>
+                                <a href="#" onclick="filterByCategory('Intel i9', event)">CPU Intel Core i9</a>
+                                <a href="#" onclick="filterByCategory('Intel i7', event)">CPU Intel Core i7</a>
+                                <a href="#" onclick="filterByCategory('Intel i5', event)">CPU Intel Core i5</a>
+                                <h4>CPU - Bộ vi xử lý AMD</h4>
+                                <a href="#" onclick="filterByCategory('Ryzen 7', event)">CPU AMD Ryzen 7 7800X3D</a>
+                                <a href="#" onclick="filterByCategory('Ryzen 5', event)">CPU AMD Ryzen 5</a>
+                            </div>
                         </div>
                     </div>
                 </li>
-                <li data-cat="case-power">
-                    <div class="menu-item-content"><span>Case, Nguồn, Tản</span><span>›</span></div>
-                    <div class="submenu">
-                        <div class="submenu-column">
-                            <h4>Linh Kiện Tản Nhiệt & Nguồn</h4>
-                            <a href="#" onclick="filterByCategory('Vỏ Case')">Vỏ Case Gaming Bể Kính</a>
-                            <a href="#" onclick="filterByCategory('Nguồn PC')">Nguồn PC (PSU) 650W - 1000W 80 Plus</a>
-                            <a href="#" onclick="filterByCategory('Tản Nhiệt Khí')">Tản Nhiệt Khí Tháp</a>
-                            <a href="#" onclick="filterByCategory('Tản Nhiệt Nước AIO')">Tản Nhiệt Nước AIO 240 / 360mm</a>
+
+                <!-- 5. Case, Nguồn, Tản -->
+                <li data-cat="case-nguon-tan">
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-box red-icon"></i> Case, Nguồn, Tản</span>
+                        <span>›</span>
+                    </div>
+                    <div class="mega-menu">
+                        <div class="mega-header">
+                            <h3>Case, Nguồn, Tản Nhiệt</h3>
+                            <a href="#" onclick="filterByCategory('Tản', event)">Xem tất cả &gt;</a>
+                        </div>
+                        <div class="mega-grid-4">
+                            <div class="mega-col">
+                                <h4>Case - Theo hãng</h4>
+                                <a href="#" onclick="filterByCategory('Case ASUS', event)">Case ASUS</a>
+                                <a href="#" onclick="filterByCategory('Case Corsair', event)">Case Corsair</a>
+                                <a href="#" onclick="filterByCategory('Case Lianli', event)">Case Lianli Bể Kính</a>
+                                <a href="#" onclick="filterByCategory('Case NZXT', event)">Case NZXT Flow</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Case - Theo giá</h4>
+                                <a href="#" onclick="filterByCategory('Case', event)">Dưới 1 triệu</a>
+                                <a href="#" onclick="filterByCategory('Case', event)">Từ 1 đến 2 triệu</a>
+                                <a href="#" onclick="filterByCategory('Case', event)">Trên 2 triệu</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Nguồn - Theo Hãng</h4>
+                                <a href="#" onclick="filterByCategory('Nguồn ASUS', event)">Nguồn ASUS ROG / TUF</a>
+                                <a href="#" onclick="filterByCategory('Nguồn Corsair', event)">Nguồn Corsair Gold</a>
+                                <a href="#" onclick="filterByCategory('Nguồn MSI', event)">Nguồn MSI MAG</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Loại Tản Nhiệt</h4>
+                                <a href="#" onclick="filterByCategory('AIO 240mm', event)">Tản nhiệt AIO 240mm</a>
+                                <a href="#" onclick="filterByCategory('AIO 360mm', event)">Tản nhiệt AIO 360mm</a>
+                                <a href="#" onclick="filterByCategory('Tản Khí', event)">Tản nhiệt khí Tháp</a>
+                                <a href="#" onclick="filterByCategory('Fan RGB', event)">Fan Case RGB</a>
+                            </div>
                         </div>
                     </div>
                 </li>
+
+                <!-- 6. Ổ cứng, RAM, Thẻ nhớ -->
                 <li data-cat="ram-ssd">
-                    <div class="menu-item-content"><span>Ổ cứng, RAM</span><span>›</span></div>
-                    <div class="submenu">
-                        <div class="submenu-column">
-                            <h4>Bộ Nhớ & Lưu Trữ</h4>
-                            <a href="#" onclick="filterByCategory('RAM DDR4')">RAM Desktop DDR4 / DDR5 (8GB - 32GB)</a>
-                            <a href="#" onclick="filterByCategory('SSD NVMe')">Ổ Cứng SSD NVMe M.2 High-Speed (512GB - 2TB)</a>
-                            <a href="#" onclick="filterByCategory('HDD Desktop')">Ổ Cứng Di Động & HDD Desktop</a>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-memory red-icon"></i> Ổ cứng, RAM, Thẻ nhớ</span>
+                        <span>›</span>
+                    </div>
+                    <div class="mega-menu">
+                        <div class="mega-header">
+                            <h3>Ổ cứng, RAM, Thẻ nhớ</h3>
+                            <a href="#" onclick="filterByCategory('RAM', event)">Xem tất cả &gt;</a>
+                        </div>
+                        <div class="mega-grid-4">
+                            <div class="mega-col">
+                                <h4>Dung lượng RAM</h4>
+                                <a href="#" onclick="filterByCategory('8 GB', event)">8 GB</a>
+                                <a href="#" onclick="filterByCategory('16 GB', event)">16 GB</a>
+                                <a href="#" onclick="filterByCategory('32 GB', event)">32 GB</a>
+                                <a href="#" onclick="filterByCategory('64 GB', event)">64 GB</a>
+                                <h4>Hãng HDD</h4>
+                                <a href="#" onclick="filterByCategory('WesternDigital', event)">Western Digital</a>
+                                <a href="#" onclick="filterByCategory('Seagate', event)">Seagate IronWolf</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Loại RAM</h4>
+                                <a href="#" onclick="filterByCategory('DDR4', event)">DDR4 Desktop</a>
+                                <a href="#" onclick="filterByCategory('DDR5', event)">DDR5 High-Speed</a>
+                                <h4>Dung lượng SSD</h4>
+                                <a href="#" onclick="filterByCategory('256GB', event)">250GB - 256GB</a>
+                                <a href="#" onclick="filterByCategory('512GB', event)">500GB - 512GB</a>
+                                <a href="#" onclick="filterByCategory('1TB', event)">1TB Gen4 NVMe</a>
+                                <a href="#" onclick="filterByCategory('2TB', event)">2TB SSD High-Speed</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Hãng RAM</h4>
+                                <a href="#" onclick="filterByCategory('Corsair', event)">Corsair Vengeance</a>
+                                <a href="#" onclick="filterByCategory('Kingston', event)">Kingston FURY</a>
+                                <a href="#" onclick="filterByCategory('G.Skill', event)">G.Skill Trident Z</a>
+                                <h4>Hãng SSD</h4>
+                                <a href="#" onclick="filterByCategory('Samsung', event)">Samsung 980 / 990 PRO</a>
+                                <a href="#" onclick="filterByCategory('Kingston', event)">Kingston NV2</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Dung lượng HDD</h4>
+                                <a href="#" onclick="filterByCategory('1TB', event)">HDD 1 TB</a>
+                                <a href="#" onclick="filterByCategory('2TB', event)">HDD 2 TB</a>
+                                <a href="#" onclick="filterByCategory('4TB', event)">HDD 4 TB - 8 TB</a>
+                                <h4>Thẻ nhớ / USB</h4>
+                                <a href="#" onclick="filterByCategory('Sandisk', event)">SanDisk Ultra / Extreme</a>
+                            </div>
                         </div>
                     </div>
                 </li>
+
+                <!-- 7. Loa, Micro, Webcam -->
                 <li data-cat="audio">
-                    <div class="menu-item-content"><span>Loa, Micro, Webcam</span><span>›</span></div>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-headphones red-icon"></i> Loa, Micro, Webcam</span>
+                        <span>›</span>
+                    </div>
                 </li>
+
+                <!-- 8. Màn hình -->
                 <li data-cat="monitor">
-                    <div class="menu-item-content"><span>Màn hình</span><span>›</span></div>
-                    <div class="submenu">
-                        <div class="submenu-column">
-                            <h4>Màn Hình Gaming</h4>
-                            <a href="#" onclick="filterByCategory('Màn hình 165Hz')">Màn hình 144Hz - 165Hz Full HD</a>
-                            <a href="#" onclick="filterByCategory('Màn hình 240Hz IPS')">Màn hình 240Hz IPS Gaming</a>
-                            <a href="#" onclick="filterByCategory('Màn hình 2K/4K')">Màn hình 2K / 4K Họa Viên & Creator</a>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-tv red-icon"></i> Màn hình</span>
+                        <span>›</span>
+                    </div>
+                    <div class="mega-menu">
+                        <div class="mega-header">
+                            <h3>Màn hình</h3>
+                            <a href="#" onclick="filterByCategory('Màn hình', event)">Xem tất cả &gt;</a>
+                        </div>
+                        <div class="mega-grid-4">
+                            <div class="mega-col">
+                                <h4>Hãng sản xuất</h4>
+                                <a href="#" onclick="filterByCategory('LG', event)">LG UltraGear</a>
+                                <a href="#" onclick="filterByCategory('Asus', event)">ASUS ROG / TUF</a>
+                                <a href="#" onclick="filterByCategory('Dell', event)">Dell UltraSharp</a>
+                                <a href="#" onclick="filterByCategory('Gigabyte', event)">Gigabyte M27Q</a>
+                                <a href="#" onclick="filterByCategory('Acer', event)">Acer Nitro</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Giá tiền</h4>
+                                <a href="#" onclick="filterByCategory('Màn hình', event)">Dưới 5 triệu</a>
+                                <a href="#" onclick="filterByCategory('Màn hình', event)">Từ 5 đến 10 triệu</a>
+                                <a href="#" onclick="filterByCategory('Màn hình', event)">Trên 10 triệu</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Độ Phân giải</h4>
+                                <a href="#" onclick="filterByCategory('Full HD', event)">Màn hình Full HD</a>
+                                <a href="#" onclick="filterByCategory('2K', event)">Màn hình 2K 1440p</a>
+                                <a href="#" onclick="filterByCategory('4K', event)">Màn hình 4K UHD</a>
+                                <h4>Tần số quét</h4>
+                                <a href="#" onclick="filterByCategory('165Hz', event)">165Hz IPS 1ms</a>
+                                <a href="#" onclick="filterByCategory('240Hz', event)">240Hz Gaming</a>
+                            </div>
+                            <div class="mega-col">
+                                <h4>Kích thước</h4>
+                                <a href="#" onclick="filterByCategory('24"', event)">Màn hình 24" IPS</a>
+                                <a href="#" onclick="filterByCategory('27"', event)">Màn hình 27" 2K</a>
+                                <a href="#" onclick="filterByCategory('32"', event)">Màn hình 32" Curved</a>
+                            </div>
                         </div>
                     </div>
                 </li>
+
+                <!-- 9. Bàn phím -->
                 <li data-cat="keyboard">
-                    <div class="menu-item-content"><span>Bàn phím</span><span>›</span></div>
-                    <div class="submenu">
-                        <div class="submenu-column">
-                            <h4>Bàn Phím Cơ</h4>
-                            <a href="#" onclick="filterByCategory('Keychron')">Bàn phím cơ Keychron Wireless</a>
-                            <a href="#" onclick="filterByCategory('Akko / Logitech')">Bàn phím cơ Akko / Logitech G</a>
-                            <a href="#" onclick="filterByCategory('Custom Mechanical Keyboard')">Bàn phím Custom Hot-Swap</a>
-                        </div>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-keyboard red-icon"></i> Bàn phím</span>
+                        <span>›</span>
                     </div>
                 </li>
+
+                <!-- 10. Chuột + Lót chuột -->
                 <li data-cat="mouse">
-                    <div class="menu-item-content"><span>Chuột + Lót</span><span>›</span></div>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-mouse red-icon"></i> Chuột + Lót chuột</span>
+                        <span>›</span>
+                    </div>
                 </li>
+
+                <!-- 11. Tai Nghe -->
                 <li data-cat="headphone">
-                    <div class="menu-item-content"><span>Tai Nghe</span><span>›</span></div>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-headset red-icon"></i> Tai Nghe</span>
+                        <span>›</span>
+                    </div>
                 </li>
+
+                <!-- 12. Ghế - Bàn -->
                 <li data-cat="chair">
-                    <div class="menu-item-content"><span>Ghế - Bàn</span><span>›</span></div>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-chair red-icon"></i> Ghế - Bàn</span>
+                        <span>›</span>
+                    </div>
                 </li>
+
+                <!-- 13. Phần mềm, mạng -->
                 <li data-cat="software">
-                    <div class="menu-item-content"><span>Phần mềm</span><span>›</span></div>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-circle-question red-icon"></i> Phần mềm, mạng</span>
+                        <span>›</span>
+                    </div>
                 </li>
+
+                <!-- 14. Phụ kiện - Console -->
                 <li data-cat="accessory">
-                    <div class="menu-item-content"><span>Phụ kiện</span><span>›</span></div>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-plug red-icon"></i> Phụ kiện - Console</span>
+                        <span>›</span>
+                    </div>
                 </li>
+
+                <!-- 15. Thu cũ đổi mới -->
                 <li data-cat="trade-in">
-                    <div class="menu-item-content"><span>Thu cũ đổi mới</span><span>›</span></div>
+                    <div class="menu-item-content">
+                        <span class="menu-icon"><i class="fa-solid fa-arrows-rotate red-icon"></i> Thu cũ đổi mới</span>
+                        <span>›</span>
+                    </div>
                 </li>
+
             </ul>
         </aside>
 
@@ -231,28 +451,28 @@
 
                 <!-- 4 Small Ad Cards -->
                 <div class="ad-cards">
-                    <div class="ad-card" style="background-color: #1e3a5f;" onclick="filterByCategory('Build PC')">
+                    <div class="ad-card" style="background-color: #1e3a5f;" onclick="filterByCategory('Build PC', event)">
                         <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?w=300&h=130&fit=crop&auto=format" alt="Ad 1">
                         <div class="ad-info">
                             <p class="ad-label">Build PC</p>
                             <p class="ad-sub" style="color: #3b82f6;">Tặng Màn Hình 240Hz</p>
                         </div>
                     </div>
-                    <div class="ad-card" style="background-color: #1a0a0a;" onclick="filterByCategory('Bàn phím cơ')">
+                    <div class="ad-card" style="background-color: #1a0a0a;" onclick="filterByCategory('Bàn phím cơ', event)">
                         <img src="https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=300&h=130&fit=crop&auto=format" alt="Ad 2">
                         <div class="ad-info">
                             <p class="ad-label">Bàn Phím Cơ</p>
                             <p class="ad-sub" style="color: #ef4444;">Giảm đến 26%</p>
                         </div>
                     </div>
-                    <div class="ad-card" style="background-color: #0c1a0e;" onclick="filterByCategory('PC i5')">
+                    <div class="ad-card" style="background-color: #0c1a0e;" onclick="filterByCategory('PC i5', event)">
                         <img src="https://images.unsplash.com/photo-1587202372583-49330a15584d?w=300&h=130&fit=crop&auto=format" alt="Ad 3">
                         <div class="ad-info">
                             <p class="ad-label">PC i5 / RTX 5060</p>
                             <p class="ad-sub" style="color: #22c55e;">Từ 23.000.000đ</p>
                         </div>
                     </div>
-                    <div class="ad-card" style="background-color: #1a0a2e;" onclick="filterByCategory('Laptop Gaming')">
+                    <div class="ad-card" style="background-color: #1a0a2e;" onclick="filterByCategory('Laptop Gaming', event)">
                         <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=300&h=130&fit=crop&auto=format" alt="Ad 4">
                         <div class="ad-info">
                             <p class="ad-label">Laptop Gaming</p>
@@ -333,10 +553,10 @@
                 </div>
                 <div class="footer-col">
                     <p class="footer-title">SẢN PHẨM</p>
-                    <a href="#" onclick="filterByCategory('PC')">PC Gaming</a>
-                    <a href="#" onclick="filterByCategory('Laptop')">Laptop Gaming</a>
-                    <a href="#" onclick="filterByCategory('Màn hình')">Màn hình</a>
-                    <a href="#" onclick="filterByCategory('Bàn phím')">Phụ kiện</a>
+                    <a href="#" onclick="filterByCategory('PC', event)">PC Gaming</a>
+                    <a href="#" onclick="filterByCategory('Laptop', event)">Laptop Gaming</a>
+                    <a href="#" onclick="filterByCategory('Màn hình', event)">Màn hình</a>
+                    <a href="#" onclick="filterByCategory('Bàn phím', event)">Phụ kiện</a>
                 </div>
                 <div class="footer-col">
                     <p class="footer-title">THEO DÕI</p>
