@@ -36,12 +36,69 @@ let selectedCategoryFilter = null;
 let liveProducts = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    initSlider();
-    initTabs();
+    initHeaderCategoryDropdown();
+    if (document.getElementById('heroSlider')) {
+        initSlider();
+        initTabs();
+        loadProducts();
+    }
     initCartDrawer();
     initCategoryClickListeners();
-    loadProducts();
 });
+
+// Header Category Dropdown Controller
+function initHeaderCategoryDropdown() {
+    const btnCategory = document.getElementById('btnHeaderCategory');
+    const dropdown = document.getElementById('headerCategoryDropdown');
+    const btnIcon = document.getElementById('headerCategoryIcon');
+
+    if (!btnCategory || !dropdown) return;
+
+    btnCategory.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = dropdown.classList.contains('show');
+        if (isOpen) {
+            closeCategoryDropdown();
+        } else {
+            openCategoryDropdown();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#headerCategoryWrapper')) {
+            closeCategoryDropdown();
+        }
+    });
+
+    function openCategoryDropdown() {
+        dropdown.classList.add('show');
+        btnCategory.classList.add('active');
+        if (btnIcon) {
+            btnIcon.className = 'fa-solid fa-xmark';
+        }
+    }
+
+    function closeCategoryDropdown() {
+        dropdown.classList.remove('show');
+        btnCategory.classList.remove('active');
+        if (btnIcon) {
+            btnIcon.className = 'fa-solid fa-bars';
+        }
+    }
+
+    // Category click listener inside popup dropdown
+    const dropdownItems = dropdown.querySelectorAll('.category-menu li');
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') return;
+            const catSlug = item.getAttribute('data-cat');
+            if (catSlug) {
+                closeCategoryDropdown();
+                window.location.href = `category.html?slug=${catSlug}`;
+            }
+        });
+    });
+}
 
 // Slider Controller
 function initSlider() {
