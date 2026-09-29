@@ -1,7 +1,11 @@
-// JavaScript điều khiển cho trang Danh mục sản phẩm (category.html)
+// JavaScript điều khiển cho trang Danh mục sản phẩm (category.html - KCC Design)
 let categoryProducts = [];
 let filteredCategoryProducts = [];
 let currentCategoryName = 'Danh mục sản phẩm';
+
+let activeBrandTab = 'all';
+let activePricePill = 'all';
+let activeSortOption = 'newest';
 
 document.addEventListener('DOMContentLoaded', () => {
     initCategoryPage();
@@ -33,7 +37,7 @@ function formatCategoryTitle(slug, search) {
         'laptop': 'Laptop',
         'laptop-gaming': 'Laptop Gaming',
         'pc-gaming': 'PC Gaming',
-        'main-cpu-vga': 'Main, CPU, VGA',
+        'main-cpu-vga': 'CPU - Bộ Vi Xử Lý / Main, VGA',
         'case-nguon-tan': 'Case, Nguồn, Tản Nhiệt',
         'o-cung-ram': 'Ổ cứng, RAM, Thẻ nhớ',
         'audio': 'Loa, Micro, Webcam',
@@ -52,7 +56,7 @@ function formatCategoryTitle(slug, search) {
 // Gọi REST API Backend nạp danh mục
 async function loadCategoryProducts(slug, search, brandParam) {
     const grid = document.getElementById('categoryProductGrid');
-    grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #666;">Đang nạp danh sách linh kiện từ Server Backend...</div>';
+    grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #666;">Đang nạp danh sách sản phẩm từ Server Backend...</div>';
 
     try {
         const res = await api.getProducts({ category: slug, per_page: 250 });
@@ -99,8 +103,7 @@ async function loadCategoryProducts(slug, search, brandParam) {
                 return pCatSlug.includes(slug) || pName.includes(slug);
             });
 
-            filteredCategoryProducts = [...categoryProducts];
-            renderCategoryGrid();
+            applyCategoryFilters();
             return;
         }
     } catch (e) {
@@ -118,9 +121,9 @@ function renderCategoryGrid() {
 
     if (filteredCategoryProducts.length === 0) {
         grid.innerHTML = `
-            <div style="grid-column: 1 / -1; padding: 80px; text-align: center; background: #fff; border: 1px solid #eee; border-radius: 8px; color: #999;">
-                <p style="font-size: 16px; margin-bottom: 12px;">Chưa có sản phẩm nào thuộc danh mục "${currentCategoryName}".</p>
-                <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 4px; font-size: 13px;">Trở về trang chủ</a>
+            <div style="grid-column: 1 / -1; padding: 60px; text-align: center; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; color: #64748b;">
+                <p style="font-size: 15px; margin-bottom: 12px; font-weight: 600;">Không tìm thấy sản phẩm nào phù hợp với bộ lọc hiện tại.</p>
+                <button onclick="resetAllCategoryFilters()" style="padding: 8px 18px; background: #0284c7; color: #fff; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-weight: 600;">Xóa bộ lọc để xem lại tất cả</button>
             </div>
         `;
         return;
@@ -128,94 +131,189 @@ function renderCategoryGrid() {
 
     filteredCategoryProducts.forEach(p => {
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = 'kcc-card';
 
-        const priceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price);
-        const specs = p.specs || {};
+        const priceNum = Number(p.price) || 0;
+        const priceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(priceNum);
         
-        let specsHtml = '';
-        if (specs.cpu) specsHtml += `<div>CPU: ${specs.cpu}</div>`;
-        if (specs.ram && specs.ssd) specsHtml += `<div>RAM ${specs.ram} · SSD ${specs.ssd}</div>`;
-        if (specs.gpu) specsHtml += `<div>GPU: ${specs.gpu}</div>`;
+        let oldPriceHtml = '';
+        let badgeHtml = '';
+        const oldPrice = priceNum > 0 ? Math.round(priceNum * 1.11) : 0;
+        const discountAmount = oldPrice - priceNum;
+
+        if (discountAmount > 100000) {
+            const oldPriceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(oldPrice);
+            const discountVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(discountAmount);
+            oldPriceHtml = `
+                <div class="kcc-price-sub">
+                    <span class="kcc-price-old">${oldPriceVnd}</span>
+                    <span class="kcc-price-discount">-10%</span>
+                </div>
+            `;
+            badgeHtml = `<div class="kcc-card-badge">TIẾT KIỆM ${discountVnd}</div>`;
+        }
 
         const imgUrl = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
 
         card.innerHTML = `
-            <div class="card-img-wrap">
+            ${badgeHtml}
+            <div class="kcc-card-img-wrap">
                 <img src="${imgUrl}" alt="${p.name}">
-                <span class="card-tag">Chính hãng</span>
             </div>
-            <div class="card-body">
-                <p class="card-title">${p.name}</p>
-                <div class="card-specs">
-                    ${specsHtml || `<div>Thương hiệu: ${p.brand || 'PC SHOP'}</div>`}
-                </div>
-                <div class="card-price-box">
-                    <div class="current-price">${priceVnd}</div>
-                </div>
+            <div class="kcc-card-title" title="${p.name}">${p.name}</div>
+            <div class="kcc-card-price-row">
+                <div class="kcc-price-main">${priceVnd}</div>
+                ${oldPriceHtml}
+            </div>
+            <div class="kcc-card-footer">
+                <span class="kcc-stock-status"><i class="fa-solid fa-check"></i> Còn hàng</span>
+                <span class="kcc-compare-btn" onclick="event.stopPropagation();"><i class="fa-solid fa-circle-plus"></i> So sánh</span>
             </div>
         `;
+        
+        card.addEventListener('click', () => {
+            window.location.href = `product.html?id=${p.id}`;
+        });
+
         grid.appendChild(card);
     });
 }
 
-
 function initFilterEvents() {
-    const checkboxes = document.querySelectorAll('.filter-checkbox input');
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', applyCategoryFilters);
+    // 1. Brand Tab Events
+    const brandTabs = document.querySelectorAll('.brand-tab-btn');
+    brandTabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            brandTabs.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeBrandTab = btn.getAttribute('data-brand');
+            applyCategoryFilters();
+        });
+    });
+
+    // 2. Price Pill Events
+    const pricePills = document.querySelectorAll('.price-pill');
+    pricePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            pricePills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            activePricePill = pill.getAttribute('data-price');
+            applyCategoryFilters();
+        });
+    });
+
+    // 3. Sort Text Option Events
+    const sortBtns = document.querySelectorAll('.sort-option-btn');
+    sortBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            sortBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeSortOption = btn.getAttribute('data-sort');
+            applyCategoryFilters();
+        });
     });
 }
 
-// SỬA LỖI LỌC GIÁ CỰC KỲ CHÍNH XÁC (Dưới 15 tr -> Chỉ hiện sản phẩm < 15.000.000đ)
 function applyCategoryFilters() {
-    const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value.toLowerCase());
-    
-    // Lấy Radio/Checkbox giá được tích chọn
-    const selectedPriceInputs = Array.from(document.querySelectorAll('input[name="price"]:checked')).map(cb => cb.value);
+    const brandDropdown = (document.getElementById('criteriaBrand')?.value || 'all').toLowerCase();
+    const socketDropdown = (document.getElementById('criteriaSocket')?.value || 'all').toLowerCase();
+    const seriesDropdown = (document.getElementById('criteriaSeries')?.value || 'all').toLowerCase();
 
     filteredCategoryProducts = categoryProducts.filter(p => {
-        // 1. Lọc theo Thương hiệu
-        if (selectedBrands.length > 0) {
-            const pBrand = (p.brand || '').toLowerCase();
-            const pName = (p.name || '').toLowerCase();
-            const matchBrand = selectedBrands.some(b => pBrand.includes(b) || pName.includes(b));
-            if (!matchBrand) return false;
+        const pName = (p.name || '').toLowerCase();
+        const pBrand = (p.brand || '').toLowerCase();
+        const price = Number(p.price) || 0;
+        const specs = p.specs || {};
+
+        // 1. Brand Quick Tabs Filter
+        if (activeBrandTab !== 'all') {
+            const b = activeBrandTab.toLowerCase();
+            if (!pBrand.includes(b) && !pName.includes(b)) {
+                return false;
+            }
         }
 
-        // 2. Lọc theo Khoảng Giá (Nghiêm ngặt 100%)
-        if (selectedPriceInputs.length > 0 && !selectedPriceInputs.includes('all')) {
-            const price = Number(p.price);
-            const matchPrice = selectedPriceInputs.some(priceVal => {
-                if (priceVal === 'under-15') return price < 15000000;
-                if (priceVal === '15-25') return price >= 15000000 && price <= 25000000;
-                if (priceVal === '25-40') return price > 25000000 && price <= 40000000;
-                if (priceVal === 'over-40') return price > 40000000;
-                return true;
-            });
-            if (!matchPrice) return false;
+        // 2. Price Pill Filter
+        if (activePricePill !== 'all') {
+            if (activePricePill === 'under-2' && !(price < 2000000)) return false;
+            if (activePricePill === '2-3' && !(price >= 2000000 && price <= 3000000)) return false;
+            if (activePricePill === '3-5' && !(price > 3000000 && price <= 5000000)) return false;
+            if (activePricePill === '5-7' && !(price > 5000000 && price <= 7000000)) return false;
+            if (activePricePill === '7-9' && !(price > 7000000 && price <= 9000000)) return false;
+            if (activePricePill === '9-12' && !(price > 9000000 && price <= 12000000)) return false;
+            if (activePricePill === '12-15' && !(price > 12000000 && price <= 15000000)) return false;
+            if (activePricePill === 'over-15' && !(price > 15000000)) return false;
+        }
+
+        // 3. Criteria Brand Dropdown
+        if (brandDropdown !== 'all') {
+            if (!pBrand.includes(brandDropdown) && !pName.includes(brandDropdown)) return false;
+        }
+
+        // 4. Criteria Socket Dropdown
+        if (socketDropdown !== 'all') {
+            const specSocket = (specs.socket || '').toLowerCase();
+            if (!specSocket.includes(socketDropdown) && !pName.includes(socketDropdown)) return false;
+        }
+
+        // 5. Criteria Series Dropdown
+        if (seriesDropdown !== 'all') {
+            if (!pName.includes(seriesDropdown)) return false;
         }
 
         return true;
     });
 
+    // Apply Sorting
+    sortFilteredProducts();
+
     renderCategoryGrid();
 }
 
-function sortProducts() {
-    const sortVal = document.getElementById('sortSelect').value;
-
-    if (sortVal === 'price-asc') {
+function sortFilteredProducts() {
+    if (activeSortOption === 'price-asc') {
         filteredCategoryProducts.sort((a, b) => a.price - b.price);
-    } else if (sortVal === 'price-desc') {
+    } else if (activeSortOption === 'price-desc') {
         filteredCategoryProducts.sort((a, b) => b.price - a.price);
-    } else if (sortVal === 'name-asc') {
+    } else if (activeSortOption === 'name-asc') {
         filteredCategoryProducts.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (activeSortOption === 'in-stock') {
+        filteredCategoryProducts.sort((a, b) => (b.stock_quantity || 0) - (a.stock_quantity || 0));
+    } else if (activeSortOption === 'views') {
+        filteredCategoryProducts.sort((a, b) => (b.views || b.id) - (a.views || a.id));
     } else {
-        filteredCategoryProducts = [...categoryProducts];
+        // default newest
+        filteredCategoryProducts.sort((a, b) => b.id - a.id);
     }
+}
 
-    renderCategoryGrid();
+function resetAllCategoryFilters() {
+    activeBrandTab = 'all';
+    activePricePill = 'all';
+    activeSortOption = 'newest';
+
+    document.querySelectorAll('.brand-tab-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-brand') === 'all');
+    });
+
+    document.querySelectorAll('.price-pill').forEach(p => {
+        p.classList.toggle('active', p.getAttribute('data-price') === 'all');
+    });
+
+    document.querySelectorAll('.sort-option-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-sort') === 'newest');
+    });
+
+    const criteriaBrand = document.getElementById('criteriaBrand');
+    if (criteriaBrand) criteriaBrand.value = 'all';
+
+    const criteriaSocket = document.getElementById('criteriaSocket');
+    if (criteriaSocket) criteriaSocket.value = 'all';
+
+    const criteriaSeries = document.getElementById('criteriaSeries');
+    if (criteriaSeries) criteriaSeries.value = 'all';
+
+    applyCategoryFilters();
 }
 
 let cartItemsCat = [];
@@ -233,22 +331,3 @@ function initCartDrawer() {
     }
 }
 
-function addToCartCategory(name) {
-    cartItemsCat.push(name);
-    document.getElementById('cartCount').textContent = cartItemsCat.length;
-    document.getElementById('cartDrawerCount').textContent = cartItemsCat.length;
-
-    const cartBody = document.getElementById('cartBody');
-    const cartFooter = document.getElementById('cartFooter');
-
-    cartFooter.style.display = 'block';
-    cartBody.innerHTML = '';
-    cartItemsCat.forEach((n, i) => {
-        const item = document.createElement('div');
-        item.className = 'cart-item';
-        item.innerHTML = `<p>${n}</p>`;
-        cartBody.appendChild(item);
-    });
-
-    document.getElementById('cartDrawer').classList.add('open');
-}

@@ -239,62 +239,97 @@
             </div>
         </div>
 
-        <!-- Filter & Product Content Layout -->
-        <div class="category-layout">
+        <!-- Horizontal Filter & Product Content Layout (KCC Style) -->
+        <div class="kcc-filter-container">
             
-            <!-- Left Sidebar Filter -->
-            <aside class="filter-sidebar">
-                <div class="filter-box">
-                    <div class="filter-header">
-                        <i class="fa-solid fa-sliders"></i> <h3>Bộ lọc tìm kiếm</h3>
-                    </div>
+            <!-- 1. Brand Quick Tabs -->
+            <div class="brand-quick-tabs" id="brandQuickTabs">
+                <button class="brand-tab-btn active" data-brand="all">TẤT CẢ</button>
+                <button class="brand-tab-btn" data-brand="AMD">AMD</button>
+                <button class="brand-tab-btn" data-brand="INTEL">INTEL</button>
+            </div>
 
-                    <!-- Price Filter Group -->
-                    <div class="filter-group">
-                        <h4 class="filter-title">Khoảng giá</h4>
-                        <label class="filter-checkbox"><input type="checkbox" name="price" value="all" checked> Tất cả</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="price" value="under-15"> Dưới 15 triệu</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="price" value="15-25"> Từ 15 triệu - 25 triệu</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="price" value="25-40"> Từ 25 triệu - 40 triệu</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="price" value="over-40"> Trên 40 triệu</label>
-                    </div>
-
-                    <!-- Brand Filter Group -->
-                    <div class="filter-group">
-                        <h4 class="filter-title">Hãng sản xuất</h4>
-                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="ASUS"> ASUS</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="Acer"> Acer</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="MSI"> MSI</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="Intel"> Intel</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="NVIDIA"> NVIDIA</label>
-                        <label class="filter-checkbox"><input type="checkbox" name="brand" value="LG"> LG</label>
-                    </div>
+            <!-- 2. Horizontal Price Range Pills -->
+            <div class="filter-row">
+                <span class="filter-row-label">Chọn khoảng giá:</span>
+                <div class="price-pill-list" id="pricePillList">
+                    <button class="price-pill active" data-price="all">Tất cả</button>
+                    <button class="price-pill" data-price="under-2">Dưới 2 triệu</button>
+                    <button class="price-pill" data-price="2-3">2 triệu - 3 triệu</button>
+                    <button class="price-pill" data-price="3-5">3 triệu - 5 triệu</button>
+                    <button class="price-pill" data-price="5-7">5 triệu - 7 triệu</button>
+                    <button class="price-pill" data-price="7-9">7 triệu - 9 triệu</button>
+                    <button class="price-pill" data-price="9-12">9 triệu - 12 triệu</button>
+                    <button class="price-pill" data-price="12-15">12 triệu - 15 triệu</button>
+                    <button class="price-pill" data-price="over-15">Trên 15 triệu</button>
                 </div>
-            </aside>
+            </div>
 
-            <!-- Right Product List Area -->
-            <main class="category-main-content">
-                
-                <!-- Sort Bar -->
-                <div class="sort-bar">
-                    <span class="found-count">Tìm thấy <strong id="productFoundCount">0</strong> kết quả</span>
-                    <div class="sort-options">
-                        <span>Sắp xếp:</span>
-                        <select id="sortSelect" onchange="sortProducts()">
-                            <option value="newest">Mới nhất</option>
-                            <option value="price-asc">Giá tăng dần</option>
-                            <option value="price-desc">Giá giảm dần</option>
-                            <option value="name-asc">Tên A-Z</option>
+            <!-- 3. Criteria Filter Dropdowns -->
+            <div class="filter-row">
+                <span class="filter-row-label">Chọn theo tiêu chí:</span>
+                <div class="criteria-dropdown-list">
+                    <div class="criteria-dropdown">
+                        <select id="criteriaBrand" onchange="applyCategoryFilters()">
+                            <option value="all">Thương hiệu ▾</option>
+                            <option value="intel">Intel</option>
+                            <option value="amd">AMD</option>
+                            <option value="asus">ASUS</option>
+                            <option value="acer">Acer</option>
+                            <option value="msi">MSI</option>
+                        </select>
+                    </div>
+                    <div class="criteria-dropdown">
+                        <select id="criteriaSocket" onchange="applyCategoryFilters()">
+                            <option value="all">Socket CPU ▾</option>
+                            <option value="lga 1700">Socket LGA 1700</option>
+                            <option value="am5">Socket AM5</option>
+                            <option value="am4">Socket AM4</option>
+                            <option value="lga 1200">Socket LGA 1200</option>
+                        </select>
+                    </div>
+                    <div class="criteria-dropdown">
+                        <select id="criteriaSeries" onchange="applyCategoryFilters()">
+                            <option value="all">Dòng CPU ▾</option>
+                            <option value="i3">Core i3</option>
+                            <option value="i5">Core i5</option>
+                            <option value="i7">Core i7</option>
+                            <option value="i9">Core i9</option>
+                            <option value="ryzen 3">Ryzen 3</option>
+                            <option value="ryzen 5">Ryzen 5</option>
+                            <option value="ryzen 7">Ryzen 7</option>
+                            <option value="ryzen 9">Ryzen 9</option>
                         </select>
                     </div>
                 </div>
+            </div>
 
-                <!-- Product Grid -->
-                <div class="product-grid" id="categoryProductGrid">
-                    <!-- Products will be loaded from API -->
+            <!-- 4. Sort & Reset Filter Bar -->
+            <div class="filter-row sort-row">
+                <span class="filter-row-label">Sắp xếp theo:</span>
+                <div class="sort-text-options" id="sortTextOptions">
+                    <button class="sort-option-btn active" data-sort="newest">Mới nhất</button>
+                    <button class="sort-option-btn" data-sort="price-asc">Giá tăng dần</button>
+                    <button class="sort-option-btn" data-sort="price-desc">Giá giảm dần</button>
+                    <button class="sort-option-btn" data-sort="views">Lượt xem</button>
+                    <button class="sort-option-btn" data-sort="exchange">Trao đổi</button>
+                    <button class="sort-option-btn" data-sort="rating">Đánh giá</button>
+                    <button class="sort-option-btn" data-sort="name-asc">Tên A-&gt;Z</button>
+                    <button class="sort-option-btn" data-sort="in-stock">Còn hàng</button>
                 </div>
-            </main>
+                <button class="btn-clear-filters" id="btnClearFilters" onclick="resetAllCategoryFilters()">Xóa bộ lọc</button>
+            </div>
 
+        </div>
+
+        <!-- Found Count Bar -->
+        <div class="category-summary-bar">
+            <span class="found-count">Tìm thấy <strong id="productFoundCount">0</strong> sản phẩm</span>
+        </div>
+
+        <!-- 5. Product Grid Container (5 columns, rich horizontal layout) -->
+        <div class="kcc-product-grid" id="categoryProductGrid">
+            <!-- Loaded via JS -->
         </div>
     </div>
 
