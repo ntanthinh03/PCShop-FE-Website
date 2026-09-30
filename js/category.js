@@ -169,12 +169,13 @@ function renderCategoryGrid() {
             badgeHtml = `<div class="kcc-card-badge">TIẾT KIỆM ${discountVnd}</div>`;
         }
 
-        const imgUrl = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
+        const imgUrl = formatImageUrl(p.images);
+        const rawImgPath = (p.images && p.images[0]) ? p.images[0].replace(/^\//, '') : '';
 
         card.innerHTML = `
             ${badgeHtml}
             <div class="kcc-card-img-wrap">
-                <img src="${imgUrl}" alt="${p.name}">
+                <img src="${imgUrl}" alt="${p.name}" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/${rawImgPath}';">
             </div>
             <div class="kcc-card-title" title="${p.name}">${p.name}</div>
             <div class="kcc-card-price-row">

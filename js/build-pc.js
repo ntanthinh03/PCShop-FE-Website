@@ -68,13 +68,14 @@ function renderComponentRows() {
 
             const unitPriceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(priceNum);
             const subtotalVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal);
-            const imgUrl = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
+            const imgUrl = formatImageUrl(p.images);
+            const rawImgPath = (p.images && p.images[0]) ? p.images[0].replace(/^\//, '') : '';
 
             row.innerHTML = `
                 <div class="build-row-label">${comp.label}</div>
                 <div class="build-row-selected">
                     <div class="build-item-info">
-                        <img src="${imgUrl}" alt="${p.name}" class="build-item-img">
+                        <img src="${imgUrl}" alt="${p.name}" class="build-item-img" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/${rawImgPath}';">
                         <div class="build-item-details">
                             <div class="build-item-title">${p.name}</div>
                             <div class="build-item-meta">
@@ -525,11 +526,12 @@ function renderModalProducts(products) {
 
         const priceNum = Number(p.price) || 0;
         const priceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(priceNum);
-        const imgUrl = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
+        const imgUrl = formatImageUrl(p.images);
+        const rawImgPath = (p.images && p.images[0]) ? p.images[0].replace(/^\//, '') : '';
 
         item.innerHTML = `
             <div class="modal-prod-left">
-                <img src="${imgUrl}" alt="${p.name}" class="modal-prod-img">
+                <img src="${imgUrl}" alt="${p.name}" class="modal-prod-img" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/${rawImgPath}';">
                 <div class="modal-prod-info">
                     <div class="modal-prod-title">${p.name}</div>
                     <div class="modal-prod-meta">

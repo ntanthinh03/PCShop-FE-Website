@@ -313,11 +313,12 @@ function renderProductCardsToContainer(container, products) {
             specsHtml = `<div>• Hàng chính hãng 100%</div><div>• Bảo hành 24 tháng</div>`;
         }
 
-        const imgUrl = (p.images && p.images[0]) ? p.images[0] : 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
+        const imgUrl = formatImageUrl(p.images);
+        const rawImgPath = (p.images && p.images[0]) ? p.images[0].replace(/^\//, '') : '';
 
         card.innerHTML = `
             <span class="home-card-tag">-13%</span>
-            <img class="home-card-img" src="${imgUrl}" alt="${p.name}">
+            <img class="home-card-img" src="${imgUrl}" alt="${p.name}" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/${rawImgPath}';">
             <h3 class="home-card-title">${p.name}</h3>
             <div class="home-card-specs-box">
                 ${specsHtml}

@@ -1,6 +1,24 @@
 // Module xử lý kết nối REST API Backend (Laravel API v1)
 const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
 
+// Helper format URL hình ảnh sản phẩm tuyệt đối an toàn
+function formatImageUrl(rawImg) {
+    const fallback = 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
+    if (!rawImg) return fallback;
+    let url = Array.isArray(rawImg) ? rawImg[0] : rawImg;
+    if (!url || typeof url !== 'string') return fallback;
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+
+    const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    if (cleanPath.startsWith('images/')) {
+        return cleanPath;
+    }
+    return `images/${cleanPath}`;
+}
+
 const api = {
     // Lấy danh sách danh mục
     getCategories: async () => {
