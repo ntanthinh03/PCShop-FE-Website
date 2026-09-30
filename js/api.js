@@ -47,7 +47,8 @@ const api = {
         try {
             const query = new URLSearchParams(params).toString();
             const response = await fetch(`${API_BASE_URL}/products?${query}`, {
-                headers: DEFAULT_HEADERS
+                headers: DEFAULT_HEADERS,
+                cache: 'no-store'
             });
             return await response.json();
         } catch (error) {
@@ -60,7 +61,8 @@ const api = {
     getProductDetail: async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-                headers: DEFAULT_HEADERS
+                headers: DEFAULT_HEADERS,
+                cache: 'no-store'
             });
             return await response.json();
         } catch (error) {
