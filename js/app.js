@@ -30,7 +30,7 @@ const slides = [
 ];
 
 let currentSlide = 0;
-let cartItems = [];
+let cartItems = JSON.parse(localStorage.getItem('pcshop_cart')) || [];
 let activeTab = 'Tất cả';
 let selectedCategoryFilter = null;
 let liveProducts = [];
@@ -44,7 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     initCartDrawer();
     initCategoryClickListeners();
+    initAuthEvents();
+    initOrdersModal();
+    updateUserHeaderUI();
+    updateCartUI();
 });
+
 
 // Header Category Dropdown Controller
 function initHeaderCategoryDropdown() {
@@ -361,26 +366,189 @@ function initAutoSectionSliders() {
 
 
 
-// Cart Drawer
+// Cart Drawer Controller
 function initCartDrawer() {
     const cartBtn = document.getElementById('cartBtn');
     const closeCart = document.getElementById('closeCart');
     const overlay = document.getElementById('cartOverlay');
     const drawer = document.getElementById('cartDrawer');
 
-    cartBtn.addEventListener('click', () => drawer.classList.add('open'));
-    closeCart.addEventListener('click', () => drawer.classList.remove('open'));
-    overlay.addEventListener('click', () => drawer.classList.remove('open'));
+    if (cartBtn && drawer) {
+        cartBtn.onclick = () => drawer.classList.add('open');
+    }
+    if (closeCart && drawer) {
+        closeCart.onclick = () => drawer.classList.remove('open');
+    }
+    if (overlay && drawer) {
+        overlay.onclick = () => drawer.classList.remove('open');
+    }
 }
 
-function addToCart(name) {
-    cartItems.push(name);
-    updateCartUI();
+function saveCartToStorage() {
+    localStorage.setItem('pcshop_cart', JSON.stringify(cartItems));
 }
 
-function removeFromCart(idx) {
-    cartItems.splice(idx, 1);
+function addToCart(item, qty = 1) {
+    if (!item) return;
+
+    let productObj = null;
+
+    if (typeof item === 'string') {
+        productObj = {
+            id: 'str_' + item.replace(/\s+/g, '_'),
+            name: item,
+            price: 0,
+            image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=200',
+            qty: qty
+        };
+    } else if (typeof item === 'object') {
+        productObj = {
+            id: item.id || ('prod_' + Date.now()),
+            name: item.name || 'Sản phẩm PCShop',
+            price: Number(item.price) || 0,
+            image: formatImageUrl(item.images),
+            qty: qty
+        };
+    }
+
+    if (!productObj) return;
+
+    const existingIndex = cartItems.findIndex(ci => String(ci.id) === String(productObj.id));
+    if (existingIndex > -1) {
+        cartItems[existingIndex].qty = (cartItems[existingIndex].qty || 1) + productObj.qty;
+    } else {
+        cartItems.push(productObj);
+    }
+
+    saveCartToStorage();
     updateCartUI();
+
+    const drawer = document.getElementById('cartDrawer');
+    if (drawer) drawer.classList.add('open');
+}
+
+function updateCartQty(index, delta) {
+    if (index >= 0 && index < cartItems.length) {
+        cartItems[index].qty = (cartItems[index].qty || 1) + delta;
+        if (cartItems[index].qty <= 0) {
+            cartItems.splice(index, 1);
+        }
+        saveCartToStorage();
+        updateCartUI();
+    }
+}
+
+function removeFromCart(index) {
+    if (index >= 0 && index < cartItems.length) {
+        cartItems.splice(index, 1);
+        saveCartToStorage();
+        updateCartUI();
+    }
+}
+
+function updateCartUI() {
+    const totalCount = cartItems.reduce((sum, item) => sum + (item.qty || 1), 0);
+    const totalPrice = cartItems.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.qty || 1)), 0);
+
+    const cartCountElem = document.getElementById('cartCount');
+    if (cartCountElem) cartCountElem.textContent = totalCount;
+
+    const drawerCountElem = document.getElementById('cartDrawerCount');
+    if (drawerCountElem) drawerCountElem.textContent = totalCount;
+
+    const cartBtn = document.getElementById('cartBtn');
+    if (cartBtn) {
+        if (totalCount > 0) cartBtn.classList.add('active');
+        else cartBtn.classList.remove('active');
+    }
+
+    const cartBody = document.getElementById('cartBody');
+    const cartTotalPriceElem = document.getElementById('cartTotalPrice');
+    const btnCheckoutElem = document.getElementById('btnCheckout');
+
+    const formattedTotalPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice);
+    if (cartTotalPriceElem) cartTotalPriceElem.textContent = formattedTotalPrice;
+
+    if (!cartBody) return;
+
+    if (cartItems.length === 0) {
+        cartBody.innerHTML = `
+            <div class="cart-empty">
+                <div class="empty-icon">🛒</div>
+                <p>Giỏ hàng trống</p>
+            </div>
+        `;
+        if (btnCheckoutElem) {
+            btnCheckoutElem.disabled = true;
+            btnCheckoutElem.style.opacity = '0.5';
+            btnCheckoutElem.style.cursor = 'not-allowed';
+            btnCheckoutElem.textContent = 'TIẾN HÀNH THANH TOÁN';
+        }
+    } else {
+        if (btnCheckoutElem) {
+            btnCheckoutElem.disabled = false;
+            btnCheckoutElem.style.opacity = '1';
+            btnCheckoutElem.style.cursor = 'pointer';
+            btnCheckoutElem.textContent = `TIẾN HÀNH THANH TOÁN (${totalCount})`;
+            btnCheckoutElem.onclick = () => checkoutCurrentCart();
+        }
+
+        cartBody.innerHTML = cartItems.map((item, i) => {
+            const itemPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price);
+            const itemSubtotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format((item.price || 0) * (item.qty || 1));
+            const img = item.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=100';
+
+            return `
+                <div class="cart-item-row">
+                    <img src="${img}" alt="${item.name}" class="cart-item-img">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title" title="${item.name}">${item.name}</div>
+                        <div class="cart-item-price-unit">${itemPrice}</div>
+                        <div class="cart-item-qty-row">
+                            <div class="cart-qty-picker">
+                                <button onclick="updateCartQty(${i}, -1)">-</button>
+                                <span>${item.qty || 1}</span>
+                                <button onclick="updateCartQty(${i}, 1)">+</button>
+                            </div>
+                            <span class="cart-item-subtotal">${itemSubtotal}</span>
+                        </div>
+                    </div>
+                    <button class="btn-remove-cart-item" onclick="removeFromCart(${i})" title="Xóa khỏi giỏ hàng">✕</button>
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+function checkoutCurrentCart() {
+    if (cartItems.length === 0) return;
+
+    const totalCount = cartItems.reduce((sum, item) => sum + (item.qty || 1), 0);
+    const totalPrice = cartItems.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.qty || 1)), 0);
+    const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice);
+
+    const itemNames = cartItems.map(it => `${it.qty || 1}x ${it.name}`);
+
+    const newOrder = {
+        id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+        date: new Date().toLocaleDateString('vi-VN'),
+        items: itemNames,
+        total: formattedTotal,
+        status: 'Đang xử lý & Giao hàng'
+    };
+
+    userOrders.unshift(newOrder);
+    localStorage.setItem('pcshop_orders', JSON.stringify(userOrders));
+
+    cartItems = [];
+    saveCartToStorage();
+    updateCartUI();
+
+    const drawer = document.getElementById('cartDrawer');
+    if (drawer) drawer.classList.remove('open');
+
+    alert(`Đặt hàng thành công! Mã đơn hàng của bạn là ${newOrder.id}.`);
+    openOrdersModal();
 }
 
 // Quản lý Đăng nhập & Đơn hàng
@@ -395,28 +563,33 @@ let userOrders = JSON.parse(localStorage.getItem('pcshop_orders')) || [
     }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
-    initAuthEvents();
-    initOrdersModal();
-    updateUserHeaderUI();
-});
-
 function initAuthEvents() {
     const loginBtn = document.getElementById('loginBtn');
     const authModal = document.getElementById('authModal');
     const closeAuth = document.getElementById('closeAuth');
     const authOverlay = document.getElementById('authOverlay');
 
-    if (loginBtn && authModal) {
-        loginBtn.addEventListener('click', () => {
+    if (loginBtn) {
+        loginBtn.onclick = () => {
             if (currentUser) {
                 openOrdersModal();
             } else {
-                authModal.classList.add('open');
+                const modal = document.getElementById('authModal');
+                if (modal) modal.classList.add('open');
             }
-        });
-        closeAuth.addEventListener('click', () => authModal.classList.remove('open'));
-        authOverlay.addEventListener('click', () => authModal.classList.remove('open'));
+        };
+    }
+    if (closeAuth) {
+        closeAuth.onclick = () => {
+            const modal = document.getElementById('authModal');
+            if (modal) modal.classList.remove('open');
+        };
+    }
+    if (authOverlay) {
+        authOverlay.onclick = () => {
+            const modal = document.getElementById('authModal');
+            if (modal) modal.classList.remove('open');
+        };
     }
 }
 
@@ -429,24 +602,24 @@ function switchAuthTab(type) {
     const authTabsHeader = document.getElementById('authTabsHeader');
 
     if (type === 'login') {
-        loginForm.style.display = 'block';
-        registerForm.style.display = 'none';
-        forgotForm.style.display = 'none';
-        authTabsHeader.style.display = 'flex';
-        tabLoginBtn.classList.add('active');
-        tabRegisterBtn.classList.remove('active');
+        if (loginForm) loginForm.style.display = 'block';
+        if (registerForm) registerForm.style.display = 'none';
+        if (forgotForm) forgotForm.style.display = 'none';
+        if (authTabsHeader) authTabsHeader.style.display = 'flex';
+        if (tabLoginBtn) tabLoginBtn.classList.add('active');
+        if (tabRegisterBtn) tabRegisterBtn.classList.remove('active');
     } else if (type === 'register') {
-        loginForm.style.display = 'none';
-        registerForm.style.display = 'block';
-        forgotForm.style.display = 'none';
-        authTabsHeader.style.display = 'flex';
-        tabRegisterBtn.classList.add('active');
-        tabLoginBtn.classList.remove('active');
+        if (loginForm) loginForm.style.display = 'none';
+        if (registerForm) registerForm.style.display = 'block';
+        if (forgotForm) forgotForm.style.display = 'none';
+        if (authTabsHeader) authTabsHeader.style.display = 'flex';
+        if (tabRegisterBtn) tabRegisterBtn.classList.add('active');
+        if (tabLoginBtn) tabLoginBtn.classList.remove('active');
     } else if (type === 'forgot') {
-        loginForm.style.display = 'none';
-        registerForm.style.display = 'none';
-        forgotForm.style.display = 'block';
-        authTabsHeader.style.display = 'none';
+        if (loginForm) loginForm.style.display = 'none';
+        if (registerForm) registerForm.style.display = 'none';
+        if (forgotForm) forgotForm.style.display = 'block';
+        if (authTabsHeader) authTabsHeader.style.display = 'none';
     }
 }
 
@@ -454,14 +627,16 @@ function handleGoogleLogin() {
     currentUser = { email: 'user.google@gmail.com', name: 'Google User' };
     localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
 
-    document.getElementById('authModal').classList.remove('open');
+    const modal = document.getElementById('authModal');
+    if (modal) modal.classList.remove('open');
     updateUserHeaderUI();
     alert('Đăng nhập thành công bằng tài khoản Google!');
 }
 
 async function handleForgotPassword(e) {
     e.preventDefault();
-    const email = document.getElementById('forgotEmail').value;
+    const emailInput = document.getElementById('forgotEmail');
+    const email = emailInput ? emailInput.value : '';
     try {
         const res = await api.forgotPassword(email);
         if (res.status === 'success') {
@@ -486,7 +661,8 @@ async function handleLogin(e) {
             const user = res.data.user || { name: email.split('@')[0], email };
             currentUser = { ...user, token: res.data.token || res.data.access_token };
             localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
-            document.getElementById('authModal').classList.remove('open');
+            const modal = document.getElementById('authModal');
+            if (modal) modal.classList.remove('open');
             updateUserHeaderUI();
             alert(`Đăng nhập thành công! Xin chào ${currentUser.name}.`);
             return;
@@ -495,11 +671,11 @@ async function handleLogin(e) {
         console.warn('Backend Auth API notice:', err);
     }
 
-    // Fallback client session
     const name = email.split('@')[0];
     currentUser = { email, name, token: 'demo_token_' + Date.now() };
     localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
-    document.getElementById('authModal').classList.remove('open');
+    const modal = document.getElementById('authModal');
+    if (modal) modal.classList.remove('open');
     updateUserHeaderUI();
     alert(`Đăng nhập thành công! Xin chào ${name}.`);
 }
@@ -516,7 +692,8 @@ async function handleRegister(e) {
             const user = res.data.user || { name, email };
             currentUser = { ...user, token: res.data.token || res.data.access_token };
             localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
-            document.getElementById('authModal').classList.remove('open');
+            const modal = document.getElementById('authModal');
+            if (modal) modal.classList.remove('open');
             updateUserHeaderUI();
             alert(`Đăng ký tài khoản thành công! Xin chào ${name}.`);
             return;
@@ -527,7 +704,8 @@ async function handleRegister(e) {
 
     currentUser = { email, name, token: 'demo_token_' + Date.now() };
     localStorage.setItem('pcshop_user', JSON.stringify(currentUser));
-    document.getElementById('authModal').classList.remove('open');
+    const modal = document.getElementById('authModal');
+    if (modal) modal.classList.remove('open');
     updateUserHeaderUI();
     alert(`Đăng ký thành công! Xin chào ${name}.`);
 }
@@ -558,7 +736,6 @@ function updateUserHeaderUI() {
     }
 }
 
-
 // Modal Lịch Sử Đơn Hàng Của User
 function initOrdersModal() {
     const ordersModal = document.getElementById('ordersModal');
@@ -566,19 +743,21 @@ function initOrdersModal() {
     const ordersOverlay = document.getElementById('ordersOverlay');
 
     if (closeOrders && ordersModal) {
-        closeOrders.addEventListener('click', () => ordersModal.classList.remove('open'));
-        ordersOverlay.addEventListener('click', () => ordersModal.classList.remove('open'));
+        closeOrders.onclick = () => ordersModal.classList.remove('open');
+        ordersOverlay.onclick = () => ordersModal.classList.remove('open');
     }
 }
 
 function openOrdersModal() {
     const ordersModal = document.getElementById('ordersModal');
+    if (!ordersModal) return;
     renderOrdersList();
     ordersModal.classList.add('open');
 }
 
 function renderOrdersList() {
     const body = document.getElementById('ordersListBody');
+    if (!body) return;
     body.innerHTML = '';
 
     if (userOrders.length === 0) {
@@ -603,65 +782,3 @@ function renderOrdersList() {
         body.appendChild(card);
     });
 }
-
-function updateCartUI() {
-    const count = cartItems.length;
-    document.getElementById('cartCount').textContent = count;
-    document.getElementById('cartDrawerCount').textContent = count;
-
-    const cartBtn = document.getElementById('cartBtn');
-    if (count > 0) cartBtn.classList.add('active');
-    else cartBtn.classList.remove('active');
-
-    const cartBody = document.getElementById('cartBody');
-    const cartFooter = document.getElementById('cartFooter');
-
-    if (count === 0) {
-        cartBody.innerHTML = `
-            <div class="cart-empty">
-                <div class="empty-icon">🛒</div>
-                <p>Giỏ hàng trống</p>
-            </div>
-        `;
-        cartFooter.style.display = 'none';
-    } else {
-        cartFooter.style.display = 'block';
-        cartBody.innerHTML = '';
-        cartItems.forEach((name, i) => {
-            const item = document.createElement('div');
-            item.className = 'cart-item';
-            item.innerHTML = `
-                <p>${name}</p>
-                <button onclick="removeFromCart(${i})">✕</button>
-            `;
-            cartBody.appendChild(item);
-        });
-
-        cartFooter.innerHTML = `
-            <button class="btn-checkout" onclick="checkoutCurrentCart()">Thanh toán ngay (${count} sản phẩm) →</button>
-        `;
-    }
-}
-
-function checkoutCurrentCart() {
-    if (cartItems.length === 0) return;
-
-    const newOrder = {
-        id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-        date: new Date().toLocaleDateString('vi-VN'),
-        items: [...cartItems],
-        total: 'Đã xác nhận đặt hàng',
-        status: 'Đang xử lý & Giao hàng'
-    };
-
-    userOrders.unshift(newOrder);
-    localStorage.setItem('pcshop_orders', JSON.stringify(userOrders));
-
-    cartItems = [];
-    updateCartUI();
-    document.getElementById('cartDrawer').classList.remove('open');
-
-    alert(`Đặt hàng thành công! Mã đơn hàng của bạn là ${newOrder.id}.`);
-    openOrdersModal();
-}
-

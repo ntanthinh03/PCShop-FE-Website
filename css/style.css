@@ -570,32 +570,59 @@ body {
 /* 1. Brand Quick Tabs */
 .brand-quick-tabs {
     display: flex;
-    gap: 12px;
-    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    margin-bottom: 8px;
 }
 
 .brand-tab-btn {
-    padding: 8px 28px;
-    background: #e2e8f0;
+    padding: 6px 16px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.brand-tab-btn:hover {
+    background: #f1f5f9;
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.brand-tab-btn.active {
+    background: #0284c7;
+    border-color: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+
+.sub-tab-btn {
+    padding: 8px 20px;
+    background: #f1f5f9;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     font-size: 13px;
     font-weight: 700;
-    color: #475569;
+    color: #334155;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.brand-tab-btn:hover {
-    background: #cbd5e1;
-    color: #0f172a;
+.sub-tab-btn:hover {
+    background: #e2e8f0;
+    color: #0284c7;
 }
 
-.brand-tab-btn.active {
-    background: #ffffff;
-    border-color: #cbd5e1;
-    color: #0284c7;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+.sub-tab-btn.active {
+    background: #0284c7;
+    border-color: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
 }
 
 /* Filter Row Shared Layout */
@@ -647,7 +674,8 @@ body {
 /* Criteria Dropdowns */
 .criteria-dropdown-list {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 10px 12px;
 }
 
 .criteria-dropdown select {
@@ -1014,25 +1042,39 @@ body {
 
 .social-icons {
     display: flex;
+    align-items: center;
     gap: 10px;
 }
 
 .social-icons a {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: #27272a;
-    color: #fff;
-    display: flex;
+    color: #f4f4f5;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    font-size: 14px;
-    transition: all 0.2s;
+    font-size: 15px;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+.social-icons a i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
 }
 
 .social-icons a:hover {
     background: #0284c7;
+    color: #ffffff;
     transform: translateY(-2px);
 }
 
@@ -2684,6 +2726,1185 @@ body {
     font-weight: 700;
     cursor: pointer;
 }
+
+/* Product Cards & Grid Layout System (5 Columns Grid) */
+.kcc-product-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+@media (max-width: 1200px) {
+    .kcc-product-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+@media (max-width: 900px) {
+    .kcc-product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .kcc-product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.kcc-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.kcc-card:hover {
+    border-color: #0284c7;
+    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.12);
+    transform: translateY(-3px);
+}
+
+.kcc-card-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 6px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.kcc-card-img-wrap {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.kcc-card-img-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.kcc-card:hover .kcc-card-img-wrap img {
+    transform: scale(1.05);
+}
+
+.kcc-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.4;
+    height: 36px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: 8px;
+}
+
+.kcc-card-price-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.kcc-price-main {
+    font-size: 15px;
+    font-weight: 800;
+    color: #e30019;
+}
+
+.kcc-price-sub {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+}
+
+.kcc-price-old {
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.kcc-price-discount {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.kcc-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #64748b;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 8px;
+}
+
+.kcc-stock-status {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   GEARVN PRODUCT DETAIL PAGE SPECIFIC STYLES (BLUE THEME)
+   ========================================================================== */
+
+/* 1. STICKY TOP BAR (SCROLL HEADER) */
+.sticky-product-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.25s ease;
+}
+
+.sticky-product-bar.show {
+    display: flex;
+    animation: stickySlideDown 0.25s ease forwards;
+}
+
+@keyframes stickySlideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.sticky-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 55%;
+}
+
+.sticky-bar-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+
+.sticky-bar-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sticky-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.sticky-bar-price-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.sticky-price-main {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0284c7;
+    line-height: 1.2;
+}
+
+.sticky-price-old {
+    font-size: 12px;
+    color: #9ca3af;
+    text-decoration: line-through;
+}
+
+.btn-sticky-cart {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #0284c7;
+    background: #f0f9ff;
+    color: #0284c7;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-sticky-cart:hover {
+    background: #e0f2fe;
+}
+
+.btn-sticky-buy {
+    padding: 9px 20px;
+    background: #0284c7;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-sticky-buy:hover {
+    background: #0369a1;
+}
+
+.btn-sticky-consult {
+    padding: 9px 18px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #0284c7;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-sticky-consult:hover {
+    border-color: #0284c7;
+    background: #f8fafc;
+}
+
+/* 2. GEARVN HERO GALLERY & ACTION BOX */
+.gearvn-hero-grid {
+    display: grid;
+    grid-template-columns: 480px 1fr;
+    gap: 32px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 28px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.gearvn-gallery-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.gearvn-main-img-box {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow: hidden;
+}
+
+.gearvn-main-img-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+/* Gallery Arrow Buttons */
+.gallery-arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.18);
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 5;
+}
+
+.gallery-arrow-btn:hover {
+    background: rgba(0, 0, 0, 0.4);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.gallery-arrow-btn.prev {
+    left: 12px;
+}
+
+.gallery-arrow-btn.next {
+    right: 12px;
+}
+
+.gallery-counter-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.18);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    backdrop-filter: blur(2px);
+}
+
+/* Gallery Thumbs Row */
+.gearvn-thumbs-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.gearvn-thumb-item {
+    width: 64px;
+    height: 64px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 3px;
+    cursor: pointer;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.gearvn-thumb-item.active,
+.gearvn-thumb-item:hover {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.gearvn-thumb-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* 3. RIGHT PRODUCT DETAILS COLUMN */
+.gearvn-detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.gearvn-product-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.gearvn-specs-link {
+    font-size: 13px;
+    color: #0284c7;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.gearvn-specs-link:hover {
+    text-decoration: underline;
+}
+
+/* Blue GearVN Price Box */
+.gearvn-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 4px;
+    margin-bottom: 6px;
+}
+
+.gearvn-price-main {
+    font-size: 30px;
+    font-weight: 900;
+    color: #0284c7;
+}
+
+.gearvn-price-old {
+    font-size: 15px;
+    color: #9ca3af;
+    text-decoration: line-through;
+}
+
+.gearvn-discount-pill {
+    background: #f0f9ff;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* GearVN Promo Offer Box (Blue Theme) */
+.gearvn-promo-box {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.gearvn-promo-header {
+    font-size: 14px;
+    font-weight: 800;
+    color: #0369a1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gearvn-promo-badge {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.gearvn-promo-content {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.45;
+}
+
+/* Action Row Buttons */
+.gearvn-actions-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.btn-gearvn-buy-now {
+    flex: 1.8;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.btn-gearvn-buy-now:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+}
+
+.btn-gearvn-buy-now .main-txt {
+    font-size: 16px;
+    font-weight: 800;
+    display: block;
+}
+
+.btn-gearvn-buy-now .sub-txt {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.9;
+    margin-top: 2px;
+    display: block;
+}
+
+.btn-gearvn-consult {
+    flex: 1.5;
+    background: #ffffff;
+    border: 1.5px solid #0284c7;
+    color: #0284c7;
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.btn-gearvn-consult:hover {
+    background: #f0f9ff;
+}
+
+.btn-gearvn-consult .main-txt {
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-gearvn-consult .sub-txt {
+    font-size: 10.5px;
+    color: #6b7280;
+    margin-top: 2px;
+    display: block;
+}
+
+.btn-gearvn-cart {
+    width: 52px;
+    height: 52px;
+    border: 1.5px solid #0284c7;
+    background: #f0f9ff;
+    color: #0284c7;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.btn-gearvn-cart:hover {
+    background: #e0f2fe;
+}
+
+/* 4. THÔNG SỐ NỔI BẬT SECTION (GRID 6 SPEC CHIPS) */
+.spec-chips-section {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 28px;
+}
+
+.spec-chips-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.spec-chips-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.spec-chips-link {
+    font-size: 13px;
+    color: #0284c7;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.spec-chips-link:hover {
+    text-decoration: underline;
+}
+
+.spec-chips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .spec-chips-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.spec-chip-card {
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.spec-chip-label {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.spec-chip-val-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.spec-chip-val-row i {
+    color: #0284c7;
+    font-size: 15px;
+    width: 18px;
+}
+
+/* 5. SẢN PHẨM TƯƠNG TỰ (CAROUSEL GRID WITH SPEC BADGES & OFFERS) */
+.related-section-gearvn {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 28px;
+}
+
+.related-header-gearvn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.related-title-gearvn {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.related-nav-arrows {
+    display: flex;
+    gap: 8px;
+}
+
+.related-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.related-nav-btn:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+/* Card Specs Pills inside Related Products */
+.card-spec-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 6px 0 8px;
+}
+
+.spec-pill-badge {
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: 10.5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.card-gift-tag {
+    background: #f0f9ff;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 100%;
+}
+
+/* 6. THÔNG TIN SẢN PHẨM & TABLE OF CONTENTS */
+.product-article-section {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 28px;
+}
+
+.product-article-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 20px;
+}
+
+.toc-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.toc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toc-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.toc-toggle-btn {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.toc-list {
+    margin-top: 14px;
+    padding-left: 20px;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #4b5563;
+}
+
+.toc-list li a {
+    color: #374151;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.toc-list li a:hover,
+.toc-list li.active a {
+    color: #0284c7;
+    font-weight: 600;
+}
+
+.article-body-text {
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: #374151;
+}
+
+.article-body-text h2,
+.article-body-text h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #111827;
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.article-body-text img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 16px 0;
+    display: block;
+}
+
+/* Expandable Article Gradient Button */
+.article-expand-wrap {
+    position: relative;
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+
+.article-expand-wrap.expanded {
+    max-height: none;
+}
+
+.article-overlay-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 12px;
+}
+
+.btn-read-more-article {
+    padding: 8px 24px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-read-more-article:hover {
+    border-color: #0284c7;
+    color: #0284c7;
+    background: #f0f9ff;
+}
+
+/* 7. FLOATING WIDGETS BOTTOM RIGHT */
+.gearvn-floating-widgets {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    z-index: 990;
+}
+
+.floating-support-pill {
+    background: #0284c7;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s;
+}
+
+.floating-support-pill:hover {
+    transform: translateY(-2px);
+    background: #0369a1;
+}
+
+.floating-circle-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #0284c7;
+    font-size: 18px;
+    transition: transform 0.2s;
+}
+
+.floating-circle-btn:hover {
+    transform: translateY(-2px);
+}
+
+.floating-circle-btn.zalo-btn {
+    background: #0084ff;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+/* ==========================================================================
+   CART DRAWER & CART ITEM ROW STYLES
+   ========================================================================== */
+.cart-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    display: none;
+}
+
+.cart-drawer.open {
+    display: block;
+}
+
+.cart-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.cart-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 420px;
+    max-width: 90vw;
+    height: 100%;
+    background: #ffffff;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+    animation: cartDrawerSlide 0.25s ease forwards;
+}
+
+@keyframes cartDrawerSlide {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.cart-header {
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-header h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.close-cart {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.15s;
+}
+
+.close-cart:hover {
+    color: #dc2626;
+}
+
+.cart-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cart-empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.cart-empty .empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.cart-empty p {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Cart Item Row */
+.cart-item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    position: relative;
+}
+
+.cart-item-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    flex-shrink: 0;
+}
+
+.cart-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.cart-item-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cart-item-price-unit {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.cart-item-qty-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.cart-qty-picker {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.cart-qty-picker button {
+    width: 26px;
+    height: 24px;
+    border: none;
+    background: #f1f5f9;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+}
+
+.cart-qty-picker button:hover {
+    background: #e2e8f0;
+}
+
+.cart-qty-picker span {
+    width: 32px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.cart-item-subtotal {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #0284c7;
+}
+
+.btn-remove-cart-item {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.15s;
+    flex-shrink: 0;
+}
+
+.btn-remove-cart-item:hover {
+    color: #dc2626;
+}
+
+.cart-footer {
+    padding: 16px 20px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14.5px;
+    color: #475569;
+}
+
+.cart-total strong {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0284c7;
+}
+
+.btn-checkout {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    transition: all 0.2s;
+}
+
+.btn-checkout:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4);
+}
+
+
+
 
 
 
