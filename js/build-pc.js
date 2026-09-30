@@ -75,7 +75,7 @@ function renderComponentRows() {
                 <div class="build-row-label">${comp.label}</div>
                 <div class="build-row-selected">
                     <div class="build-item-info">
-                        <img src="${imgUrl}" alt="${p.name}" class="build-item-img" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/${rawImgPath}';">
+                        <img src="${imgUrl}" alt="${p.name}" class="build-item-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600';">
                         <div class="build-item-details">
                             <div class="build-item-title">${p.name}</div>
                             <div class="build-item-meta">
@@ -531,7 +531,7 @@ function renderModalProducts(products) {
 
         item.innerHTML = `
             <div class="modal-prod-left">
-                <img src="${imgUrl}" alt="${p.name}" class="modal-prod-img" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/${rawImgPath}';">
+                <img src="${imgUrl}" alt="${p.name}" class="modal-prod-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600';">
                 <div class="modal-prod-info">
                     <div class="modal-prod-title">${p.name}</div>
                     <div class="modal-prod-meta">

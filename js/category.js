@@ -648,7 +648,7 @@ function renderCategoryGrid() {
         card.innerHTML = `
             ${badgeHtml}
             <div class="kcc-card-img-wrap">
-                <img src="${imgUrl}" alt="${p.name}" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/${rawImgPath}';">
+                <img src="${imgUrl}" alt="${p.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600';">
             </div>
             <div class="kcc-card-title" title="${p.name}">${p.name}</div>
             <div class="kcc-card-price-row">

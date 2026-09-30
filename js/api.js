@@ -7,9 +7,9 @@ const DEFAULT_HEADERS = {
     'ngrok-skip-browser-warning': 'true'
 };
 
-// Helper format URL hình ảnh sản phẩm tuyệt đối an toàn
+// Helper format URL hình ảnh sản phẩm tuyệt đối an toàn (Tự động prepend Backend URL cho Ngrok / Vercel)
 function formatImageUrl(rawImg) {
-    const fallback = 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400';
+    const fallback = 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600';
     if (!rawImg) return fallback;
     let url = Array.isArray(rawImg) ? rawImg[0] : rawImg;
     if (!url || typeof url !== 'string') return fallback;
@@ -19,11 +19,14 @@ function formatImageUrl(rawImg) {
     }
 
     const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+    const backendBase = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'http://127.0.0.1:8000/api/v1').replace(/\/api\/v1\/?$/, '');
+
     if (cleanPath.startsWith('images/')) {
-        return cleanPath;
+        return `${backendBase}/${cleanPath}`;
     }
-    return `images/${cleanPath}`;
+    return `${backendBase}/images/${cleanPath}`;
 }
+
 
 const api = {
     // Lấy danh sách danh mục

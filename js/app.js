@@ -323,7 +323,7 @@ function renderProductCardsToContainer(container, products) {
 
         card.innerHTML = `
             <span class="home-card-tag">-13%</span>
-            <img class="home-card-img" src="${imgUrl}" alt="${p.name}" onerror="this.onerror=null; this.src='http://127.0.0.1:8000/${rawImgPath}';">
+            <img class="home-card-img" src="${imgUrl}" alt="${p.name}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600';">
             <h3 class="home-card-title">${p.name}</h3>
             <div class="home-card-specs-box">
                 ${specsHtml}
