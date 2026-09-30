@@ -67,8 +67,16 @@ function initHeaderCategoryDropdown() {
         const isLandingPage = !!document.getElementById('heroSlider') && sidebar && getComputedStyle(sidebar).display !== 'none';
         
         if (isLandingPage) {
-            // Highlight nổi bật thanh sidebar danh mục bên trái
-            sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Cuộn mượt tới vị trí sidebar có tính offset thanh header cố định
+            const headerHeight = document.querySelector('.header')?.offsetHeight || 64;
+            const topBarHeight = document.querySelector('.top-bar')?.offsetHeight || 40;
+            const targetPos = sidebar.getBoundingClientRect().top + window.pageYOffset - (headerHeight + topBarHeight + 10);
+            
+            window.scrollTo({
+                top: Math.max(0, targetPos),
+                behavior: 'smooth'
+            });
+
             sidebar.classList.add('sidebar-highlight');
             setTimeout(() => {
                 sidebar.classList.remove('sidebar-highlight');
