@@ -522,33 +522,9 @@ function updateCartUI() {
 
 function checkoutCurrentCart() {
     if (cartItems.length === 0) return;
-
-    const totalCount = cartItems.reduce((sum, item) => sum + (item.qty || 1), 0);
-    const totalPrice = cartItems.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.qty || 1)), 0);
-    const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice);
-
-    const itemNames = cartItems.map(it => `${it.qty || 1}x ${it.name}`);
-
-    const newOrder = {
-        id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-        date: new Date().toLocaleDateString('vi-VN'),
-        items: itemNames,
-        total: formattedTotal,
-        status: 'Đang xử lý & Giao hàng'
-    };
-
-    userOrders.unshift(newOrder);
-    localStorage.setItem('pcshop_orders', JSON.stringify(userOrders));
-
-    cartItems = [];
-    saveCartToStorage();
-    updateCartUI();
-
     const drawer = document.getElementById('cartDrawer');
     if (drawer) drawer.classList.remove('open');
-
-    alert(`Đặt hàng thành công! Mã đơn hàng của bạn là ${newOrder.id}.`);
-    openOrdersModal();
+    window.location.href = 'checkout.html';
 }
 
 // Quản lý Đăng nhập & Đơn hàng
