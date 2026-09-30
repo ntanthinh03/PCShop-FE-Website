@@ -303,7 +303,7 @@ function renderProductCardsToContainer(container, products) {
         const card = document.createElement('div');
         card.className = 'home-product-card';
         card.onclick = () => {
-            window.location.href = `category.html?slug=${p.category ? (p.category.slug || 'pc-gaming') : 'pc-gaming'}`;
+            window.location.href = `product.html?id=${p.id}`;
         };
 
         const priceVnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price);
