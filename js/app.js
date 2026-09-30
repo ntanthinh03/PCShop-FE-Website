@@ -155,6 +155,13 @@ function setSlide(idx) {
     currentSlide = idx;
     const s = slides[idx];
     const slider = document.getElementById('heroSlider');
+    const overlay = slider.querySelector('.slider-overlay');
+    
+    if (overlay) {
+        overlay.style.animation = 'none';
+        void overlay.offsetHeight; // trigger reflow
+        overlay.style.animation = 'fadeInSlide 0.5s ease-out forwards';
+    }
     
     slider.style.backgroundColor = s.bg;
     document.getElementById('slideTint').style.backgroundColor = s.accent;
