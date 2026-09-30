@@ -1,6 +1,11 @@
 // Module xử lý kết nối REST API Backend (Vercel FE -> ngrok Backend API v1)
 const API_BASE_URL = 'https://phosphate-postbox-sloppy.ngrok-free.dev/api/v1';
 
+// Headers mặc định bỏ qua trang cảnh báo của Ngrok Free Tier khi gọi qua Fetch API
+const DEFAULT_HEADERS = {
+    'Accept': 'application/json',
+    'ngrok-skip-browser-warning': 'true'
+};
 
 // Helper format URL hình ảnh sản phẩm tuyệt đối an toàn
 function formatImageUrl(rawImg) {
@@ -25,7 +30,7 @@ const api = {
     getCategories: async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/categories`, {
-                headers: { 'Accept': 'application/json' }
+                headers: DEFAULT_HEADERS
             });
             return await response.json();
         } catch (error) {
@@ -39,7 +44,7 @@ const api = {
         try {
             const query = new URLSearchParams(params).toString();
             const response = await fetch(`${API_BASE_URL}/products?${query}`, {
-                headers: { 'Accept': 'application/json' }
+                headers: DEFAULT_HEADERS
             });
             return await response.json();
         } catch (error) {
@@ -52,7 +57,7 @@ const api = {
     getProductDetail: async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-                headers: { 'Accept': 'application/json' }
+                headers: DEFAULT_HEADERS
             });
             return await response.json();
         } catch (error) {
@@ -67,8 +72,8 @@ const api = {
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email, password })
             });
@@ -84,8 +89,8 @@ const api = {
             const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ name, email, password })
             });
@@ -101,8 +106,8 @@ const api = {
             const response = await fetch(`${API_BASE_URL}/auth/logout`, {
                 method: 'POST',
                 headers: {
+                    ...DEFAULT_HEADERS,
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`
                 }
             });
@@ -118,8 +123,8 @@ const api = {
             const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email })
             });
@@ -135,7 +140,7 @@ const api = {
         try {
             const response = await fetch(`${API_BASE_URL}/orders/history`, {
                 headers: {
-                    'Accept': 'application/json',
+                    ...DEFAULT_HEADERS,
                     'Authorization': `Bearer ${token}`
                 }
             });
@@ -146,4 +151,3 @@ const api = {
         }
     }
 };
-
