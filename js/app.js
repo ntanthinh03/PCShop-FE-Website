@@ -56,11 +56,26 @@ function initHeaderCategoryDropdown() {
     const btnCategory = document.getElementById('btnHeaderCategory');
     const dropdown = document.getElementById('headerCategoryDropdown');
     const btnIcon = document.getElementById('headerCategoryIcon');
+    const sidebar = document.querySelector('.sidebar');
 
     if (!btnCategory || !dropdown) return;
 
     btnCategory.addEventListener('click', (e) => {
         e.stopPropagation();
+        
+        // Nếu ở landing page (có thanh sidebar danh mục bên trái hiển thị)
+        const isLandingPage = !!document.getElementById('heroSlider') && sidebar && getComputedStyle(sidebar).display !== 'none';
+        
+        if (isLandingPage) {
+            // Highlight nổi bật thanh sidebar danh mục bên trái
+            sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            sidebar.classList.add('sidebar-highlight');
+            setTimeout(() => {
+                sidebar.classList.remove('sidebar-highlight');
+            }, 1800);
+            return;
+        }
+
         const isOpen = dropdown.classList.contains('show');
         if (isOpen) {
             closeCategoryDropdown();

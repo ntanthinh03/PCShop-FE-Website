@@ -355,6 +355,30 @@ body {
     position: sticky;
     top: 0;
     z-index: 50;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.sidebar.sidebar-highlight {
+    animation: sidebarGlowPulse 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sidebarGlowPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.6);
+        outline: 2px solid #0284c7;
+        transform: scale(1.02);
+    }
+    50% {
+        box-shadow: 0 0 25px 5px rgba(2, 132, 199, 0.4);
+        outline: 3px solid #0284c7;
+        transform: scale(1.025);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(2, 132, 199, 0);
+        outline: 2px solid transparent;
+        transform: scale(1);
+    }
 }
 
 .category-menu {
