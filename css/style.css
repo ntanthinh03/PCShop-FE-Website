@@ -4129,14 +4129,62 @@ body {
         border-bottom: 1px solid #e2e8f0;
     }
 
-    /* Product Detail Page Mobile */
-    .product-detail-layout {
+    /* Product Detail Page Mobile (GearVN Grid, Gallery, Action Buttons & Sticky Bar) */
+    .gearvn-hero-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 16px;
     }
-    .product-summary-box {
-        position: static;
+    .gearvn-main-img-box {
+        height: 280px;
+    }
+    .gearvn-product-title {
+        font-size: 17px;
+    }
+    .gearvn-price-main {
+        font-size: 24px;
+    }
+    .gearvn-actions-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .btn-gearvn-buy-now,
+    .btn-gearvn-consult {
+        width: 100%;
+        flex: none;
+    }
+    .btn-gearvn-cart {
+        width: 100%;
+        height: 44px;
+    }
+    .sticky-product-bar {
+        padding: 6px 12px;
+    }
+    .sticky-bar-title {
+        max-width: 140px;
+        font-size: 11px;
+    }
+    .sticky-price-main {
+        font-size: 13px;
+    }
+    .btn-sticky-buy,
+    .btn-sticky-consult {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    .spec-chips-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .spec-chips-header,
+    .related-header-gearvn {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
     }
 }
+
 
 
 
