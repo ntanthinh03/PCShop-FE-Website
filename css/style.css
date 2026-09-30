@@ -3903,6 +3903,242 @@ body {
     box-shadow: 0 6px 18px rgba(2, 132, 199, 0.4);
 }
 
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE STYLES (Fix layout breaking on mobile devices)
+   ========================================================================== */
+
+/* 1. Header & Navigation Adjustments for Mobile (max-width: 992px) */
+@media (max-width: 992px) {
+    .header {
+        padding: 8px 12px;
+    }
+    .container-header {
+        height: auto;
+        flex-wrap: wrap;
+        gap: 8px 10px;
+        padding: 4px 0;
+    }
+    .logo {
+        font-size: 20px;
+    }
+    .btn-category {
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+    .btn-build-pc {
+        padding: 6px 10px;
+    }
+    .build-pc-text span {
+        display: none;
+    }
+    .build-pc-text strong {
+        font-size: 12px;
+    }
+    .btn-login {
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+
+    /* Move Search bar to its own full width row on small screens */
+    .search-wrap {
+        order: 10;
+        flex: 0 0 100%;
+        margin-top: 4px;
+    }
+
+    /* Top Bar scrollable on mobile */
+    .top-bar {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px 12px;
+    }
+    .container-top {
+        gap: 16px;
+        justify-content: flex-start;
+    }
+
+    /* Sidebar hide desktop menu by default or full width */
+    .sidebar {
+        display: none; /* Desktop sidebar hidden on mobile, category button triggers dropdown popup */
+        width: 100%;
+        position: relative;
+    }
+
+    /* Main layout grid adjustments */
+    .main-wrapper {
+        padding: 0 12px;
+    }
+    .main-content {
+        width: 100%;
+    }
+
+    /* Hero section grid adjustment */
+    .hero-landing-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .main-slider {
+        height: 220px;
+    }
+
+    /* Promo Banners Grid */
+    .ad-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .promo-4-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .promo-2-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    /* Footer Mobile */
+    .footer-grid-rich {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+
+    /* Header Category Dropdown full screen on mobile */
+    .header-category-dropdown {
+        width: 100% !important;
+        max-width: 320px;
+        left: 0 !important;
+    }
+    .header-category-dropdown .mega-menu {
+        display: none !important; /* Hide deep mega menu on mobile hover to avoid overflow */
+    }
+}
+
+/* 2. Phone Screen Adjustments (max-width: 640px) */
+@media (max-width: 640px) {
+    .logo {
+        font-size: 18px;
+    }
+
+    .btn-login span, 
+    #headerCategoryText {
+        font-size: 11px;
+    }
+
+    /* Hero Banner Mobile Height */
+    .main-slider {
+        height: 180px;
+    }
+    .slider-overlay h2 {
+        font-size: 16px;
+    }
+    .slider-overlay .slider-badge {
+        font-size: 10px;
+    }
+    .btn-slider-cta {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+
+    /* Home Product Sections */
+    .section-title-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .filter-sub-tabs {
+        overflow-x: auto;
+        width: 100%;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Product Cards in carousel on mobile */
+    .home-product-carousel {
+        gap: 10px;
+    }
+    .home-product-card {
+        min-width: 170px;
+        width: 170px;
+        padding: 10px;
+    }
+
+    /* Category Page Mobile */
+    .container-category-page {
+        padding: 12px 12px 36px;
+    }
+    .category-page-title {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+    .category-banner {
+        flex-direction: column;
+        padding: 18px;
+        text-align: center;
+        gap: 12px;
+    }
+    .banner-img img {
+        height: 120px;
+    }
+    .kcc-product-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+    }
+
+    /* KCC Filter Container */
+    .kcc-filter-container {
+        padding: 12px;
+    }
+    .filter-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .filter-row-label {
+        min-width: auto;
+    }
+
+    /* Footer Mobile Columns */
+    .footer-grid-rich {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .footer-bottom-rich {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+
+    /* Modal Mobile Adjustments */
+    .auth-box {
+        width: 92%;
+        padding: 24px 16px;
+    }
+    .orders-box {
+        width: 95%;
+        max-height: 90vh;
+    }
+    .pc-builder-modal {
+        width: 98%;
+        max-height: 95vh;
+    }
+    .modal-body-layout {
+        flex-direction: column;
+    }
+    .modal-sidebar-filter {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* Product Detail Page Mobile */
+    .product-detail-layout {
+        grid-template-columns: 1fr;
+    }
+    .product-summary-box {
+        position: static;
+    }
+}
+
+
 
 
 
