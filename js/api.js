@@ -1,5 +1,6 @@
-// Module xử lý kết nối REST API Backend (Laravel API v1)
-const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
+// Module xử lý kết nối REST API Backend (Vercel FE -> ngrok Backend API v1)
+const API_BASE_URL = 'https://phosphate-postbox-sloppy.ngrok-free.dev/api/v1';
+
 
 // Helper format URL hình ảnh sản phẩm tuyệt đối an toàn
 function formatImageUrl(rawImg) {
