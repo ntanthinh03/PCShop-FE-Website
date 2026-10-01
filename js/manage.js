@@ -2,6 +2,19 @@
 let currentStaffUser = JSON.parse(localStorage.getItem('pcshop_manage_user')) || null;
 let allManageOrders = JSON.parse(localStorage.getItem('pcshop_orders')) || [
     {
+        id: 'ORD-2026-4574',
+        date: '30/09/2026',
+        items: ['1x Laptop Gaming Logitech ROG Strix V43 (RTX 4070 8GB)'],
+        total: '29.099.000đ',
+        rawTotal: 29099000,
+        customerName: 'Nguyễn Tấn Thịnh',
+        customerPhone: '0932262415',
+        customerEmail: 'ntanthinh03@gmail.com',
+        shippingAddress: '456 Lê Văn Sỹ, Quận 3, TP.HCM',
+        paymentMethod: 'COD',
+        status: 'Chờ xử lý'
+    },
+    {
         id: 'ORD-2026-9812',
         date: '28/09/2026',
         items: ['1x PC Gaming PCShop Ultra V198 (RTX 5070 Ti 16GB)', '1x Bàn Phím Cơ Gaming Akko Mod007'],
@@ -13,19 +26,6 @@ let allManageOrders = JSON.parse(localStorage.getItem('pcshop_orders')) || [
         shippingAddress: '123 Nguyễn Thị Minh Khai, Quận 1, TP.HCM',
         paymentMethod: 'PAYOS',
         status: 'Đã giao thành công'
-    },
-    {
-        id: 'ORD-2026-4574',
-        date: '30/09/2026',
-        items: ['1x Laptop Gaming Logitech ROG Strix V43 (RTX 4070 8GB)'],
-        total: '29.099.000đ',
-        rawTotal: 29099000,
-        customerName: 'Trần Thị Bình',
-        customerPhone: '0988777666',
-        customerEmail: 'binh.tran@gmail.com',
-        shippingAddress: '456 Lê Văn Sỹ, Quận 3, TP.HCM',
-        paymentMethod: 'COD',
-        status: 'Chờ xử lý'
     }
 ];
 

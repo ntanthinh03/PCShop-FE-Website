@@ -222,12 +222,20 @@ function applyVoucher() {
 function submitFinalOrder() {
     if (cartItems.length === 0) return;
 
-    const name = document.getElementById('custName')?.value || 'Khách hàng';
-    const phone = document.getElementById('custPhone')?.value || '';
-    const email = document.getElementById('custEmail')?.value || '';
-    const address = document.getElementById('custAddress')?.value || 'Nhận tại Showroom';
+    const name = (document.getElementById('custName')?.value || '').trim();
+    const phone = (document.getElementById('custPhone')?.value || '').trim();
+    const email = (document.getElementById('custEmail')?.value || '').trim();
+    const address = (document.getElementById('custAddress')?.value || '').trim() || 'Nhận tại Showroom';
     const selectedPay = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cod';
-    const note = document.getElementById('orderNote')?.value || '';
+    const note = (document.getElementById('orderNote')?.value || '').trim();
+
+    if (!name || !phone || !email) {
+        alert('Vui lòng điền đầy đủ Họ và tên, Số điện thoại và Email giao hàng trước khi đặt hàng!');
+        switchCheckoutStep(2);
+        const form = document.getElementById('shippingForm');
+        if (form) form.reportValidity();
+        return;
+    }
 
     const totalPrice = cartItems.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.qty || 1)), 0);
     const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice);
