@@ -48,6 +48,42 @@ let allWarranties = JSON.parse(localStorage.getItem('pcshop_warranties')) || [
     }
 ];
 
+let defaultStaffAccounts = [
+    { id: 1, name: 'Quản Trị Viên (Admin)', username: 'admin', email: 'admin@pcshop.vn', password: 'admin123', role: 'ADMIN', ordersCount: 15, revenue: 145000000, status: 'Hoạt động' },
+    { id: 2, name: 'Nhân Viên Kỹ Thuật (Staff 1)', username: 'staff', email: 'staff@pcshop.vn', password: 'staff123', role: 'STAFF', ordersCount: 8, revenue: 68500000, status: 'Hoạt động' }
+];
+
+let defaultSystemLogs = [
+    { id: 'LOG-1001', time: '01/10/2026 10:15', user: 'admin', category: 'sales', objectId: 'ORD-2026-4574', detail: 'Tiếp nhận đơn hàng mới từ khách Nguyễn Tấn Thịnh (29.099.000đ)' },
+    { id: 'LOG-1002', time: '01/10/2026 09:30', user: 'staff', category: 'warranty', objectId: 'BH-2026-001', detail: 'Tạo phiếu tiếp nhận bảo hành VGA ASUS RTX 4070 SUPER' },
+    { id: 'LOG-1003', time: '30/09/2026 16:20', user: 'admin', category: 'stock', objectId: 'PROD-001', detail: 'Cập nhật tồn kho sản phẩm PC Gaming PCShop Ultra V198 (+5 cái)' }
+];
+
+function getStaffAccounts() {
+    return JSON.parse(localStorage.getItem('pcshop_staff_accounts')) || defaultStaffAccounts;
+}
+
+function getSystemLogs() {
+    return JSON.parse(localStorage.getItem('pcshop_system_logs')) || defaultSystemLogs;
+}
+
+function addSystemLog(category, user, objectId, detail) {
+    let logs = getSystemLogs();
+    const newLog = {
+        id: 'LOG-' + Date.now(),
+        time: new Date().toLocaleString('vi-VN'),
+        user: user || (currentStaffUser ? currentStaffUser.name : 'System'),
+        category,
+        objectId,
+        detail
+    };
+    logs.unshift(newLog);
+    localStorage.setItem('pcshop_system_logs', JSON.stringify(logs));
+    if (currentActiveTab === 'logs') {
+        renderLogsTable();
+    }
+}
+
 let revenueChartInstance = null;
 let categoryPieChartInstance = null;
 let currentActiveTab = 'overview';
@@ -77,14 +113,19 @@ function handleManageLogin(e) {
     const passVal = document.getElementById('managePassword')?.value.trim();
     const alertBox = document.getElementById('manageLoginAlert');
 
+    const staffList = getStaffAccounts();
+    const foundUser = staffList.find(s => (s.username.toLowerCase() === userVal?.toLowerCase() || s.email.toLowerCase() === userVal?.toLowerCase()) && s.password === passVal);
+
     if ((userVal === 'admin' || userVal === 'admin@pcshop.vn') && passVal === 'admin123') {
-        currentStaffUser = { name: 'Quản Trị Viên (Admin)', username: 'admin', role: 'ADMIN' };
+        currentStaffUser = { name: 'Quản Trị Viên (Admin)', username: 'admin', role: 'ADMIN', email: 'admin@pcshop.vn' };
     } else if ((userVal === 'staff' || userVal === 'staff@pcshop.vn') && passVal === 'staff123') {
-        currentStaffUser = { name: 'Nhân Viên Kỹ Thuật', username: 'staff', role: 'STAFF' };
+        currentStaffUser = { name: 'Nhân Viên Kỹ Thuật', username: 'staff', role: 'STAFF', email: 'staff@pcshop.vn' };
+    } else if (foundUser) {
+        currentStaffUser = { name: foundUser.name, username: foundUser.username, role: foundUser.role, email: foundUser.email };
     } else {
         if (alertBox) {
             alertBox.style.display = 'block';
-            alertBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Tên đăng nhập hoặc mật khẩu quản trị không chính xác!';
+            alertBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Tên đăng nhập hoặc mật khẩu không chính xác!';
         }
         return;
     }
@@ -106,12 +147,17 @@ function updateManageUserInfo() {
     const avatar = document.getElementById('sidebarAvatar');
     const name = document.getElementById('sidebarUserName');
     const role = document.getElementById('sidebarUserRole');
+    const navStaff = document.getElementById('navStaffManage');
 
     if (avatar) avatar.textContent = currentStaffUser.name.charAt(0).toUpperCase();
     if (name) name.textContent = currentStaffUser.name;
     if (role) {
         role.textContent = currentStaffUser.role;
         role.className = currentStaffUser.role === 'ADMIN' ? 'role-pill-admin' : 'role-pill-staff';
+    }
+
+    if (navStaff) {
+        navStaff.style.display = currentStaffUser.role === 'ADMIN' ? 'flex' : 'none';
     }
 }
 
@@ -120,12 +166,17 @@ function switchManageTab(tabId, btnElem) {
     document.querySelectorAll('.manage-tab-page').forEach(page => page.classList.remove('active'));
     document.querySelectorAll('.sidebar-menu .nav-item').forEach(btn => btn.classList.remove('active'));
 
-    const activePage = document.getElementById(
-        tabId === 'overview' ? 'tabOverview' :
-        tabId === 'orders' ? 'tabOrders' :
-        tabId === 'products' ? 'tabProducts' :
-        tabId === 'customers' ? 'tabCustomers' : 'tabWarranties'
-    );
+    const tabMap = {
+        'overview': 'tabOverview',
+        'orders': 'tabOrders',
+        'products': 'tabProducts',
+        'customers': 'tabCustomers',
+        'warranties': 'tabWarranties',
+        'staff': 'tabStaff',
+        'logs': 'tabLogs'
+    };
+
+    const activePage = document.getElementById(tabMap[tabId] || 'tabOverview');
 
     if (activePage) activePage.classList.add('active');
     if (btnElem) btnElem.classList.add('active');
@@ -144,9 +195,14 @@ function switchManageTab(tabId, btnElem) {
                 tabId === 'orders' ? 'Tìm mã đơn hàng, tên khách, số điện thoại...' :
                 tabId === 'products' ? 'Tìm tên sản phẩm, mã SKU, hãng sản xuất...' :
                 tabId === 'customers' ? 'Tìm tên khách hàng, email, số điện thoại...' :
-                'Tìm mã phiếu BH, tên khách, sản phẩm...';
+                tabId === 'warranties' ? 'Tìm mã phiếu BH, tên khách, sản phẩm...' :
+                tabId === 'staff' ? 'Tìm tên nhân viên, username, email...' :
+                'Tìm nội dung nhật ký, người thực hiện...';
         }
     }
+
+    if (tabId === 'staff') renderStaffTable();
+    if (tabId === 'logs') renderLogsTable();
 }
 
 async function initDashboardData() {
@@ -158,6 +214,8 @@ async function initDashboardData() {
     renderProductsTable(null, 1);
     renderCustomersTable();
     renderWarrantiesTable();
+    renderStaffTable();
+    renderLogsTable();
     renderCharts();
     renderNotifications();
 }
@@ -225,7 +283,7 @@ function renderFullOrdersTable() {
     renderFullOrdersTableFiltered(allManageOrders);
 }
 
-function updateOrderStatus(orderId, newStatus) {
+async function updateOrderStatus(orderId, newStatus) {
     const index = allManageOrders.findIndex(o => o.id === orderId);
     if (index === -1) return;
 
@@ -241,11 +299,24 @@ function updateOrderStatus(orderId, newStatus) {
     ord.status = newStatus;
     ord.updatedAt = new Date().toLocaleString('vi-VN');
 
+    // DB Sync via API if available
+    try {
+        if (typeof api !== 'undefined' && api.updateOrderStatus) {
+            await api.updateOrderStatus(orderId, { status: newStatus });
+        }
+    } catch (e) {
+        console.log('API sync skipped, saving locally');
+    }
+
     // Nút HỦY đơn: Cộng trả số lượng sản phẩm về kho
     if (newStatus === 'Đã hủy' && oldStatus !== 'Đã hủy') {
         restoreStockFromOrder(ord);
+        addSystemLog('stock', currentStaffUser ? currentStaffUser.name : 'Hệ Thống', orderId, `Hoàn sản phẩm từ đơn hủy #${orderId} về lại tồn kho`);
         alert(`Đã chuyển đơn hàng #${orderId} sang ĐÃ HỦY và hoàn số lượng sản phẩm về kho thành công!`);
     }
+
+    // Thêm nhật ký bán hàng
+    addSystemLog('sales', currentStaffUser ? currentStaffUser.name : 'Staff', orderId, `Cập nhật trạng thái đơn từ "${oldStatus}" ➔ "${newStatus}"`);
 
     localStorage.setItem('pcshop_orders', JSON.stringify(allManageOrders));
     renderKPIs();
@@ -808,6 +879,8 @@ function saveWarranty(e) {
     allWarranties.unshift(newWar);
     localStorage.setItem('pcshop_warranties', JSON.stringify(allWarranties));
 
+    addSystemLog('warranty', currentStaffUser ? currentStaffUser.name : 'Kỹ thuật viên', newWar.id, `Tạo phiếu tiếp nhận bảo hành mới: ${product} (${customer})`);
+
     renderWarrantiesTable();
     renderKPIs();
     renderNotifications();
@@ -819,25 +892,259 @@ function changeWarrantyStatus(warrantyId) {
     const war = allWarranties.find(w => w.id === warrantyId);
     if (!war) return;
 
-    const statuses = [
-        'Đang kiểm tra kỹ thuật',
-        'Đang gửi hãng bảo hành',
-        'Đã sửa chữa thành công',
-        'Đã đổi mới cho khách',
-        'Từ chối bảo hành'
-    ];
+    document.getElementById('editWarId').value = war.id;
+    document.getElementById('editWarTitle').value = `${war.id} - ${war.product} (${war.customer})`;
+    document.getElementById('editWarStatusSelect').value = war.status;
+    document.getElementById('editWarTechNote').value = war.techNote || '';
 
-    const input = prompt(
-        `Cập nhật trạng thái cho phiếu #${warrantyId}:\n1. Đang kiểm tra kỹ thuật\n2. Đang gửi hãng bảo hành\n3. Đã sửa chữa thành công\n4. Đã đổi mới cho khách\n5. Từ chối bảo hành\n\nNhập số tương ứng (1-5):`,
-        "1"
-    );
+    const modal = document.getElementById('updateWarrantyStatusModal');
+    if (modal) modal.classList.add('open');
+}
 
-    if (input && Number(input) >= 1 && Number(input) <= 5) {
-        war.status = statuses[Number(input) - 1];
+function saveWarrantyStatusChange(e) {
+    e.preventDefault();
+    const warId = document.getElementById('editWarId').value;
+    const newStatus = document.getElementById('editWarStatusSelect').value;
+    const note = document.getElementById('editWarTechNote').value.trim();
+
+    const war = allWarranties.find(w => w.id === warId);
+    if (war) {
+        const oldStatus = war.status;
+        war.status = newStatus;
+        if (note) war.techNote = note;
         localStorage.setItem('pcshop_warranties', JSON.stringify(allWarranties));
+
+        addSystemLog('warranty', currentStaffUser ? currentStaffUser.name : 'Kỹ thuật viên', warId, `Đổi trạng thái BH từ "${oldStatus}" ➔ "${newStatus}". Ghi chú: ${note || 'Không có'}`);
+
         renderWarrantiesTable();
         renderKPIs();
         renderNotifications();
+        closeManageModal('updateWarrantyStatusModal');
+        alert(`Đã cập nhật trạng thái phiếu bảo hành #${warId} thành công!`);
+    }
+}
+
+function filterProductsByCategory() {
+    const select = document.getElementById('manageProdCategoryFilter');
+    if (!select) return;
+    const cat = select.value;
+    const allProds = getCombinedProducts();
+
+    if (cat === 'all') {
+        renderProductsTable(allProds, 1);
+    } else {
+        const filtered = allProds.filter(p => {
+            const prodCat = p.category_name || (p.category ? (p.category.name || p.category) : '');
+            return prodCat.toLowerCase() === cat.toLowerCase();
+        });
+        renderProductsTable(filtered, 1);
+    }
+}
+
+function renderStaffTable(staffToRender = null) {
+    const tbody = document.getElementById('manageStaffTbody');
+    if (!tbody) return;
+
+    const list = staffToRender || getStaffAccounts();
+
+    tbody.innerHTML = list.map(s => {
+        const staffOrders = allManageOrders.filter(o => o.staffUsername === s.username || (s.username === 'admin' && o.status !== 'Đã hủy'));
+        let staffRev = s.revenue || 0;
+        if (s.username === 'admin') {
+            staffRev = 0;
+            allManageOrders.forEach(o => { if (o.status !== 'Đã hủy') staffRev += (o.rawTotal || parsePriceString(o.total)); });
+        }
+
+        return `
+            <tr>
+                <td>#STAF-${s.id}</td>
+                <td><strong>${s.name}</strong></td>
+                <td><code>${s.username}</code></td>
+                <td><span class="${s.role === 'ADMIN' ? 'role-pill-admin' : 'role-pill-staff'}">${s.role}</span></td>
+                <td>${s.email}</td>
+                <td><span class="badge-count">${staffOrders.length || s.ordersCount || 0} đơn</span></td>
+                <td><strong style="color:#0284c7;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(staffRev)}</strong></td>
+                <td><span class="status-pill status-success">${s.status || 'Hoạt động'}</span></td>
+                <td>
+                    <button class="btn-table-action" onclick="alert('Đã cập nhật thông tin tài khoản nhân viên ${s.name}')" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function openCreateStaffModal() {
+    const form = document.getElementById('createStaffForm');
+    if (form) form.reset();
+    const modal = document.getElementById('createStaffModal');
+    if (modal) modal.classList.add('open');
+}
+
+function saveNewStaff(e) {
+    e.preventDefault();
+    const name = document.getElementById('staffFullName').value.trim();
+    const username = document.getElementById('staffUsername').value.trim();
+    const email = document.getElementById('staffEmail').value.trim();
+    const password = document.getElementById('staffPassword').value.trim();
+    const role = document.getElementById('staffRole').value;
+
+    let list = getStaffAccounts();
+    if (list.some(s => s.username.toLowerCase() === username.toLowerCase())) {
+        alert('Tên đăng nhập này đã tồn tại! Vui lòng chọn tên đăng nhập khác.');
+        return;
+    }
+
+    const newStaff = {
+        id: list.length + 1,
+        name,
+        username,
+        email,
+        password,
+        role,
+        ordersCount: 0,
+        revenue: 0,
+        status: 'Hoạt động'
+    };
+
+    list.push(newStaff);
+    localStorage.setItem('pcshop_staff_accounts', JSON.stringify(list));
+
+    addSystemLog('system', currentStaffUser ? currentStaffUser.name : 'Admin', username, `Tạo tài khoản nhân viên mới: ${name} (${role})`);
+
+    renderStaffTable();
+    closeManageModal('createStaffModal');
+    alert(`Đã tạo tài khoản nhân viên ${name} (${username}) thành công!`);
+}
+
+let activeLogSubtab = 'sales';
+
+function switchLogSubtab(subtab, btnElem) {
+    activeLogSubtab = subtab;
+    document.querySelectorAll('#tabLogs .warranty-subtab').forEach(b => b.classList.remove('active'));
+    if (btnElem) btnElem.classList.add('active');
+    renderLogsTable();
+}
+
+function renderLogsTable(logsToRender = null) {
+    const tbody = document.getElementById('manageLogsTbody');
+    if (!tbody) return;
+
+    let logs = logsToRender || getSystemLogs();
+
+    if (!logsToRender) {
+        logs = logs.filter(l => l.category === activeLogSubtab);
+    }
+
+    if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px; color: #94a3b8;">Chưa có nhật ký hoạt động nào ở mục này.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = logs.map(l => `
+        <tr>
+            <td><small style="color:#64748b;"><i class="fa-regular fa-clock"></i> ${l.time}</small></td>
+            <td><strong>${l.user}</strong></td>
+            <td><span class="pay-badge-mini">${l.category === 'sales' ? 'Bán Hàng' : l.category === 'warranty' ? 'Bảo Hành' : l.category === 'stock' ? 'Tồn Kho / Giá' : 'Hệ Thống'}</span></td>
+            <td><code>${l.objectId || 'N/A'}</code></td>
+            <td style="font-size:12.5px; color:#334155;">${l.detail}</td>
+        </tr>
+    `).join('');
+}
+
+function renderOverviewWithFilter() {
+    const timeFilter = document.getElementById('overviewTimeRangeFilter')?.value || '7days';
+    let filteredOrders = allManageOrders;
+
+    if (timeFilter !== 'all') {
+        const now = new Date();
+        filteredOrders = allManageOrders.filter(ord => {
+            if (!ord.date) return true;
+            const parts = ord.date.split(/[\/\-]/);
+            if (parts.length < 3) return true;
+            let ordDate;
+            if (parts[0].length === 4) {
+                ordDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            } else {
+                ordDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            }
+            const diffTime = Math.abs(now - ordDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (timeFilter === 'today') return diffDays <= 1;
+            if (timeFilter === '7days' || timeFilter === 'this_week') return diffDays <= 7;
+            if (timeFilter === 'this_month') return diffDays <= 30;
+            if (timeFilter === 'this_year') return diffDays <= 365;
+            return true;
+        });
+    }
+
+    let totalRev = 0;
+    filteredOrders.forEach(ord => {
+        if (ord.status !== 'Đã hủy') {
+            totalRev += (ord.rawTotal || parsePriceString(ord.total));
+        }
+    });
+
+    const kpiRev = document.getElementById('kpiRevenue');
+    const kpiTotalOrd = document.getElementById('kpiTotalOrders');
+    if (kpiRev) kpiRev.textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalRev);
+    if (kpiTotalOrd) kpiTotalOrd.textContent = filteredOrders.length;
+
+    renderChartsWithData(filteredOrders);
+}
+
+function renderChartsWithData(ordersToChart = allManageOrders) {
+    const ctxRevenue = document.getElementById('revenueChart');
+    const ctxPie = document.getElementById('categoryPieChart');
+
+    let catCounts = { 'PC Gaming': 0, 'Laptop Gaming': 0, 'VGA & CPU': 0, 'Màn Hình': 0, 'Phụ Kiện Gear': 0 };
+    ordersToChart.forEach(ord => {
+        if (ord.status !== 'Đã hủy') {
+            const itemsStr = Array.isArray(ord.items) ? ord.items.join(' ') : (ord.items || '');
+            if (itemsStr.includes('PC') || itemsStr.includes('Ultra')) catCounts['PC Gaming'] += 1;
+            else if (itemsStr.includes('Laptop') || itemsStr.includes('ROG')) catCounts['Laptop Gaming'] += 1;
+            else if (itemsStr.includes('VGA') || itemsStr.includes('RTX') || itemsStr.includes('CPU')) catCounts['VGA & CPU'] += 1;
+            else if (itemsStr.includes('Màn') || itemsStr.includes('Monitor')) catCounts['Màn Hình'] += 1;
+            else catCounts['Phụ Kiện Gear'] += 1;
+        }
+    });
+
+    if (ctxRevenue) {
+        if (revenueChartInstance) revenueChartInstance.destroy();
+        revenueChartInstance = new Chart(ctxRevenue, {
+            type: 'bar',
+            data: {
+                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                datasets: [{
+                    label: 'Doanh Thu (VNĐ)',
+                    data: [15000000, 22000000, 18000000, 28000000, 35000000, 42000000, 48500000],
+                    backgroundColor: '#0284c7',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    if (ctxPie) {
+        if (categoryPieChartInstance) categoryPieChartInstance.destroy();
+        categoryPieChartInstance = new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(catCounts),
+                datasets: [{
+                    data: Object.values(catCounts).map(v => v > 0 ? v : 1),
+                    backgroundColor: ['#0284c7', '#2563eb', '#38bdf8', '#60a5fa', '#93c5fd']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
     }
 }
 
@@ -1040,49 +1347,33 @@ function filterManageGlobal(query) {
             );
             renderWarrantiesTable(filtered);
         }
+    } else if (currentActiveTab === 'staff') {
+        const staffList = getStaffAccounts();
+        if (!q) {
+            renderStaffTable(staffList);
+        } else {
+            const filtered = staffList.filter(s =>
+                s.name.toLowerCase().includes(q) ||
+                s.username.toLowerCase().includes(q) ||
+                s.email.toLowerCase().includes(q)
+            );
+            renderStaffTable(filtered);
+        }
+    } else if (currentActiveTab === 'logs') {
+        const logs = getSystemLogs();
+        if (!q) {
+            renderLogsTable(logs);
+        } else {
+            const filtered = logs.filter(l =>
+                l.detail.toLowerCase().includes(q) ||
+                l.user.toLowerCase().includes(q) ||
+                (l.objectId || '').toLowerCase().includes(q)
+            );
+            renderLogsTable(filtered);
+        }
     }
 }
 
 function renderCharts() {
-    const ctxRevenue = document.getElementById('revenueChart');
-    const ctxPie = document.getElementById('categoryPieChart');
-
-    if (ctxRevenue) {
-        if (revenueChartInstance) revenueChartInstance.destroy();
-        revenueChartInstance = new Chart(ctxRevenue, {
-            type: 'bar',
-            data: {
-                labels: ['Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Hôm nay'],
-                datasets: [{
-                    label: 'Doanh thu (VNĐ)',
-                    data: [15000000, 28000000, 45000000, 32000000, 22000000, 38000000, 46248000],
-                    backgroundColor: '#0284c7',
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
-        });
-    }
-
-    if (ctxPie) {
-        if (categoryPieChartInstance) categoryPieChartInstance.destroy();
-        categoryPieChartInstance = new Chart(ctxPie, {
-            type: 'doughnut',
-            data: {
-                labels: ['PC Gaming', 'Laptop Gaming', 'VGA & CPU', 'Màn Hình', 'Phụ Kiện Gear'],
-                datasets: [{
-                    data: [40, 25, 20, 10, 5],
-                    backgroundColor: ['#0284c7', '#2563eb', '#38bdf8', '#60a5fa', '#93c5fd']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
+    renderChartsWithData(allManageOrders);
 }

@@ -88,6 +88,12 @@
                 <button class="nav-item" onclick="switchManageTab('warranties', this)">
                     <i class="fa-solid fa-shield-halved"></i> Đơn Bảo Hành
                 </button>
+                <button class="nav-item" id="navStaffManage" onclick="switchManageTab('staff', this)">
+                    <i class="fa-solid fa-user-gear"></i> Quản Lý Nhân Viên
+                </button>
+                <button class="nav-item" onclick="switchManageTab('logs', this)">
+                    <i class="fa-solid fa-list-check"></i> Nhật Ký Hệ Thống
+                </button>
             </nav>
 
             <div class="sidebar-footer">
@@ -130,7 +136,14 @@
             <section class="manage-tab-page active" id="tabOverview">
                 <div class="page-title-row">
                     <h2>Báo Cáo Doanh Thu & Hoạt Động</h2>
-                    <span class="date-tag" id="currentDateTag">Hôm nay</span>
+                    <select id="overviewTimeRangeFilter" onchange="renderOverviewWithFilter()" class="select-time-range">
+                        <option value="7days">7 Ngày gần nhất</option>
+                        <option value="today">Hôm nay</option>
+                        <option value="this_week">Tuần này</option>
+                        <option value="this_month">Tháng này</option>
+                        <option value="this_year">Năm nay</option>
+                        <option value="all">Tất cả thời gian</option>
+                    </select>
                 </div>
 
                 <!-- 4 KPI CARDS -->
@@ -258,9 +271,22 @@
             <section class="manage-tab-page" id="tabProducts">
                 <div class="page-title-row">
                     <h2>Quản Lý Kho Sản Phẩm</h2>
-                    <button class="btn-primary-blue" onclick="openAddProductModal()">
-                        <i class="fa-solid fa-plus"></i> Thêm Sản Phẩm Mới
-                    </button>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <select id="manageProdCategoryFilter" onchange="filterProductsByCategory()" class="select-time-range">
+                            <option value="all">Tất cả danh mục sản phẩm</option>
+                            <option value="PC Gaming">PC Gaming</option>
+                            <option value="Laptop Gaming">Laptop Gaming</option>
+                            <option value="Laptop Văn Phòng">Laptop Văn Phòng</option>
+                            <option value="VGA - Card Màn Hình">VGA - Card Màn Hình</option>
+                            <option value="CPU - Bộ Vi Xử Lý">CPU - Bộ Vi Xử Lý</option>
+                            <option value="Màn Hình Gaming">Màn Hình Gaming</option>
+                            <option value="Bàn Phím & Chuột">Bàn Phím & Chuột</option>
+                            <option value="Linh Kiện Khác">Linh Kiện Khác</option>
+                        </select>
+                        <button class="btn-action-gradient" onclick="openAddProductModal()">
+                            <i class="fa-solid fa-plus"></i> Thêm Sản Phẩm Mới
+                        </button>
+                    </div>
                 </div>
 
                 <div class="table-card-box">
@@ -317,7 +343,7 @@
             <section class="manage-tab-page" id="tabWarranties">
                 <div class="page-title-row">
                     <h2>Quản Lý Tiếp Nhận Bảo Hành</h2>
-                    <button class="btn-primary-blue" onclick="openAddWarrantyModal()">
+                    <button class="btn-action-gradient" onclick="openAddWarrantyModal()">
                         <i class="fa-solid fa-plus"></i> Tạo Phiếu Bảo Hành
                     </button>
                 </div>
@@ -346,6 +372,66 @@
                                 </tr>
                             </thead>
                             <tbody id="manageWarrantiesTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: QUẢN LÝ NHÂN VIÊN (CHỈ ADMIN) -->
+            <section class="manage-tab-page" id="tabStaff">
+                <div class="page-title-row">
+                    <h2>Quản Lý Nhân Viên & Doanh Số</h2>
+                    <button class="btn-action-gradient" onclick="openCreateStaffModal()">
+                        <i class="fa-solid fa-user-plus"></i> Tạo Tài Khoản Staff
+                    </button>
+                </div>
+                <div class="table-card-box">
+                    <div class="table-responsive">
+                        <table class="manage-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Họ & Tên Nhân Viên</th>
+                                    <th>Username</th>
+                                    <th>Chức Vụ</th>
+                                    <th>Email</th>
+                                    <th>Số Đơn Đã Xử Lý</th>
+                                    <th>Doanh Số Chốt Được</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageStaffTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 7: NHẬT KÝ HỆ THỐNG & LOGS -->
+            <section class="manage-tab-page" id="tabLogs">
+                <div class="page-title-row">
+                    <h2>Nhật Ký Hoạt Động & System Logs</h2>
+                </div>
+
+                <div class="warranty-subtabs-bar">
+                    <button class="warranty-subtab active" onclick="switchLogSubtab('sales', this)"><i class="fa-solid fa-cart-shopping"></i> 1. Lịch Sử Bán Hàng</button>
+                    <button class="warranty-subtab" onclick="switchLogSubtab('warranty', this)"><i class="fa-solid fa-shield-halved"></i> 2. Nhật Ký Bảo Hành</button>
+                    <button class="warranty-subtab" onclick="switchLogSubtab('stock', this)"><i class="fa-solid fa-boxes-stacked"></i> 3. Điều Chỉnh Kho & Giá</button>
+                </div>
+
+                <div class="table-card-box">
+                    <div class="table-responsive">
+                        <table class="manage-table">
+                            <thead>
+                                <tr>
+                                    <th>Thời Gian</th>
+                                    <th>Người Thực Hiện</th>
+                                    <th>Loại Nhật Ký</th>
+                                    <th>Đối Tượng / Mã Đơn</th>
+                                    <th>Chi Tiết Thay Đổi & Nhật Ký</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageLogsTbody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -480,6 +566,84 @@
                 <button class="close-modal-btn" onclick="closeManageModal('warrantyDetailModal')">✕</button>
             </div>
             <div class="modal-body" id="warrantyDetailModalBody"></div>
+        </div>
+    </div>
+
+    <!-- MODAL CẬP NHẬT TRẠNG THÁI BẢO HÀNH (THAY THẾ PROMPT) -->
+    <div class="manage-modal-overlay" id="updateWarrantyStatusModal">
+        <div class="manage-modal-box" style="width: 520px; max-width: 90%;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-wrench"></i> Cập Nhật Trạng Thái Bảo Hành</h3>
+                <button class="close-modal-btn" onclick="closeManageModal('updateWarrantyStatusModal')">✕</button>
+            </div>
+            <form id="updateWarrantyStatusForm" onsubmit="saveWarrantyStatusChange(event)">
+                <input type="hidden" id="editWarId">
+                <div class="modal-form-grid">
+                    <div class="modal-form-group full-width">
+                        <label>Phiếu Bảo Hành & Sản Phẩm</label>
+                        <input type="text" id="editWarTitle" readonly style="background:#e2e8f0; font-weight:700;">
+                    </div>
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-list-check"></i> Trạng Thái Mới (*)</label>
+                        <select id="editWarStatusSelect">
+                            <option value="Đang kiểm tra kỹ thuật">1. Đang kiểm tra kỹ thuật</option>
+                            <option value="Đang gửi hãng bảo hành">2. Đang gửi hãng bảo hành</option>
+                            <option value="Đã sửa chữa thành công">3. Đã sửa chữa thành công</option>
+                            <option value="Đã đổi mới cho khách">4. Đã đổi mới cho khách</option>
+                            <option value="Từ chối bảo hành">5. Từ chối bảo hành</option>
+                        </select>
+                    </div>
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-comment-dots"></i> Ghi Chú Kỹ Thuật / Kết Quả Xử Lý</label>
+                        <textarea id="editWarTechNote" rows="3" placeholder="Nhập kết quả kiểm tra hoặc ghi chú..." style="padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeManageModal('updateWarrantyStatusModal')">Hủy bỏ</button>
+                    <button type="submit" class="btn-primary-blue"><i class="fa-solid fa-floppy-disk"></i> Lưu & Đồng Bộ Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TẠO TÀI KHOẢN NHÂN VIÊN MỚI -->
+    <div class="manage-modal-overlay" id="createStaffModal">
+        <div class="manage-modal-box" style="width: 520px; max-width: 90%;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus"></i> Tạo Tài Khoản Nhân Viên Mới</h3>
+                <button class="close-modal-btn" onclick="closeManageModal('createStaffModal')">✕</button>
+            </div>
+            <form id="createStaffForm" onsubmit="saveNewStaff(event)">
+                <div class="modal-form-grid">
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-user"></i> Họ và Tên Nhân Viên (*)</label>
+                        <input type="text" id="staffFullName" placeholder="VD: Nguyễn Văn Kỹ Thuật" required>
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-id-badge"></i> Tên Đăng Nhập (*)</label>
+                        <input type="text" id="staffUsername" placeholder="staff2" required>
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-envelope"></i> Email (*)</label>
+                        <input type="email" id="staffEmail" placeholder="staff2@pcshop.vn" required>
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-key"></i> Mật Khẩu (*)</label>
+                        <input type="password" id="staffPassword" placeholder="Nhập mật khẩu..." required>
+                    </div>
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-user-shield"></i> Vai Trò / Quyền Hạn</label>
+                        <select id="staffRole">
+                            <option value="STAFF">Staff (Nhân viên kỹ thuật/bán hàng)</option>
+                            <option value="ADMIN">Administrator (Quản trị viên hệ thống)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeManageModal('createStaffModal')">Hủy bỏ</button>
+                    <button type="submit" class="btn-primary-blue"><i class="fa-solid fa-plus"></i> Tạo Tài Khoản</button>
+                </div>
+            </form>
         </div>
     </div>
 

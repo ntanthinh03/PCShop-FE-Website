@@ -6041,6 +6041,82 @@ body {
     font-size: 13px;
 }
 
+/* Beautiful Action Gradient Buttons */
+.btn-action-gradient {
+    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-action-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+    background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
+}
+
+/* Overview Time Range Filter */
+.select-time-range {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.select-time-range:focus,
+.select-time-range:hover {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+/* Low Stock Badge Alert */
+.stock-badge.stock-low {
+    background: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fca5a5;
+    font-weight: 700;
+}
+
+/* System Log Badges */
+.log-badge {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.log-badge-sales {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
+.log-badge-warranty {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.log-badge-stock {
+    background: #f1f5f9;
+    color: #475569;
+}
+
 
 
 
