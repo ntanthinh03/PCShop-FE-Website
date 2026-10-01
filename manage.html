@@ -102,17 +102,26 @@
             
             <!-- TOPBAR -->
             <header class="manage-topbar">
-                <div class="topbar-search">
+                <div class="topbar-search" id="manageSearchWrap" style="visibility: hidden;">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Tìm đơn hàng, khách hàng, mã máy..." id="globalManageSearch" onkeyup="filterManageGlobal(this.value)">
+                    <input type="text" placeholder="Tìm kiếm dữ liệu..." id="globalManageSearch" onkeyup="filterManageGlobal(this.value)">
                 </div>
                 <div class="topbar-right">
                     <div class="store-live-link">
                         <a href="index.html" target="_blank"><i class="fa-solid fa-store"></i> Xem Cửa Hàng Live</a>
                     </div>
-                    <div class="noti-bell">
-                        <i class="fa-solid fa-bell"></i>
-                        <span class="noti-dot"></span>
+                    <div class="noti-bell-wrap">
+                        <div class="noti-bell-btn" id="notiBellBtn" onclick="toggleNotificationDropdown(event)" title="Thông báo hệ thống">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="noti-badge" id="notiBadgeCount" style="display: none;">0</span>
+                        </div>
+                        <div class="noti-dropdown" id="notiDropdown">
+                            <div class="noti-dropdown-header">
+                                <h4><i class="fa-solid fa-bell"></i> Thông Báo Hệ Thống</h4>
+                                <span id="notiHeaderCount">0 tin mới</span>
+                            </div>
+                            <div class="noti-dropdown-body" id="notiDropdownBody"></div>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -271,6 +280,10 @@
                             <tbody id="manageProductsTbody"></tbody>
                         </table>
                     </div>
+                    <div class="manage-pagination-bar" id="manageProductsPagination">
+                        <span class="pagination-info" id="prodPaginationInfo">Đang tải danh sách...</span>
+                        <div class="pagination-controls" id="prodPaginationBtns"></div>
+                    </div>
                 </div>
             </section>
 
@@ -291,6 +304,7 @@
                                     <th>Địa Chỉ</th>
                                     <th>Số Đơn Đã Mua</th>
                                     <th>Tổng Chi Tiêu</th>
+                                    <th>Lịch Sử Mua hàng</th>
                                 </tr>
                             </thead>
                             <tbody id="manageCustomersTbody"></tbody>
@@ -307,6 +321,16 @@
                         <i class="fa-solid fa-plus"></i> Tạo Phiếu Bảo Hành
                     </button>
                 </div>
+
+                <!-- SUB-TABS BẢO HÀNH -->
+                <div class="warranty-subtabs-bar">
+                    <button class="warranty-subtab active" onclick="switchWarrantySubtab('all', this)">Tất Cả (<span id="warCountAll">0</span>)</button>
+                    <button class="warranty-subtab" onclick="switchWarrantySubtab('pending', this)">1. Tiếp Nhận / Kiểm Tra (<span id="warCountPending">0</span>)</button>
+                    <button class="warranty-subtab" onclick="switchWarrantySubtab('sending', this)">2. Đang Gửi Hãng (<span id="warCountSending">0</span>)</button>
+                    <button class="warranty-subtab" onclick="switchWarrantySubtab('repairing', this)">3. Đang Sửa Chữa (<span id="warCountRepairing">0</span>)</button>
+                    <button class="warranty-subtab" onclick="switchWarrantySubtab('completed', this)">4. Đã Hoàn Thành (<span id="warCountCompleted">0</span>)</button>
+                </div>
+
                 <div class="table-card-box">
                     <div class="table-responsive">
                         <table class="manage-table">
@@ -434,6 +458,28 @@
                     <button type="submit" class="btn-primary-blue"><i class="fa-solid fa-plus"></i> Tạo Phiếu Bảo Hành</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL XEM LỊCH SỬ MUA HÀNG CỦA KHÁCH HÀNG -->
+    <div class="manage-modal-overlay" id="customerDetailModal">
+        <div class="manage-modal-box" style="width: 720px; max-width: 92%;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-id-card"></i> Lịch Sử Mua Hàng Khách Hàng <span id="custModalName"></span></h3>
+                <button class="close-modal-btn" onclick="closeManageModal('customerDetailModal')">✕</button>
+            </div>
+            <div class="modal-body" id="customerDetailModalBody"></div>
+        </div>
+    </div>
+
+    <!-- MODAL CHI TIẾT ĐƠN BẢO HÀNH -->
+    <div class="manage-modal-overlay" id="warrantyDetailModal">
+        <div class="manage-modal-box" style="width: 680px; max-width: 92%;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-shield-halved"></i> Chi Tiết Phiếu Bảo Hành <span id="warModalId">#BH</span></h3>
+                <button class="close-modal-btn" onclick="closeManageModal('warrantyDetailModal')">✕</button>
+            </div>
+            <div class="modal-body" id="warrantyDetailModalBody"></div>
         </div>
     </div>
 

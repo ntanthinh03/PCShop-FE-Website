@@ -25,7 +25,7 @@ let allManageOrders = JSON.parse(localStorage.getItem('pcshop_orders')) || [
         customerEmail: 'an.nguyen@gmail.com',
         shippingAddress: '123 Nguyễn Thị Minh Khai, Quận 1, TP.HCM',
         paymentMethod: 'PAYOS',
-        status: 'Đã giao thành công'
+        status: 'Đang giao hàng'
     }
 ];
 
@@ -50,6 +50,7 @@ let allWarranties = JSON.parse(localStorage.getItem('pcshop_warranties')) || [
 
 let revenueChartInstance = null;
 let categoryPieChartInstance = null;
+let currentActiveTab = 'overview';
 
 document.addEventListener('DOMContentLoaded', () => {
     checkManageAuth();
@@ -115,19 +116,36 @@ function updateManageUserInfo() {
 }
 
 function switchManageTab(tabId, btnElem) {
+    currentActiveTab = tabId;
     document.querySelectorAll('.manage-tab-page').forEach(page => page.classList.remove('active'));
     document.querySelectorAll('.sidebar-menu .nav-item').forEach(btn => btn.classList.remove('active'));
 
-    const activePage = document.getElementById(tabId === 'overview' ? 'tabOverview' :
+    const activePage = document.getElementById(
+        tabId === 'overview' ? 'tabOverview' :
         tabId === 'orders' ? 'tabOrders' :
         tabId === 'products' ? 'tabProducts' :
-        tabId === 'customers' ? 'tabCustomers' : 'tabWarranties');
+        tabId === 'customers' ? 'tabCustomers' : 'tabWarranties'
+    );
 
     if (activePage) activePage.classList.add('active');
     if (btnElem) btnElem.classList.add('active');
 
+    const searchWrap = document.getElementById('manageSearchWrap');
+    const searchInput = document.getElementById('globalManageSearch');
+
     if (tabId === 'overview') {
+        if (searchWrap) searchWrap.style.visibility = 'hidden';
         renderCharts();
+    } else {
+        if (searchWrap) searchWrap.style.visibility = 'visible';
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.placeholder = 
+                tabId === 'orders' ? 'Tìm mã đơn hàng, tên khách, số điện thoại...' :
+                tabId === 'products' ? 'Tìm tên sản phẩm, mã SKU, hãng sản xuất...' :
+                tabId === 'customers' ? 'Tìm tên khách hàng, email, số điện thoại...' :
+                'Tìm mã phiếu BH, tên khách, sản phẩm...';
+        }
     }
 }
 
@@ -137,10 +155,11 @@ async function initDashboardData() {
     renderKPIs();
     renderOverviewOrdersTable();
     renderFullOrdersTable();
-    renderProductsTable();
+    renderProductsTable(null, 1);
     renderCustomersTable();
     renderWarrantiesTable();
     renderCharts();
+    renderNotifications();
 }
 
 function syncLatestOrders() {
@@ -203,44 +222,69 @@ function renderOverviewOrdersTable() {
 }
 
 function renderFullOrdersTable() {
-    const tbody = document.getElementById('fullOrdersTbody');
-    if (!tbody) return;
-
-    tbody.innerHTML = allManageOrders.map(ord => `
-        <tr>
-            <td><strong>#${ord.id}</strong></td>
-            <td>${ord.date || '30/09/2026'}</td>
-            <td>
-                <strong>${ord.customerName || 'Khách chưa đăng nhập'}</strong><br>
-                <small style="color:#64748b;">📞 ${ord.customerPhone || 'N/A'} | ✉️ ${ord.customerEmail || 'N/A'}</small>
-            </td>
-            <td style="max-width:200px; font-size:12px;">${ord.shippingAddress || 'Nhận tại Showroom'}</td>
-            <td style="max-width:220px; font-size:12.5px;">${Array.isArray(ord.items) ? ord.items.join('<br>') : ord.items}</td>
-            <td><strong style="color: #0284c7; font-size:14px;">${ord.total}</strong></td>
-            <td><span class="pay-badge-mini">${ord.paymentMethod || 'COD'}</span></td>
-            <td><span class="status-pill ${getStatusClass(ord.status)}">${ord.status}</span></td>
-            <td>
-                <select class="status-select-action" onchange="updateOrderStatus('${ord.id}', this.value)">
-                    <option value="Chờ xử lý" ${ord.status === 'Chờ xử lý' ? 'selected' : ''}>Chờ xử lý</option>
-                    <option value="Đã xác nhận" ${ord.status === 'Đã xác nhận' ? 'selected' : ''}>Đã xác nhận</option>
-                    <option value="Đang giao hàng" ${ord.status === 'Đang giao hàng' ? 'selected' : ''}>Đang giao hàng</option>
-                    <option value="Đã giao thành công" ${ord.status === 'Đã giao thành công' ? 'selected' : ''}>Đã giao thành công</option>
-                    <option value="Đã hủy" ${ord.status === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
-                </select>
-            </td>
-        </tr>
-    `).join('');
+    renderFullOrdersTableFiltered(allManageOrders);
 }
 
 function updateOrderStatus(orderId, newStatus) {
     const index = allManageOrders.findIndex(o => o.id === orderId);
-    if (index > -1) {
-        allManageOrders[index].status = newStatus;
-        localStorage.setItem('pcshop_orders', JSON.stringify(allManageOrders));
-        renderKPIs();
-        renderOverviewOrdersTable();
+    if (index === -1) return;
+
+    const ord = allManageOrders[index];
+    const oldStatus = ord.status;
+
+    if (oldStatus === 'Đã giao thành công' && newStatus !== 'Đã giao thành công') {
+        alert('Đơn hàng đã giao thành công không thể quay lại trạng thái cũ!');
         renderFullOrdersTable();
+        return;
     }
+
+    ord.status = newStatus;
+    ord.updatedAt = new Date().toLocaleString('vi-VN');
+
+    // Nút HỦY đơn: Cộng trả số lượng sản phẩm về kho
+    if (newStatus === 'Đã hủy' && oldStatus !== 'Đã hủy') {
+        restoreStockFromOrder(ord);
+        alert(`Đã chuyển đơn hàng #${orderId} sang ĐÃ HỦY và hoàn số lượng sản phẩm về kho thành công!`);
+    }
+
+    localStorage.setItem('pcshop_orders', JSON.stringify(allManageOrders));
+    renderKPIs();
+    renderOverviewOrdersTable();
+    renderFullOrdersTable();
+    renderProductsTable(null, currentProdPage);
+    renderNotifications();
+}
+
+function restoreStockFromOrder(ord) {
+    if (!ord || !ord.items) return;
+    let customProds = JSON.parse(localStorage.getItem('pcshop_custom_products')) || [];
+    const allProds = getCombinedProducts();
+
+    const itemsList = Array.isArray(ord.items) ? ord.items : [ord.items];
+    itemsList.forEach(itemStr => {
+        const match = itemStr.match(/^(\d+)x\s+(.+)$/);
+        let qty = 1;
+        let name = itemStr;
+        if (match) {
+            qty = parseInt(match[1]) || 1;
+            name = match[2].trim();
+        }
+
+        const prod = allProds.find(p => p.name.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(p.name.toLowerCase()));
+        if (prod) {
+            const customIdx = customProds.findIndex(cp => String(cp.id) === String(prod.id));
+            if (customIdx > -1) {
+                customProds[customIdx].stock_quantity = (customProds[customIdx].stock_quantity || 10) + qty;
+            } else {
+                customProds.push({
+                    ...prod,
+                    stock_quantity: (prod.stock_quantity || 10) + qty
+                });
+            }
+        }
+    });
+
+    localStorage.setItem('pcshop_custom_products', JSON.stringify(customProds));
 }
 
 function getStatusClass(status) {
@@ -272,13 +316,14 @@ function viewOrderDetail(orderId) {
                     <p><strong>Số điện thoại:</strong> ${ord.customerPhone || 'N/A'}</p>
                     <p><strong>Email:</strong> ${ord.customerEmail || 'N/A'}</p>
                     <p><strong>Địa chỉ giao:</strong> ${ord.shippingAddress || 'N/A'}</p>
-                    <p><strong>Ghi chú:</strong> ${ord.note || 'Không có ghi chú'}</p>
+                    <p><strong>Ngày tạo đơn:</strong> ${ord.date || 'N/A'}</p>
                 </div>
                 <div class="info-block">
                     <h4><i class="fa-solid fa-credit-card"></i> THANH TOÁN & TRẠNG THÁI</h4>
                     <p><strong>Hình thức:</strong> ${ord.paymentMethod || 'COD'}</p>
                     <p><strong>Tổng tiền:</strong> <strong style="color:#0284c7; font-size:16px;">${ord.total}</strong></p>
                     <p><strong>Trạng thái hiện tại:</strong> <span class="status-pill ${getStatusClass(ord.status)}">${ord.status}</span></p>
+                    ${ord.updatedAt ? `<p><small style="color:#64748b;">Lần cuối cập nhật: ${ord.updatedAt}</small></p>` : ''}
                 </div>
             </div>
 
@@ -301,37 +346,10 @@ function closeManageModal(modalId) {
     if (modal) modal.classList.remove('open');
 }
 
-function renderProductsTable(productsToRender = null) {
-    const tbody = document.getElementById('manageProductsTbody');
-    if (!tbody) return;
-
-    const list = productsToRender || getCombinedProducts();
-
-    if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #94a3b8;">Không tìm thấy sản phẩm nào trong hệ thống kho.</td></tr>`;
-        return;
-    }
-
-    tbody.innerHTML = list.map(p => `
-        <tr>
-            <td><img src="${formatImageUrl(p.images)}" style="width:45px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #e2e8f0;"></td>
-            <td><code>${p.sku || ('SKU-' + p.id)}</code></td>
-            <td><strong>${p.name}</strong><br><small style="color:#64748b;">${p.category_name || (p.category ? (p.category.name || p.category) : 'Linh Kiện')}</small></td>
-            <td><span class="brand-pill">${p.brand || 'PCShop'}</span></td>
-            <td><strong style="color:#0284c7;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price)}</strong></td>
-            <td><span class="stock-badge">${p.stock_quantity ?? p.stock ?? 10}</span></td>
-            <td>
-                <button class="btn-table-action" onclick="editProduct('${p.id}')" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button class="btn-table-action btn-danger" onclick="deleteProduct('${p.id}')" title="Xóa"><i class="fa-solid fa-trash-can"></i></button>
-            </td>
-        </tr>
-    `).join('');
-}
-
 let manageProductsList = [
     { id: 'PROD-001', name: 'PC Gaming PCShop Ultra V198 (RTX 5070 Ti 16GB)', sku: 'SKU-ULTRA-01', brand: 'PCShop', category_name: 'PC Gaming', price: 17149000, stock_quantity: 12, images: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=500' },
     { id: 'PROD-002', name: 'Laptop Gaming Logitech ROG Strix V43 (RTX 4070 8GB)', sku: 'SKU-ROG-V43', brand: 'ASUS', category_name: 'Laptop Gaming', price: 29099000, stock_quantity: 8, images: 'https://images.unsplash.com/photo-1593640408182-31c228f8a9e3?w=500' },
-    { id: 'PROD-003', name: 'VGA ASUS ROG Strix GeForce RTX 4070 SUPER 12GB', sku: 'SKU-VGA-4070S', brand: 'ASUS', category_name: 'VGA - Card Màn Hình', price: 18990000, stock_quantity: 15, images: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=500' },
+    { id: 'PROD-003', name: 'VGA ASUS ROG Strix GeForce RTX 4070 SUPER 12GB', sku: 'SKU-VGA-4070S', brand: 'ASUS', category_name: 'VGA - Card Màn Hình', price: 18990000, stock_quantity: 3, images: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=500' },
     { id: 'PROD-004', name: 'Màn hình Gaming LG UltraGear 27 inch 240Hz IPS', sku: 'SKU-MON-LG27', brand: 'LG', category_name: 'Màn Hình Gaming', price: 6890000, stock_quantity: 20, images: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500' },
     { id: 'PROD-005', name: 'Bàn Phím Cơ Gaming Akko Mod007 v3 VIA RGB', sku: 'SKU-GEAR-AKKO', brand: 'Akko', category_name: 'Bàn Phím & Chuột', price: 2490000, stock_quantity: 35, images: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500' }
 ];
@@ -367,6 +385,84 @@ function getCombinedProducts() {
 
     const deletedIds = JSON.parse(localStorage.getItem('pcshop_deleted_product_ids')) || [];
     return baseList.filter(p => !deletedIds.includes(String(p.id)) && !deletedIds.includes(Number(p.id)));
+}
+
+let currentProdPage = 1;
+const PRODS_PER_PAGE = 10;
+
+function renderProductsTable(productsToRender = null, page = 1) {
+    const tbody = document.getElementById('manageProductsTbody');
+    if (!tbody) return;
+
+    currentProdPage = page;
+    const fullList = productsToRender || getCombinedProducts();
+    const totalProds = fullList.length;
+
+    if (totalProds === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #94a3b8;">Không tìm thấy sản phẩm nào trong hệ thống kho.</td></tr>`;
+        renderPaginationControls(0, 0, 0, fullList);
+        return;
+    }
+
+    const totalPages = Math.ceil(totalProds / PRODS_PER_PAGE);
+    if (currentProdPage > totalPages) currentProdPage = totalPages;
+
+    const startIndex = (currentProdPage - 1) * PRODS_PER_PAGE;
+    const endIndex = Math.min(startIndex + PRODS_PER_PAGE, totalProds);
+    const paginatedList = fullList.slice(startIndex, endIndex);
+
+    tbody.innerHTML = paginatedList.map(p => `
+        <tr>
+            <td><img src="${formatImageUrl(p.images)}" style="width:45px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #e2e8f0;"></td>
+            <td><code>${p.sku || ('SKU-' + p.id)}</code></td>
+            <td><strong>${p.name}</strong><br><small style="color:#64748b;">${p.category_name || (p.category ? (p.category.name || p.category) : 'Linh Kiện')}</small></td>
+            <td><span class="brand-pill">${p.brand || 'PCShop'}</span></td>
+            <td><strong style="color:#0284c7;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price)}</strong></td>
+            <td><span class="stock-badge ${ (p.stock_quantity ?? p.stock ?? 10) <= 5 ? 'stock-low' : ''}">${p.stock_quantity ?? p.stock ?? 10}</span></td>
+            <td>
+                <button class="btn-table-action" onclick="editProduct('${p.id}')" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="btn-table-action btn-danger" onclick="deleteProduct('${p.id}')" title="Xóa"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+        </tr>
+    `).join('');
+
+    renderPaginationControls(startIndex + 1, endIndex, totalProds, fullList);
+}
+
+function renderPaginationControls(start, end, total, fullList) {
+    const info = document.getElementById('prodPaginationInfo');
+    const btns = document.getElementById('prodPaginationBtns');
+    if (!info || !btns) return;
+
+    if (total === 0) {
+        info.textContent = 'Chưa có sản phẩm';
+        btns.innerHTML = '';
+        return;
+    }
+
+    info.textContent = `Hiển thị ${start}-${end} trên tổng ${total} sản phẩm`;
+    const totalPages = Math.ceil(total / PRODS_PER_PAGE);
+
+    let btnsHtml = `
+        <button class="page-btn" ${currentProdPage === 1 ? 'disabled' : ''} onclick="changeProdPage(${currentProdPage - 1})">‹ Trước</button>
+    `;
+
+    for (let i = 1; i <= totalPages; i++) {
+        btnsHtml += `
+            <button class="page-btn ${i === currentProdPage ? 'active' : ''}" onclick="changeProdPage(${i})">${i}</button>
+        `;
+    }
+
+    btnsHtml += `
+        <button class="page-btn" ${currentProdPage === totalPages ? 'disabled' : ''} onclick="changeProdPage(${currentProdPage + 1})">Sau ›</button>
+    `;
+
+    btns.innerHTML = btnsHtml;
+    window._lastProdListForPagination = fullList;
+}
+
+function changeProdPage(page) {
+    renderProductsTable(window._lastProdListForPagination, page);
 }
 
 function openAddProductModal() {
@@ -443,7 +539,8 @@ function saveProduct(e) {
     }
 
     localStorage.setItem('pcshop_custom_products', JSON.stringify(customProds));
-    renderProductsTable();
+    renderProductsTable(null, currentProdPage);
+    renderNotifications();
     closeManageModal('productModal');
     alert(editId ? 'Đã cập nhật sản phẩm thành công!' : 'Đã thêm sản phẩm mới vào kho thành công!');
 }
@@ -461,49 +558,228 @@ function deleteProduct(productId) {
     customProds = customProds.filter(p => String(p.id) !== String(productId));
     localStorage.setItem('pcshop_custom_products', JSON.stringify(customProds));
 
-    renderProductsTable();
+    renderProductsTable(null, currentProdPage);
+    renderNotifications();
 }
 
-function renderCustomersTable() {
+function renderCustomersTable(customersToRender = null) {
     const tbody = document.getElementById('manageCustomersTbody');
     if (!tbody) return;
 
-    const customers = [
-        { id: 1, name: 'Nguyễn Văn An', email: 'an.nguyen@gmail.com', phone: '0901234567', address: 'Quận 1, TP.HCM', count: 3, spend: '46.248.000đ' },
-        { id: 2, name: 'Trần Thị Bình', email: 'binh.tran@gmail.com', phone: '0988777666', address: 'Quận 3, TP.HCM', count: 1, spend: '29.099.000đ' },
-        { id: 3, name: 'Lê Hoàng Nam', email: 'nam.le@gmail.com', phone: '0933221100', address: 'Quận 7, TP.HCM', count: 2, spend: '18.500.000đ' },
+    const defaultCustomers = [
+        { id: 1, name: 'Nguyễn Tấn Thịnh', email: 'ntanthinh03@gmail.com', phone: '0932262415', address: '456 Lê Văn Sỹ, Quận 3, TP.HCM' },
+        { id: 2, name: 'Nguyễn Văn An', email: 'an.nguyen@gmail.com', phone: '0901234567', address: '123 Nguyễn Thị Minh Khai, Quận 1, TP.HCM' },
+        { id: 3, name: 'Trần Thị Bình', email: 'binh.tran@gmail.com', phone: '0988777666', address: '789 Phạm Văn Đồng, TP. Thủ Đức, TP.HCM' },
+        { id: 4, name: 'Lê Hoàng Nam', email: 'nam.le@gmail.com', phone: '0933221100', address: '12 Nguyễn Thị Thập, Quận 7, TP.HCM' }
     ];
 
-    tbody.innerHTML = customers.map(c => `
-        <tr>
-            <td>#CUST-${c.id}</td>
-            <td><strong>${c.name}</strong></td>
-            <td>${c.email}</td>
-            <td>${c.phone}</td>
-            <td>${c.address}</td>
-            <td><span class="badge-count">${c.count} đơn</span></td>
-            <td><strong style="color:#0284c7;">${c.spend}</strong></td>
-        </tr>
-    `).join('');
+    const list = customersToRender || defaultCustomers;
+
+    tbody.innerHTML = list.map(c => {
+        const custOrders = allManageOrders.filter(o => 
+            (o.customerEmail && o.customerEmail.toLowerCase() === c.email.toLowerCase()) ||
+            (o.customerName && o.customerName.toLowerCase() === c.name.toLowerCase()) ||
+            (o.customerPhone && o.customerPhone === c.phone)
+        );
+
+        let totalSpend = 0;
+        custOrders.forEach(o => {
+            if (o.status !== 'Đã hủy') {
+                totalSpend += (o.rawTotal || parsePriceString(o.total));
+            }
+        });
+
+        const formattedSpend = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalSpend);
+
+        return `
+            <tr>
+                <td>#CUST-${c.id}</td>
+                <td><strong><a class="customer-name-link" onclick="viewCustomerHistory('${c.email}', '${c.name}', '${c.phone}')">${c.name}</a></strong></td>
+                <td>${c.email}</td>
+                <td>${c.phone}</td>
+                <td>${c.address}</td>
+                <td><span class="badge-count">${custOrders.length} đơn</span></td>
+                <td><strong style="color:#0284c7;">${formattedSpend}</strong></td>
+                <td>
+                    <button class="btn-table-action" onclick="viewCustomerHistory('${c.email}', '${c.name}', '${c.phone}')">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Xem lịch sử mua
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
-function renderWarrantiesTable() {
+function viewCustomerHistory(email, name, phone) {
+    const modal = document.getElementById('customerDetailModal');
+    const body = document.getElementById('customerDetailModalBody');
+    const nameElem = document.getElementById('custModalName');
+
+    if (nameElem) nameElem.textContent = `- ${name}`;
+
+    const custOrders = allManageOrders.filter(o => 
+        (o.customerEmail && o.customerEmail.toLowerCase() === (email||'').toLowerCase()) ||
+        (o.customerName && o.customerName.toLowerCase() === (name||'').toLowerCase()) ||
+        (o.customerPhone && o.customerPhone === phone)
+    );
+
+    if (body) {
+        if (custOrders.length === 0) {
+            body.innerHTML = `
+                <div style="padding: 30px; text-align: center; color: #94a3b8;">
+                    <i class="fa-solid fa-receipt" style="font-size: 32px; margin-bottom: 10px;"></i>
+                    <p>Khách hàng <strong>${name}</strong> chưa có đơn hàng nào trong hệ thống.</p>
+                </div>
+            `;
+        } else {
+            let totalSpend = 0;
+            custOrders.forEach(o => { if (o.status !== 'Đã hủy') totalSpend += (o.rawTotal || parsePriceString(o.total)); });
+
+            body.innerHTML = `
+                <div class="customer-info-box">
+                    <div><strong>Họ tên:</strong> ${name}</div>
+                    <div><strong>Email:</strong> ${email || 'N/A'}</div>
+                    <div><strong>Số điện thoại:</strong> ${phone || 'N/A'}</div>
+                    <div><strong>Tổng chi tiêu:</strong> <strong style="color:#0284c7;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalSpend)}</strong> (${custOrders.length} đơn)</div>
+                </div>
+
+                <h4 style="font-size: 13.5px; font-weight: 700; margin-bottom: 10px; color: #0f172a;"><i class="fa-solid fa-box"></i> DANH SÁCH ĐƠN HÀNG ĐÃ ĐẶT</h4>
+
+                <div class="table-responsive">
+                    <table class="manage-table">
+                        <thead>
+                            <tr>
+                                <th>Mã Đơn</th>
+                                <th>Ngày Đặt</th>
+                                <th>Sản Phẩm Mua</th>
+                                <th>Tổng Tiền</th>
+                                <th>Thanh Toán</th>
+                                <th>Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${custOrders.map(o => `
+                                <tr>
+                                    <td><strong>#${o.id}</strong></td>
+                                    <td>${o.date || 'N/A'}</td>
+                                    <td>${Array.isArray(o.items) ? o.items.join('<br>') : o.items}</td>
+                                    <td><strong style="color:#0284c7;">${o.total}</strong></td>
+                                    <td><span class="pay-badge-mini">${o.paymentMethod || 'COD'}</span></td>
+                                    <td><span class="status-pill ${getStatusClass(o.status)}">${o.status}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+    }
+
+    if (modal) modal.classList.add('open');
+}
+
+let activeWarrantySubtab = 'all';
+
+function switchWarrantySubtab(subtab, btnElem) {
+    activeWarrantySubtab = subtab;
+    document.querySelectorAll('.warranty-subtab').forEach(b => b.classList.remove('active'));
+    if (btnElem) btnElem.classList.add('active');
+    renderWarrantiesTable();
+}
+
+function renderWarrantiesTable(warrantiesToRender = null) {
     const tbody = document.getElementById('manageWarrantiesTbody');
     if (!tbody) return;
 
-    tbody.innerHTML = allWarranties.map(w => `
+    let list = warrantiesToRender || allWarranties;
+
+    // Update subtab counts
+    const countAll = allWarranties.length;
+    const countPending = allWarranties.filter(w => w.status.includes('kiểm tra') || w.status.includes('Tiếp nhận')).length;
+    const countSending = allWarranties.filter(w => w.status.includes('gửi hãng')).length;
+    const countRepairing = allWarranties.filter(w => w.status.includes('sửa chữa')).length;
+    const countCompleted = allWarranties.filter(w => w.status.includes('đổi mới') || w.status.includes('thành công') || w.status.includes('hoàn thành')).length;
+
+    if (document.getElementById('warCountAll')) document.getElementById('warCountAll').textContent = countAll;
+    if (document.getElementById('warCountPending')) document.getElementById('warCountPending').textContent = countPending;
+    if (document.getElementById('warCountSending')) document.getElementById('warCountSending').textContent = countSending;
+    if (document.getElementById('warCountRepairing')) document.getElementById('warCountRepairing').textContent = countRepairing;
+    if (document.getElementById('warCountCompleted')) document.getElementById('warCountCompleted').textContent = countCompleted;
+
+    // Filter by active subtab
+    if (!warrantiesToRender) {
+        if (activeWarrantySubtab === 'pending') {
+            list = allWarranties.filter(w => w.status.includes('kiểm tra') || w.status.includes('Tiếp nhận'));
+        } else if (activeWarrantySubtab === 'sending') {
+            list = allWarranties.filter(w => w.status.includes('gửi hãng'));
+        } else if (activeWarrantySubtab === 'repairing') {
+            list = allWarranties.filter(w => w.status.includes('sửa chữa'));
+        } else if (activeWarrantySubtab === 'completed') {
+            list = allWarranties.filter(w => w.status.includes('đổi mới') || w.status.includes('thành công') || w.status.includes('hoàn thành'));
+        }
+    }
+
+    if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #94a3b8;">Không có phiếu bảo hành nào ở danh mục này.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = list.map(w => `
         <tr>
-            <td><strong>${w.id}</strong></td>
+            <td><strong><a class="customer-name-link" onclick="viewWarrantyDetail('${w.id}')">${w.id}</a></strong></td>
             <td>${w.customer}</td>
-            <td>${w.product}</td>
+            <td><strong>${w.product}</strong></td>
             <td style="max-width:200px; font-size:12px; color:#ef4444;">${w.issue}</td>
             <td>${w.date}</td>
             <td><span class="status-pill status-shipping">${w.status}</span></td>
             <td>
-                <button class="btn-table-action" onclick="changeWarrantyStatus('${w.id}')"><i class="fa-solid fa-wrench"></i> Xử lý</button>
+                <button class="btn-table-action" onclick="viewWarrantyDetail('${w.id}')" title="Chi tiết"><i class="fa-solid fa-eye"></i> Chi tiết</button>
+                <button class="btn-table-action" onclick="changeWarrantyStatus('${w.id}')" title="Đổi trạng thái"><i class="fa-solid fa-wrench"></i> Xử lý</button>
             </td>
         </tr>
     `).join('');
+}
+
+function viewWarrantyDetail(warrantyId) {
+    const war = allWarranties.find(w => w.id === warrantyId);
+    if (!war) return;
+
+    const modal = document.getElementById('warrantyDetailModal');
+    const body = document.getElementById('warrantyDetailModalBody');
+    const warModalId = document.getElementById('warModalId');
+
+    if (warModalId) warModalId.textContent = `#${war.id}`;
+
+    if (body) {
+        body.innerHTML = `
+            <div class="order-detail-grid">
+                <div class="info-block">
+                    <h4><i class="fa-solid fa-user"></i> THÔNG TIN KHÁCH HÀNG</h4>
+                    <p><strong>Khách hàng:</strong> ${war.customer}</p>
+                    <p><strong>Ngày tiếp nhận:</strong> ${war.date}</p>
+                    <p><strong>Trạng thái xử lý:</strong> <span class="status-pill status-shipping">${war.status}</span></p>
+                </div>
+                <div class="info-block">
+                    <h4><i class="fa-solid fa-desktop"></i> THÔNG TIN SẢN PHẨM BẢO HÀNH</h4>
+                    <p><strong>Tên sản phẩm & Serial:</strong> ${war.product}</p>
+                    <p><strong>Mô tả lỗi:</strong> <span style="color:#ef4444; font-weight:600;">${war.issue}</span></p>
+                </div>
+            </div>
+
+            <div style="margin-top:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px;">
+                <h4 style="font-size:12.5px; color:#0284c7; font-weight:700; margin-bottom:8px;"><i class="fa-solid fa-clipboard-check"></i> LỊCH SỬ XỬ LÝ KỸ THUẬT</h4>
+                <p style="font-size:13px; color:#334155;">- Ngày ${war.date}: Tiếp nhận thiết bị từ khách hàng. Ghi nhận mô tả: "${war.issue}".</p>
+                <p style="font-size:13px; color:#334155;">- Trạng thái kỹ thuật hiện tại: <strong>${war.status}</strong></p>
+            </div>
+
+            <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+                <button class="btn-primary-blue" onclick="changeWarrantyStatus('${war.id}'); closeManageModal('warrantyDetailModal');"><i class="fa-solid fa-wrench"></i> Cập Nhật Trạng Thái</button>
+                <button class="btn-secondary" onclick="closeManageModal('warrantyDetailModal')">Đóng cửa sổ</button>
+            </div>
+        `;
+    }
+
+    if (modal) modal.classList.add('open');
 }
 
 function openAddWarrantyModal() {
@@ -534,6 +810,7 @@ function saveWarranty(e) {
 
     renderWarrantiesTable();
     renderKPIs();
+    renderNotifications();
     closeManageModal('warrantyModal');
     alert('Tạo phiếu tiếp nhận bảo hành mới thành công!');
 }
@@ -560,6 +837,7 @@ function changeWarrantyStatus(warrantyId) {
         localStorage.setItem('pcshop_warranties', JSON.stringify(allWarranties));
         renderWarrantiesTable();
         renderKPIs();
+        renderNotifications();
     }
 }
 
@@ -585,56 +863,184 @@ function renderFullOrdersTableFiltered(ordersList) {
         return;
     }
 
-    tbody.innerHTML = ordersList.map(ord => `
-        <tr>
-            <td><strong>#${ord.id}</strong></td>
-            <td>${ord.date || '30/09/2026'}</td>
-            <td>
-                <strong>${ord.customerName || 'Khách chưa đăng nhập'}</strong><br>
-                <small style="color:#64748b;">📞 ${ord.customerPhone || 'N/A'} | ✉️ ${ord.customerEmail || 'N/A'}</small>
-            </td>
-            <td style="max-width:200px; font-size:12px;">${ord.shippingAddress || 'Nhận tại Showroom'}</td>
-            <td style="max-width:220px; font-size:12.5px;">${Array.isArray(ord.items) ? ord.items.join('<br>') : ord.items}</td>
-            <td><strong style="color: #0284c7; font-size:14px;">${ord.total}</strong></td>
-            <td><span class="pay-badge-mini">${ord.paymentMethod || 'COD'}</span></td>
-            <td><span class="status-pill ${getStatusClass(ord.status)}">${ord.status}</span></td>
-            <td>
-                <select class="status-select-action" onchange="updateOrderStatus('${ord.id}', this.value)">
-                    <option value="Chờ xử lý" ${ord.status === 'Chờ xử lý' ? 'selected' : ''}>Chờ xử lý</option>
-                    <option value="Đã xác nhận" ${ord.status === 'Đã xác nhận' ? 'selected' : ''}>Đã xác nhận</option>
-                    <option value="Đang giao hàng" ${ord.status === 'Đang giao hàng' ? 'selected' : ''}>Đang giao hàng</option>
-                    <option value="Đã giao thành công" ${ord.status === 'Đã giao thành công' ? 'selected' : ''}>Đã giao thành công</option>
-                    <option value="Đã hủy" ${ord.status === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
-                </select>
-            </td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = ordersList.map(ord => {
+        const isSuccess = ord.status === 'Đã giao thành công';
+        return `
+            <tr>
+                <td><strong>#${ord.id}</strong></td>
+                <td>${ord.date || '30/09/2026'}</td>
+                <td>
+                    <strong>${ord.customerName || 'Khách chưa đăng nhập'}</strong><br>
+                    <small style="color:#64748b;">📞 ${ord.customerPhone || 'N/A'} | ✉️ ${ord.customerEmail || 'N/A'}</small>
+                </td>
+                <td style="max-width:200px; font-size:12px;">${ord.shippingAddress || 'Nhận tại Showroom'}</td>
+                <td style="max-width:220px; font-size:12.5px;">${Array.isArray(ord.items) ? ord.items.join('<br>') : ord.items}</td>
+                <td><strong style="color: #0284c7; font-size:14px;">${ord.total}</strong></td>
+                <td><span class="pay-badge-mini">${ord.paymentMethod || 'COD'}</span></td>
+                <td><span class="status-pill ${getStatusClass(ord.status)}">${ord.status}</span></td>
+                <td>
+                    <select class="status-select-action" onchange="updateOrderStatus('${ord.id}', this.value)" ${isSuccess ? 'disabled style="opacity:0.7; cursor:not-allowed;"' : ''}>
+                        <option value="Chờ xử lý" ${ord.status === 'Chờ xử lý' ? 'selected' : ''} ${isSuccess ? 'disabled' : ''}>Chờ xử lý</option>
+                        <option value="Đã xác nhận" ${ord.status === 'Đã xác nhận' ? 'selected' : ''} ${isSuccess ? 'disabled' : ''}>Đã xác nhận</option>
+                        <option value="Đang giao hàng" ${ord.status === 'Đang giao hàng' ? 'selected' : ''} ${isSuccess ? 'disabled' : ''}>Đang giao hàng</option>
+                        <option value="Đã giao thành công" ${ord.status === 'Đã giao thành công' ? 'selected' : ''}>Đã giao thành công</option>
+                        <option value="Đã hủy" ${ord.status === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
+                    </select>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
-function filterManageGlobal(query) {
-    const q = (query || '').toLowerCase().trim();
-    if (!q) {
-        renderFullOrdersTable();
-        renderProductsTable();
-        renderWarrantiesTable();
+function renderNotifications() {
+    const badge = document.getElementById('notiBadgeCount');
+    const headerCount = document.getElementById('notiHeaderCount');
+    const body = document.getElementById('notiDropdownBody');
+    if (!body) return;
+
+    let notifications = [];
+
+    // 1. Pending orders
+    allManageOrders.forEach(ord => {
+        if (ord.status === 'Chờ xử lý') {
+            notifications.push({
+                type: 'order',
+                title: `Đơn hàng mới #${ord.id}`,
+                desc: `Khách: <strong>${ord.customerName || 'Khách lẻ'}</strong> - ${ord.total}`,
+                time: ord.date || 'Gần đây',
+                action: () => { switchManageTab('orders'); viewOrderDetail(ord.id); }
+            });
+        }
+    });
+
+    // 2. Low stock products (<= 5)
+    const allProds = getCombinedProducts();
+    allProds.forEach(p => {
+        const stock = p.stock_quantity ?? p.stock ?? 10;
+        if (stock <= 5) {
+            notifications.push({
+                type: 'stock',
+                title: `⚠️ Cảnh báo tồn kho thấp`,
+                desc: `Sản phẩm <strong>${p.name}</strong> chỉ còn ${stock} món trong kho!`,
+                time: 'Cần nhập thêm',
+                action: () => { switchManageTab('products'); editProduct(p.id); }
+            });
+        }
+    });
+
+    if (badge) {
+        if (notifications.length > 0) {
+            badge.style.display = 'inline-block';
+            badge.textContent = notifications.length;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    if (headerCount) {
+        headerCount.textContent = `${notifications.length} tin mới`;
+    }
+
+    if (notifications.length === 0) {
+        body.innerHTML = `<div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 13px;">Không có thông báo mới nào.</div>`;
         return;
     }
 
-    const filteredOrders = allManageOrders.filter(o => 
-        (o.id || '').toLowerCase().includes(q) ||
-        (o.customerName || '').toLowerCase().includes(q) ||
-        (o.customerPhone || '').toLowerCase().includes(q) ||
-        (o.shippingAddress || '').toLowerCase().includes(q)
-    );
-    renderFullOrdersTableFiltered(filteredOrders);
+    body.innerHTML = notifications.map((n, idx) => `
+        <div class="noti-item unread" onclick="handleNotificationClick(${idx})">
+            <div class="noti-icon-box ${n.type === 'order' ? 'noti-icon-order' : 'noti-icon-stock'}">
+                <i class="fa-solid ${n.type === 'order' ? 'fa-cart-shopping' : 'fa-triangle-exclamation'}"></i>
+            </div>
+            <div class="noti-content">
+                <div><strong>${n.title}</strong></div>
+                <div>${n.desc}</div>
+                <div class="noti-time"><i class="fa-regular fa-clock"></i> ${n.time}</div>
+            </div>
+        </div>
+    `).join('');
 
-    const allProds = getCombinedProducts();
-    const filteredProds = allProds.filter(p =>
-        (p.name || '').toLowerCase().includes(q) ||
-        (p.sku || '').toLowerCase().includes(q) ||
-        (p.brand || '').toLowerCase().includes(q)
-    );
-    renderProductsTable(filteredProds);
+    window._currentNotis = notifications;
+}
+
+function handleNotificationClick(idx) {
+    if (window._currentNotis && window._currentNotis[idx]) {
+        window._currentNotis[idx].action();
+        const dropdown = document.getElementById('notiDropdown');
+        if (dropdown) dropdown.classList.remove('show');
+    }
+}
+
+function toggleNotificationDropdown(e) {
+    if (e) e.stopPropagation();
+    const dropdown = document.getElementById('notiDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.noti-bell-wrap')) {
+        const dropdown = document.getElementById('notiDropdown');
+        if (dropdown) dropdown.classList.remove('show');
+    }
+});
+
+function filterManageGlobal(query) {
+    const q = (query || '').toLowerCase().trim();
+
+    if (currentActiveTab === 'orders') {
+        if (!q) {
+            renderFullOrdersTable();
+        } else {
+            const filtered = allManageOrders.filter(o => 
+                (o.id || '').toLowerCase().includes(q) ||
+                (o.customerName || '').toLowerCase().includes(q) ||
+                (o.customerPhone || '').toLowerCase().includes(q) ||
+                (o.shippingAddress || '').toLowerCase().includes(q)
+            );
+            renderFullOrdersTableFiltered(filtered);
+        }
+    } else if (currentActiveTab === 'products') {
+        const allProds = getCombinedProducts();
+        if (!q) {
+            renderProductsTable(allProds, 1);
+        } else {
+            const filtered = allProds.filter(p =>
+                (p.name || '').toLowerCase().includes(q) ||
+                (p.sku || '').toLowerCase().includes(q) ||
+                (p.brand || '').toLowerCase().includes(q)
+            );
+            renderProductsTable(filtered, 1);
+        }
+    } else if (currentActiveTab === 'customers') {
+        const defaultCustomers = [
+            { id: 1, name: 'Nguyễn Tấn Thịnh', email: 'ntanthinh03@gmail.com', phone: '0932262415', address: '456 Lê Văn Sỹ, Quận 3, TP.HCM' },
+            { id: 2, name: 'Nguyễn Văn An', email: 'an.nguyen@gmail.com', phone: '0901234567', address: '123 Nguyễn Thị Minh Khai, Quận 1, TP.HCM' },
+            { id: 3, name: 'Trần Thị Bình', email: 'binh.tran@gmail.com', phone: '0988777666', address: '789 Phạm Văn Đồng, TP. Thủ Đức, TP.HCM' },
+            { id: 4, name: 'Lê Hoàng Nam', email: 'nam.le@gmail.com', phone: '0933221100', address: '12 Nguyễn Thị Thập, Quận 7, TP.HCM' }
+        ];
+        if (!q) {
+            renderCustomersTable(defaultCustomers);
+        } else {
+            const filtered = defaultCustomers.filter(c => 
+                c.name.toLowerCase().includes(q) ||
+                c.email.toLowerCase().includes(q) ||
+                c.phone.includes(q)
+            );
+            renderCustomersTable(filtered);
+        }
+    } else if (currentActiveTab === 'warranties') {
+        if (!q) {
+            renderWarrantiesTable();
+        } else {
+            const filtered = allWarranties.filter(w =>
+                (w.id || '').toLowerCase().includes(q) ||
+                (w.customer || '').toLowerCase().includes(q) ||
+                (w.product || '').toLowerCase().includes(q)
+            );
+            renderWarrantiesTable(filtered);
+        }
+    }
 }
 
 function renderCharts() {

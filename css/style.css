@@ -5791,6 +5791,256 @@ body {
     color: #1e293b;
 }
 
+/* Notification Bell Dropdown */
+.noti-bell-wrap {
+    position: relative;
+}
+
+.noti-bell-btn {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #475569;
+    transition: all 0.2s;
+    font-size: 16px;
+}
+
+.noti-bell-btn:hover {
+    background: #e2e8f0;
+    color: #0284c7;
+}
+
+.noti-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 10px;
+    border: 2px solid #fff;
+    min-width: 16px;
+    text-align: center;
+}
+
+.noti-dropdown {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    width: 350px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+    border: 1px solid #e2e8f0;
+    z-index: 10000;
+    display: none;
+    overflow: hidden;
+}
+
+.noti-dropdown.show {
+    display: block;
+    animation: fadeInSlide 0.2s ease-out;
+}
+
+.noti-dropdown-header {
+    padding: 12px 16px;
+    background: #0f172a;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.noti-dropdown-header h4 {
+    font-size: 13.5px;
+    margin: 0;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.noti-dropdown-header span {
+    font-size: 11px;
+    background: #0284c7;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.noti-dropdown-body {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.noti-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.noti-item:hover {
+    background: #f8fafc;
+}
+
+.noti-item.unread {
+    background: #f0f9ff;
+}
+
+.noti-icon-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.noti-icon-order { background: #e0f2fe; color: #0284c7; }
+.noti-icon-stock { background: #fef2f2; color: #ef4444; }
+
+.noti-content {
+    font-size: 12px;
+    color: #334155;
+    line-height: 1.45;
+}
+
+.noti-content strong {
+    color: #0f172a;
+}
+
+.noti-time {
+    font-size: 10.5px;
+    color: #94a3b8;
+    margin-top: 3px;
+}
+
+/* Pagination Bar */
+.manage-pagination-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+    border-radius: 0 0 12px 12px;
+}
+
+.pagination-info {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.page-btn {
+    padding: 6px 12px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.page-btn.active {
+    background: #0284c7;
+    color: #fff;
+    border-color: #0284c7;
+}
+
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Warranty Subtabs Bar */
+.warranty-subtabs-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.warranty-subtab {
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.warranty-subtab:hover {
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.warranty-subtab.active {
+    background: #0284c7;
+    color: #fff;
+    border-color: #0284c7;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+/* Customer Detail Link & History Table */
+.customer-name-link {
+    color: #0284c7;
+    text-decoration: none;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.customer-name-link:hover {
+    text-decoration: underline;
+}
+
+.customer-info-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 13px;
+}
+
 
 
 
