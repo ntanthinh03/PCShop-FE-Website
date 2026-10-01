@@ -3935,33 +3935,49 @@ body {
 /* 1. Header & Navigation Adjustments for Mobile (max-width: 992px) */
 @media (max-width: 992px) {
     .header {
-        padding: 8px 12px;
+        padding: 6px 10px;
     }
     .container-header {
         height: auto;
         flex-wrap: wrap;
-        gap: 8px 10px;
+        gap: 6px 4px;
         padding: 4px 0;
+        justify-content: space-between;
     }
     .logo {
-        font-size: 20px;
+        font-size: 17px;
+        gap: 4px;
     }
     .btn-category {
-        padding: 7px 12px;
-        font-size: 12px;
+        padding: 5px 8px;
+        font-size: 11.5px;
+        gap: 4px;
     }
     .btn-build-pc {
-        padding: 6px 10px;
+        padding: 4px 6px;
+        gap: 4px;
+    }
+    .blue-build-icon {
+        font-size: 15px;
     }
     .build-pc-text span {
         display: none;
     }
     .build-pc-text strong {
-        font-size: 12px;
+        font-size: 11px;
+    }
+    .btn-cart {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+        flex-shrink: 0;
     }
     .btn-login {
-        padding: 7px 12px;
-        font-size: 12px;
+        padding: 5px 8px;
+        font-size: 11.5px;
+        gap: 4px;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     /* Move Search bar to its own full width row on small screens */
@@ -6286,24 +6302,30 @@ img, video, iframe, canvas, table {
 @media screen and (max-width: 768px) {
     /* Header Responsive Layout */
     .header {
-        padding: 8px 12px !important;
+        padding: 6px 8px !important;
         height: auto !important;
     }
 
     .container-header {
         height: auto !important;
         flex-wrap: wrap !important;
-        gap: 8px !important;
+        gap: 6px 4px !important;
         justify-content: space-between !important;
+        align-items: center !important;
     }
 
     .logo {
-        font-size: 19px !important;
+        font-size: 16px !important;
+        gap: 4px !important;
+    }
+    .blue-logo-icon {
+        font-size: 17px !important;
     }
 
     .btn-category {
-        padding: 6px 12px !important;
-        font-size: 12px !important;
+        padding: 5px 7px !important;
+        font-size: 11px !important;
+        gap: 4px !important;
     }
 
     .search-wrap {
@@ -6314,20 +6336,35 @@ img, video, iframe, canvas, table {
     }
 
     .btn-build-pc {
-        padding: 4px 8px !important;
+        padding: 4px 6px !important;
+        gap: 4px !important;
+    }
+
+    .btn-build-pc .blue-build-icon {
+        font-size: 14px !important;
     }
 
     .btn-build-pc .build-pc-text strong {
-        font-size: 11px !important;
+        font-size: 10.5px !important;
     }
 
     .btn-build-pc .build-pc-text span {
         display: none !important;
     }
 
+    .btn-cart {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 13px !important;
+        flex-shrink: 0 !important;
+    }
+
     .btn-login {
-        padding: 6px 10px !important;
-        font-size: 12px !important;
+        padding: 5px 7px !important;
+        font-size: 11px !important;
+        gap: 4px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
     }
 
     /* Floating Category Dropdown & Mega Menu Fix on Mobile */
