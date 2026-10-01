@@ -1,5 +1,5 @@
-// Module xử lý kết nối REST API Backend (Vercel FE -> ngrok Backend API v1)
-const API_BASE_URL = 'https://phosphate-postbox-sloppy.ngrok-free.dev/api/v1';
+// Module xử lý kết nối REST API Backend (Vercel FE -> Render Production Backend API v1)
+const API_BASE_URL = 'https://pcshop-backend-87np.onrender.com/api/v1';
 
 // Headers mặc định bỏ qua trang cảnh báo của Ngrok Free Tier khi gọi qua Fetch API
 const DEFAULT_HEADERS = {
