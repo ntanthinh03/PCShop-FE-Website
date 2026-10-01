@@ -341,6 +341,102 @@
         </div>
     </div>
 
+    <!-- MODAL THÊM / SỬA SẢN PHẨM -->
+    <div class="manage-modal-overlay" id="productModal">
+        <div class="manage-modal-box">
+            <div class="modal-header">
+                <h3 id="productModalTitle"><i class="fa-solid fa-box-open"></i> Thêm Sản Phẩm Mới</h3>
+                <button class="close-modal-btn" onclick="closeManageModal('productModal')">✕</button>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="prodEditId">
+                <div class="modal-form-grid">
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-tag"></i> Tên Sản Phẩm (*)</label>
+                        <input type="text" id="prodName" placeholder="VD: PC Gaming PCShop Ultra V20..." required>
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-barcode"></i> Mã SKU</label>
+                        <input type="text" id="prodSku" placeholder="VD: SKU-8891">
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-copyright"></i> Hãng / Thương Hiệu</label>
+                        <input type="text" id="prodBrand" placeholder="VD: ASUS, MSI, Gigabyte...">
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-layer-group"></i> Danh Mục</label>
+                        <select id="prodCategory">
+                            <option value="PC Gaming">PC Gaming</option>
+                            <option value="Laptop Gaming">Laptop Gaming</option>
+                            <option value="Laptop Văn Phòng">Laptop Văn Phòng</option>
+                            <option value="VGA - Card Màn Hình">VGA - Card Màn Hình</option>
+                            <option value="CPU - Bộ Vi Xử Lý">CPU - Bộ Vi Xử Lý</option>
+                            <option value="Màn Hình Gaming">Màn Hình Gaming</option>
+                            <option value="Bàn Phím & Chuột">Bàn Phím & Chuột</option>
+                            <option value="Linh Kiện Khác">Linh Kiện Khác</option>
+                        </select>
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-money-bill-wave"></i> Giá Bán (VNĐ) (*)</label>
+                        <input type="number" id="prodPrice" placeholder="VD: 15990000" min="0" required>
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-boxes-stacked"></i> Số Lượng Tồn Kho</label>
+                        <input type="number" id="prodStock" placeholder="10" min="0" value="10">
+                    </div>
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-image"></i> Link Hình Ảnh (URL)</label>
+                        <input type="url" id="prodImage" placeholder="https://images.unsplash.com/...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeManageModal('productModal')">Hủy bỏ</button>
+                    <button type="submit" class="btn-primary-blue"><i class="fa-solid fa-floppy-disk"></i> Lưu Sản Phẩm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TẠO PHIẾU BẢO HÀNH -->
+    <div class="manage-modal-overlay" id="warrantyModal">
+        <div class="manage-modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-shield-halved"></i> Tạo Phiếu Tiếp Nhận Bảo Hành</h3>
+                <button class="close-modal-btn" onclick="closeManageModal('warrantyModal')">✕</button>
+            </div>
+            <form id="warrantyForm" onsubmit="saveWarranty(event)">
+                <div class="modal-form-grid">
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-user"></i> Thông Tin Khách Hàng (Tên & SĐT) (*)</label>
+                        <input type="text" id="warCustomer" placeholder="VD: Nguyễn Văn A (0987654321)" required>
+                    </div>
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-desktop"></i> Tên Sản Phẩm & Số Serial (*)</label>
+                        <input type="text" id="warProduct" placeholder="VD: VGA ASUS RTX 4070 SUPER (SN: 991823)" required>
+                    </div>
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-triangle-exclamation"></i> Chi Tiết Lỗi Gặp Phải (*)</label>
+                        <textarea id="warIssue" rows="3" placeholder="Mô tả hiện tượng lỗi của thiết bị..." required style="padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none;"></textarea>
+                    </div>
+                    <div class="modal-form-group full-width">
+                        <label><i class="fa-solid fa-list-check"></i> Trạng Thái Xử Lý</label>
+                        <select id="warStatus">
+                            <option value="Đang kiểm tra kỹ thuật">Đang kiểm tra kỹ thuật</option>
+                            <option value="Đang gửi hãng bảo hành">Đang gửi hãng bảo hành</option>
+                            <option value="Đã sửa chữa thành công">Đã sửa chữa thành công</option>
+                            <option value="Đã đổi mới cho khách">Đã đổi mới cho khách</option>
+                            <option value="Từ chối bảo hành">Từ chối bảo hành</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeManageModal('warrantyModal')">Hủy bỏ</button>
+                    <button type="submit" class="btn-primary-blue"><i class="fa-solid fa-plus"></i> Tạo Phiếu Bảo Hành</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- App API & Manage JS -->
     <script src="js/api.js"></script>
     <script src="js/manage.js"></script>

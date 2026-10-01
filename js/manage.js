@@ -131,8 +131,9 @@ function switchManageTab(tabId, btnElem) {
     }
 }
 
-function initDashboardData() {
+async function initDashboardData() {
     syncLatestOrders();
+    await loadApiProductsIfNeeded();
     renderKPIs();
     renderOverviewOrdersTable();
     renderFullOrdersTable();
@@ -300,26 +301,167 @@ function closeManageModal(modalId) {
     if (modal) modal.classList.remove('open');
 }
 
-function renderProductsTable() {
+function renderProductsTable(productsToRender = null) {
     const tbody = document.getElementById('manageProductsTbody');
     if (!tbody) return;
 
-    if (typeof liveProducts !== 'undefined' && liveProducts.length > 0) {
-        tbody.innerHTML = liveProducts.slice(0, 15).map(p => `
-            <tr>
-                <td><img src="${formatImageUrl(p.images)}" style="width:45px; height:45px; object-fit:cover; border-radius:6px;"></td>
-                <td><code>${p.sku || 'SKU-001'}</code></td>
-                <td><strong>${p.name}</strong></td>
-                <td><span class="brand-pill">${p.brand || 'PCShop'}</span></td>
-                <td><strong style="color:#0284c7;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price)}</strong></td>
-                <td><span class="stock-badge">${p.stock_quantity || 15}</span></td>
-                <td>
-                    <button class="btn-table-action" onclick="alert('Tính năng chỉnh sửa sản phẩm #${p.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button class="btn-table-action btn-danger" onclick="alert('Tính năng xóa sản phẩm #${p.id}')"><i class="fa-solid fa-trash-can"></i></button>
-                </td>
-            </tr>
-        `).join('');
+    const list = productsToRender || getCombinedProducts();
+
+    if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #94a3b8;">Không tìm thấy sản phẩm nào trong hệ thống kho.</td></tr>`;
+        return;
     }
+
+    tbody.innerHTML = list.map(p => `
+        <tr>
+            <td><img src="${formatImageUrl(p.images)}" style="width:45px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #e2e8f0;"></td>
+            <td><code>${p.sku || ('SKU-' + p.id)}</code></td>
+            <td><strong>${p.name}</strong><br><small style="color:#64748b;">${p.category_name || (p.category ? (p.category.name || p.category) : 'Linh Kiện')}</small></td>
+            <td><span class="brand-pill">${p.brand || 'PCShop'}</span></td>
+            <td><strong style="color:#0284c7;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price)}</strong></td>
+            <td><span class="stock-badge">${p.stock_quantity ?? p.stock ?? 10}</span></td>
+            <td>
+                <button class="btn-table-action" onclick="editProduct('${p.id}')" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="btn-table-action btn-danger" onclick="deleteProduct('${p.id}')" title="Xóa"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+let manageProductsList = [
+    { id: 'PROD-001', name: 'PC Gaming PCShop Ultra V198 (RTX 5070 Ti 16GB)', sku: 'SKU-ULTRA-01', brand: 'PCShop', category_name: 'PC Gaming', price: 17149000, stock_quantity: 12, images: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=500' },
+    { id: 'PROD-002', name: 'Laptop Gaming Logitech ROG Strix V43 (RTX 4070 8GB)', sku: 'SKU-ROG-V43', brand: 'ASUS', category_name: 'Laptop Gaming', price: 29099000, stock_quantity: 8, images: 'https://images.unsplash.com/photo-1593640408182-31c228f8a9e3?w=500' },
+    { id: 'PROD-003', name: 'VGA ASUS ROG Strix GeForce RTX 4070 SUPER 12GB', sku: 'SKU-VGA-4070S', brand: 'ASUS', category_name: 'VGA - Card Màn Hình', price: 18990000, stock_quantity: 15, images: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=500' },
+    { id: 'PROD-004', name: 'Màn hình Gaming LG UltraGear 27 inch 240Hz IPS', sku: 'SKU-MON-LG27', brand: 'LG', category_name: 'Màn Hình Gaming', price: 6890000, stock_quantity: 20, images: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500' },
+    { id: 'PROD-005', name: 'Bàn Phím Cơ Gaming Akko Mod007 v3 VIA RGB', sku: 'SKU-GEAR-AKKO', brand: 'Akko', category_name: 'Bàn Phím & Chuột', price: 2490000, stock_quantity: 35, images: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500' }
+];
+
+async function loadApiProductsIfNeeded() {
+    try {
+        if (typeof api !== 'undefined' && api.getProducts) {
+            const res = await api.getProducts({ per_page: 100 });
+            if (res && res.status === 'success' && res.data) {
+                const apiData = Array.isArray(res.data) ? res.data : (res.data.data || []);
+                if (apiData.length > 0) {
+                    manageProductsList = apiData;
+                }
+            }
+        }
+    } catch (e) {
+        console.log('API call fallback to local products list');
+    }
+}
+
+function getCombinedProducts() {
+    let baseList = [...manageProductsList];
+    const customProds = JSON.parse(localStorage.getItem('pcshop_custom_products')) || [];
+
+    customProds.forEach(cp => {
+        const idx = baseList.findIndex(p => String(p.id) === String(cp.id));
+        if (idx > -1) {
+            baseList[idx] = cp;
+        } else {
+            baseList.unshift(cp);
+        }
+    });
+
+    const deletedIds = JSON.parse(localStorage.getItem('pcshop_deleted_product_ids')) || [];
+    return baseList.filter(p => !deletedIds.includes(String(p.id)) && !deletedIds.includes(Number(p.id)));
+}
+
+function openAddProductModal() {
+    const form = document.getElementById('productForm');
+    if (form) form.reset();
+    document.getElementById('prodEditId').value = '';
+    document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-box-open"></i> Thêm Sản Phẩm Mới';
+    const modal = document.getElementById('productModal');
+    if (modal) modal.classList.add('open');
+}
+
+function editProduct(productId) {
+    const list = getCombinedProducts();
+    const prod = list.find(p => String(p.id) === String(productId));
+    if (!prod) return;
+
+    document.getElementById('prodEditId').value = prod.id;
+    document.getElementById('prodName').value = prod.name || '';
+    document.getElementById('prodSku').value = prod.sku || '';
+    document.getElementById('prodBrand').value = prod.brand || '';
+    document.getElementById('prodCategory').value = prod.category_name || (prod.category ? (prod.category.name || prod.category) : 'PC Gaming');
+    document.getElementById('prodPrice').value = prod.price || 0;
+    document.getElementById('prodStock').value = prod.stock_quantity ?? prod.stock ?? 10;
+    document.getElementById('prodImage').value = formatImageUrl(prod.images) || '';
+
+    document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa Sản Phẩm';
+    const modal = document.getElementById('productModal');
+    if (modal) modal.classList.add('open');
+}
+
+function saveProduct(e) {
+    e.preventDefault();
+    const editId = document.getElementById('prodEditId').value.trim();
+    const name = document.getElementById('prodName').value.trim();
+    const sku = document.getElementById('prodSku').value.trim() || ('SKU-' + Math.floor(1000 + Math.random() * 9000));
+    const brand = document.getElementById('prodBrand').value.trim() || 'PCShop';
+    const category = document.getElementById('prodCategory').value;
+    const price = Number(document.getElementById('prodPrice').value) || 0;
+    const stock = Number(document.getElementById('prodStock').value) || 0;
+    const image = document.getElementById('prodImage').value.trim() || 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=500';
+
+    let customProds = JSON.parse(localStorage.getItem('pcshop_custom_products')) || [];
+
+    if (editId) {
+        const idx = customProds.findIndex(p => String(p.id) === String(editId));
+        const updatedItem = {
+            id: editId,
+            name,
+            sku,
+            brand,
+            category_name: category,
+            price,
+            stock_quantity: stock,
+            images: image
+        };
+
+        if (idx > -1) {
+            customProds[idx] = updatedItem;
+        } else {
+            customProds.push(updatedItem);
+        }
+    } else {
+        const newItem = {
+            id: 'PROD-NEW-' + Date.now(),
+            name,
+            sku,
+            brand,
+            category_name: category,
+            price,
+            stock_quantity: stock,
+            images: image
+        };
+        customProds.unshift(newItem);
+    }
+
+    localStorage.setItem('pcshop_custom_products', JSON.stringify(customProds));
+    renderProductsTable();
+    closeManageModal('productModal');
+    alert(editId ? 'Đã cập nhật sản phẩm thành công!' : 'Đã thêm sản phẩm mới vào kho thành công!');
+}
+
+function deleteProduct(productId) {
+    if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi kho hàng?')) return;
+
+    let deletedIds = JSON.parse(localStorage.getItem('pcshop_deleted_product_ids')) || [];
+    if (!deletedIds.includes(String(productId))) {
+        deletedIds.push(String(productId));
+        localStorage.setItem('pcshop_deleted_product_ids', JSON.stringify(deletedIds));
+    }
+
+    let customProds = JSON.parse(localStorage.getItem('pcshop_custom_products')) || [];
+    customProds = customProds.filter(p => String(p.id) !== String(productId));
+    localStorage.setItem('pcshop_custom_products', JSON.stringify(customProds));
+
+    renderProductsTable();
 }
 
 function renderCustomersTable() {
@@ -358,18 +500,141 @@ function renderWarrantiesTable() {
             <td>${w.date}</td>
             <td><span class="status-pill status-shipping">${w.status}</span></td>
             <td>
-                <button class="btn-table-action" onclick="alert('Cập nhật trạng thái bảo hành ${w.id}')"><i class="fa-solid fa-wrench"></i> Xử lý</button>
+                <button class="btn-table-action" onclick="changeWarrantyStatus('${w.id}')"><i class="fa-solid fa-wrench"></i> Xử lý</button>
             </td>
         </tr>
     `).join('');
 }
 
-function openAddProductModal() {
-    alert('Mở form Thêm Sản Phẩm Mới (Tính năng Quản Trị Admin)');
+function openAddWarrantyModal() {
+    const form = document.getElementById('warrantyForm');
+    if (form) form.reset();
+    const modal = document.getElementById('warrantyModal');
+    if (modal) modal.classList.add('open');
 }
 
-function openAddWarrantyModal() {
-    alert('Mở form Tạo Phiếu Tiếp Nhận Bảo Hành Mới');
+function saveWarranty(e) {
+    e.preventDefault();
+    const customer = document.getElementById('warCustomer').value.trim();
+    const product = document.getElementById('warProduct').value.trim();
+    const issue = document.getElementById('warIssue').value.trim();
+    const status = document.getElementById('warStatus').value;
+
+    const newWar = {
+        id: 'BH-' + new Date().getFullYear() + '-' + String(allWarranties.length + 1).padStart(3, '0'),
+        customer,
+        product,
+        issue,
+        date: new Date().toLocaleDateString('vi-VN'),
+        status
+    };
+
+    allWarranties.unshift(newWar);
+    localStorage.setItem('pcshop_warranties', JSON.stringify(allWarranties));
+
+    renderWarrantiesTable();
+    renderKPIs();
+    closeManageModal('warrantyModal');
+    alert('Tạo phiếu tiếp nhận bảo hành mới thành công!');
+}
+
+function changeWarrantyStatus(warrantyId) {
+    const war = allWarranties.find(w => w.id === warrantyId);
+    if (!war) return;
+
+    const statuses = [
+        'Đang kiểm tra kỹ thuật',
+        'Đang gửi hãng bảo hành',
+        'Đã sửa chữa thành công',
+        'Đã đổi mới cho khách',
+        'Từ chối bảo hành'
+    ];
+
+    const input = prompt(
+        `Cập nhật trạng thái cho phiếu #${warrantyId}:\n1. Đang kiểm tra kỹ thuật\n2. Đang gửi hãng bảo hành\n3. Đã sửa chữa thành công\n4. Đã đổi mới cho khách\n5. Từ chối bảo hành\n\nNhập số tương ứng (1-5):`,
+        "1"
+    );
+
+    if (input && Number(input) >= 1 && Number(input) <= 5) {
+        war.status = statuses[Number(input) - 1];
+        localStorage.setItem('pcshop_warranties', JSON.stringify(allWarranties));
+        renderWarrantiesTable();
+        renderKPIs();
+    }
+}
+
+function filterOrdersTable() {
+    const select = document.getElementById('orderStatusFilter');
+    if (!select) return;
+    const val = select.value;
+
+    if (val === 'all') {
+        renderFullOrdersTable();
+    } else {
+        const filtered = allManageOrders.filter(o => o.status === val);
+        renderFullOrdersTableFiltered(filtered);
+    }
+}
+
+function renderFullOrdersTableFiltered(ordersList) {
+    const tbody = document.getElementById('fullOrdersTbody');
+    if (!tbody) return;
+
+    if (ordersList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px; color:#94a3b8;">Không tìm thấy đơn hàng nào ở trạng thái này.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = ordersList.map(ord => `
+        <tr>
+            <td><strong>#${ord.id}</strong></td>
+            <td>${ord.date || '30/09/2026'}</td>
+            <td>
+                <strong>${ord.customerName || 'Khách chưa đăng nhập'}</strong><br>
+                <small style="color:#64748b;">📞 ${ord.customerPhone || 'N/A'} | ✉️ ${ord.customerEmail || 'N/A'}</small>
+            </td>
+            <td style="max-width:200px; font-size:12px;">${ord.shippingAddress || 'Nhận tại Showroom'}</td>
+            <td style="max-width:220px; font-size:12.5px;">${Array.isArray(ord.items) ? ord.items.join('<br>') : ord.items}</td>
+            <td><strong style="color: #0284c7; font-size:14px;">${ord.total}</strong></td>
+            <td><span class="pay-badge-mini">${ord.paymentMethod || 'COD'}</span></td>
+            <td><span class="status-pill ${getStatusClass(ord.status)}">${ord.status}</span></td>
+            <td>
+                <select class="status-select-action" onchange="updateOrderStatus('${ord.id}', this.value)">
+                    <option value="Chờ xử lý" ${ord.status === 'Chờ xử lý' ? 'selected' : ''}>Chờ xử lý</option>
+                    <option value="Đã xác nhận" ${ord.status === 'Đã xác nhận' ? 'selected' : ''}>Đã xác nhận</option>
+                    <option value="Đang giao hàng" ${ord.status === 'Đang giao hàng' ? 'selected' : ''}>Đang giao hàng</option>
+                    <option value="Đã giao thành công" ${ord.status === 'Đã giao thành công' ? 'selected' : ''}>Đã giao thành công</option>
+                    <option value="Đã hủy" ${ord.status === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
+                </select>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function filterManageGlobal(query) {
+    const q = (query || '').toLowerCase().trim();
+    if (!q) {
+        renderFullOrdersTable();
+        renderProductsTable();
+        renderWarrantiesTable();
+        return;
+    }
+
+    const filteredOrders = allManageOrders.filter(o => 
+        (o.id || '').toLowerCase().includes(q) ||
+        (o.customerName || '').toLowerCase().includes(q) ||
+        (o.customerPhone || '').toLowerCase().includes(q) ||
+        (o.shippingAddress || '').toLowerCase().includes(q)
+    );
+    renderFullOrdersTableFiltered(filteredOrders);
+
+    const allProds = getCombinedProducts();
+    const filteredProds = allProds.filter(p =>
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.sku || '').toLowerCase().includes(q) ||
+        (p.brand || '').toLowerCase().includes(q)
+    );
+    renderProductsTable(filteredProds);
 }
 
 function renderCharts() {
