@@ -306,10 +306,10 @@ body {
 .container-top {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 0;
+    padding: 0 16px;
     display: flex;
-    justify-content: flex-start;
-    gap: 32px;
+    justify-content: center;
+    gap: 36px;
     align-items: center;
 }
 
@@ -3974,13 +3974,13 @@ body {
     /* Top Bar on mobile */
     .top-bar {
         overflow-x: hidden;
-        padding: 8px 16px;
+        padding: 8px 12px;
         width: 100%;
         box-sizing: border-box;
     }
     .container-top {
-        gap: 12px;
-        justify-content: space-between;
+        gap: 20px;
+        justify-content: center;
         align-items: center;
         width: 100%;
     }
