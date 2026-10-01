@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Hệ Thống - PC SHOP Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="manage-body">
+
+    <!-- 1. MANAGE LOGIN MODAL OVERLAY (KHI CHƯA DĂNG NHẬP STAFF/ADMIN) -->
+    <div class="manage-login-overlay" id="manageLoginOverlay">
+        <div class="manage-login-card">
+            <div class="manage-login-header">
+                <div class="manage-logo-icon">
+                    <i class="fa-solid fa-desktop"></i>
+                </div>
+                <h2>PCSHOP DASHBOARD</h2>
+                <p>Cổng Quản Trị Hệ Thống Dành Cho Staff & Admin</p>
+            </div>
+
+            <div class="manage-login-alert" id="manageLoginAlert" style="display: none;"></div>
+
+            <form id="manageLoginForm" onsubmit="handleManageLogin(event)">
+                <div class="form-group-item">
+                    <label><i class="fa-solid fa-user-shield"></i> Tài khoản Staff / Admin</label>
+                    <input type="text" id="manageUsername" placeholder="Nhập tên đăng nhập hoặc email..." required value="admin">
+                </div>
+                <div class="form-group-item" style="margin-top: 14px;">
+                    <label><i class="fa-solid fa-key"></i> Mật khẩu</label>
+                    <input type="password" id="managePassword" placeholder="Nhập mật khẩu..." required value="admin123">
+                </div>
+                <div class="manage-demo-hint">
+                    <i class="fa-solid fa-circle-info"></i> Tài khoản mẫu: <strong>admin</strong> / <strong>admin123</strong> (Quyền Admin) hoặc <strong>staff</strong> / <strong>staff123</strong> (Staff)
+                </div>
+                <button type="submit" class="btn-manage-login-submit">
+                    ĐĂNG NHẬP DASHBOARD <i class="fa-solid fa-right-to-bracket"></i>
+                </button>
+            </form>
+            <div style="text-align: center; margin-top: 16px;">
+                <a href="index.html" style="font-size: 13px; color: #0284c7; text-decoration: none; font-weight: 600;">← Quay lại Cửa Hàng</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DASHBOARD MAIN LAYOUT (CHỈ HIỆN KHI ĐÃ ĐĂNG NHẬP SUCCESS) -->
+    <div class="manage-app-layout" id="manageAppLayout" style="display: none;">
+        
+        <!-- SIDEBAR -->
+        <aside class="manage-sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-desktop"></i>
+                <div class="brand-text">
+                    <strong>PCSHOP ADMIN</strong>
+                    <span>Store Management</span>
+                </div>
+            </div>
+
+            <div class="sidebar-user-badge">
+                <div class="avatar-circle" id="sidebarAvatar">A</div>
+                <div class="user-info">
+                    <strong id="sidebarUserName">Quản Trị Viên</strong>
+                    <span id="sidebarUserRole" class="role-pill-admin">ADMINISTRATOR</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <button class="nav-item active" onclick="switchManageTab('overview', this)">
+                    <i class="fa-solid fa-chart-pie"></i> Tổng Quan & Báo Cáo
+                </button>
+                <button class="nav-item" onclick="switchManageTab('orders', this)">
+                    <i class="fa-solid fa-cart-flatbed"></i> Quản Lý Đơn Hàng <span class="badge-count" id="pendingOrdersCount">0</span>
+                </button>
+                <button class="nav-item" onclick="switchManageTab('products', this)">
+                    <i class="fa-solid fa-boxes-stacked"></i> Quản Lý Sản Phẩm
+                </button>
+                <button class="nav-item" onclick="switchManageTab('customers', this)">
+                    <i class="fa-solid fa-users"></i> Khách Hàng
+                </button>
+                <button class="nav-item" onclick="switchManageTab('warranties', this)">
+                    <i class="fa-solid fa-shield-halved"></i> Đơn Bảo Hành
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-manage-logout" onclick="handleManageLogout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="manage-main-content">
+            
+            <!-- TOPBAR -->
+            <header class="manage-topbar">
+                <div class="topbar-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm đơn hàng, khách hàng, mã máy..." id="globalManageSearch" onkeyup="filterManageGlobal(this.value)">
+                </div>
+                <div class="topbar-right">
+                    <div class="store-live-link">
+                        <a href="index.html" target="_blank"><i class="fa-solid fa-store"></i> Xem Cửa Hàng Live</a>
+                    </div>
+                    <div class="noti-bell">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="noti-dot"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB 1: TỔNG QUAN & DOANH THU CHART -->
+            <section class="manage-tab-page active" id="tabOverview">
+                <div class="page-title-row">
+                    <h2>Báo Cáo Doanh Thu & Hoạt Động</h2>
+                    <span class="date-tag" id="currentDateTag">Hôm nay</span>
+                </div>
+
+                <!-- 4 KPI CARDS -->
+                <div class="kpi-cards-grid">
+                    <div class="kpi-card bg-blue-grad">
+                        <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="kpi-data">
+                            <span>Tổng Doanh Thu</span>
+                            <strong id="kpiRevenue">0 đ</strong>
+                            <small><i class="fa-solid fa-arrow-trend-up"></i> +18.5% so với tháng trước</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card bg-indigo-grad">
+                        <div class="kpi-icon"><i class="fa-solid fa-receipt"></i></div>
+                        <div class="kpi-data">
+                            <span>Tổng Đơn Hàng</span>
+                            <strong id="kpiTotalOrders">0</strong>
+                            <small><i class="fa-solid fa-check"></i> Đã hoàn tất 92%</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card bg-sky-grad">
+                        <div class="kpi-icon"><i class="fa-solid fa-users-gear"></i></div>
+                        <div class="kpi-data">
+                            <span>Khách Hàng Mới</span>
+                            <strong id="kpiCustomers">0</strong>
+                            <small><i class="fa-solid fa-user-plus"></i> +12 khách trong tuần</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card bg-teal-grad">
+                        <div class="kpi-icon"><i class="fa-solid fa-shield-virus"></i></div>
+                        <div class="kpi-data">
+                            <span>Yêu Cầu Bảo Hành</span>
+                            <strong id="kpiWarranties">0</strong>
+                            <small><i class="fa-solid fa-clock"></i> 2 đơn chờ tiếp nhận</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHARTS ROW -->
+                <div class="charts-grid-row">
+                    <div class="chart-box">
+                        <div class="chart-header">
+                            <h3><i class="fa-solid fa-chart-column"></i> Biểu Đồ Doanh Thu 7 Ngày Gần Nhất</h3>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-box">
+                        <div class="chart-header">
+                            <h3><i class="fa-solid fa-chart-pie"></i> Tỷ Lệ Danh Mục Bán Chạy</h3>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="categoryPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT ORDERS TABLE MINI -->
+                <div class="table-card-box">
+                    <div class="table-card-header">
+                        <h3>Đơn Hàng Mới Cần Xử Lý</h3>
+                        <button class="btn-link-action" onclick="switchManageTab('orders')">Xem tất cả đơn ›</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="manage-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Đơn</th>
+                                    <th>Khách Hàng</th>
+                                    <th>Số Điện Thoại</th>
+                                    <th>Tổng Tiền</th>
+                                    <th>Hình Thức</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overviewRecentOrdersTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: QUẢN LÝ ĐƠN HÀNG -->
+            <section class="manage-tab-page" id="tabOrders">
+                <div class="page-title-row">
+                    <h2>Quản Lý Đơn Hàng</h2>
+                    <div class="filter-actions-row">
+                        <select id="orderStatusFilter" onchange="filterOrdersTable()">
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="Chờ xử lý">Chờ xử lý</option>
+                            <option value="Đã xác nhận">Đã xác nhận</option>
+                            <option value="Đang đóng gói">Đang đóng gói</option>
+                            <option value="Đang giao hàng">Đang giao hàng</option>
+                            <option value="Đã giao thành công">Đã giao thành công</option>
+                            <option value="Đã hủy">Đã hủy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-card-box">
+                    <div class="table-responsive">
+                        <table class="manage-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Đơn</th>
+                                    <th>Thời Gian</th>
+                                    <th>Khách Hàng & Thông Tin</th>
+                                    <th>Địa Chỉ Giao Hàng</th>
+                                    <th>Sản Phẩm Đặt</th>
+                                    <th>Tổng Tiền</th>
+                                    <th>Thanh Toán</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác Xử Lý</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fullOrdersTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: QUẢN LÝ SẢN PHẨM -->
+            <section class="manage-tab-page" id="tabProducts">
+                <div class="page-title-row">
+                    <h2>Quản Lý Kho Sản Phẩm</h2>
+                    <button class="btn-primary-blue" onclick="openAddProductModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm Sản Phẩm Mới
+                    </button>
+                </div>
+
+                <div class="table-card-box">
+                    <div class="table-responsive">
+                        <table class="manage-table">
+                            <thead>
+                                <tr>
+                                    <th>Hình Ảnh</th>
+                                    <th>Mã SKU</th>
+                                    <th>Tên Sản Phẩm</th>
+                                    <th>Hãng</th>
+                                    <th>Giá Bán</th>
+                                    <th>Tồn Kho</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageProductsTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: QUẢN LÝ KHÁCH HÀNG -->
+            <section class="manage-tab-page" id="tabCustomers">
+                <div class="page-title-row">
+                    <h2>Danh Sách Khách Hàng</h2>
+                </div>
+                <div class="table-card-box">
+                    <div class="table-responsive">
+                        <table class="manage-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Họ và Tên</th>
+                                    <th>Email</th>
+                                    <th>Số Điện Thoại</th>
+                                    <th>Địa Chỉ</th>
+                                    <th>Số Đơn Đã Mua</th>
+                                    <th>Tổng Chi Tiêu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageCustomersTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: QUẢN LÝ ĐƠN BẢO HÀNH -->
+            <section class="manage-tab-page" id="tabWarranties">
+                <div class="page-title-row">
+                    <h2>Quản Lý Tiếp Nhận Bảo Hành</h2>
+                    <button class="btn-primary-blue" onclick="openAddWarrantyModal()">
+                        <i class="fa-solid fa-plus"></i> Tạo Phiếu Bảo Hành
+                    </button>
+                </div>
+                <div class="table-card-box">
+                    <div class="table-responsive">
+                        <table class="manage-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Phiếu BH</th>
+                                    <th>Khách Hàng</th>
+                                    <th>Sản Phẩm / Sê-ri</th>
+                                    <th>Lỗi Chi Tiết</th>
+                                    <th>Ngày Tiếp Nhận</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageWarrantiesTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL XEM CHI TIẾT & XỬ LÝ ĐƠN HÀNG -->
+    <div class="manage-modal-overlay" id="orderDetailModal">
+        <div class="manage-modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-invoice-dollar"></i> Chi Tiết Đơn Hàng <span id="modalOrderId">#ORD</span></h3>
+                <button class="close-modal-btn" onclick="closeManageModal('orderDetailModal')">✕</button>
+            </div>
+            <div class="modal-body" id="orderDetailModalBody"></div>
+        </div>
+    </div>
+
+    <!-- App API & Manage JS -->
+    <script src="js/api.js"></script>
+    <script src="js/manage.js"></script>
+</body>
+</html>

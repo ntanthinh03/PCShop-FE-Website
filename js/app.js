@@ -48,6 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initOrdersModal();
     updateUserHeaderUI();
     updateCartUI();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('openOrders') === 'true') {
+        setTimeout(() => {
+            openOrdersModal();
+        }, 300);
+    }
 });
 
 

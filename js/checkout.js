@@ -227,9 +227,16 @@ function submitFinalOrder() {
     const email = document.getElementById('custEmail')?.value || '';
     const address = document.getElementById('custAddress')?.value || 'Nhận tại Showroom';
     const selectedPay = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'cod';
+    const note = document.getElementById('orderNote')?.value || '';
 
     const totalPrice = cartItems.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.qty || 1)), 0);
     const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice);
+    const itemDetails = cartItems.map(it => ({
+        name: it.name,
+        qty: it.qty || 1,
+        price: it.price || 0,
+        image: it.image
+    }));
     const itemNames = cartItems.map(it => `${it.qty || 1}x ${it.name}`);
 
     const orderId = `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -238,13 +245,17 @@ function submitFinalOrder() {
         id: orderId,
         date: new Date().toLocaleDateString('vi-VN'),
         items: itemNames,
+        itemDetails: itemDetails,
+        rawTotal: totalPrice,
         total: formattedTotal,
         customerName: name,
         customerPhone: phone,
         customerEmail: email,
         shippingAddress: address,
+        note: note,
         paymentMethod: selectedPay.toUpperCase(),
-        status: selectedPay === 'payos' ? 'Chờ thanh toán PayOS' : 'Đang xử lý & Giao hàng'
+        status: 'Chờ xử lý',
+        createdAt: new Date().toISOString()
     };
 
     userOrders.unshift(newOrder);
@@ -255,8 +266,45 @@ function submitFinalOrder() {
     saveCartToStorage();
     updateCartUI();
 
-    alert(`Tạo đơn hàng thành công! Mã đơn: ${orderId}.\nĐang chuyển sang cổng thanh toán ${selectedPay.toUpperCase()}...`);
+    showOrderSuccessModal(newOrder);
+}
 
-    // Redirect to orders or Home page
-    window.location.href = 'index.html';
+function showOrderSuccessModal(order) {
+    let modal = document.getElementById('orderSuccessModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'orderSuccessModal';
+        modal.className = 'order-success-modal-overlay';
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="order-success-modal-box">
+            <div class="success-icon-badge">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2>ĐẶT HÀNG THÀNH CÔNG!</h2>
+            <p class="success-sub-desc">Cảm ơn bạn đã tin tưởng mua sắm tại PCShop. Mã đơn hàng của bạn là <strong style="color:#0284c7;">#${order.id}</strong></p>
+            
+            <div class="order-summary-mini-card">
+                <div class="mini-row"><span>Khách hàng:</span><strong>${order.customerName} (${order.customerPhone})</strong></div>
+                <div class="mini-row"><span>Địa chỉ giao:</span><span>${order.shippingAddress}</span></div>
+                <div class="mini-row"><span>Hình thức thanh toán:</span><span class="pay-badge-mini">${order.paymentMethod}</span></div>
+                <div class="mini-row"><span>Tổng giá trị đơn:</span><strong style="color:#0284c7; font-size:16px;">${order.total}</strong></div>
+            </div>
+
+            <div class="success-modal-actions">
+                <button class="btn-secondary-home" onclick="window.location.href='index.html'">Về trang chủ</button>
+                <button class="btn-primary-orders" onclick="openMyOrdersModalDirect()">Xem đơn hàng của tôi</button>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
+}
+
+function openMyOrdersModalDirect() {
+    const modal = document.getElementById('orderSuccessModal');
+    if (modal) modal.classList.remove('active');
+    window.location.href = 'index.html?openOrders=true';
 }
