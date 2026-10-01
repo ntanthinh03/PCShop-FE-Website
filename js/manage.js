@@ -79,9 +79,43 @@ function addSystemLog(category, user, objectId, detail) {
     };
     logs.unshift(newLog);
     localStorage.setItem('pcshop_system_logs', JSON.stringify(logs));
+
+    // DB API Sync
+    if (typeof api !== 'undefined' && api.addSystemLog) {
+        api.addSystemLog(newLog).catch(e => console.log('Log API sync fallback'));
+    }
+
     if (currentActiveTab === 'logs') {
         renderLogsTable();
     }
+}
+
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast-message toast-${type}`;
+    
+    const iconClass = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info';
+    
+    toast.innerHTML = `
+        <div class="toast-icon"><i class="fa-solid ${iconClass}"></i></div>
+        <div class="toast-text">${message}</div>
+        <button class="toast-close-btn" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'toastSlideOut 0.3s forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
 }
 
 let revenueChartInstance = null;
@@ -564,7 +598,7 @@ function editProduct(productId) {
     if (modal) modal.classList.add('open');
 }
 
-function saveProduct(e) {
+async function saveProduct(e) {
     e.preventDefault();
     const editId = document.getElementById('prodEditId').value.trim();
     const name = document.getElementById('prodName').value.trim();
@@ -577,47 +611,58 @@ function saveProduct(e) {
 
     let customProds = JSON.parse(localStorage.getItem('pcshop_custom_products')) || [];
 
+    const productPayload = {
+        name,
+        sku,
+        brand,
+        category_name: category,
+        price,
+        stock_quantity: stock,
+        images: image
+    };
+
     if (editId) {
         const idx = customProds.findIndex(p => String(p.id) === String(editId));
-        const updatedItem = {
-            id: editId,
-            name,
-            sku,
-            brand,
-            category_name: category,
-            price,
-            stock_quantity: stock,
-            images: image
-        };
+        const updatedItem = { id: editId, ...productPayload };
 
         if (idx > -1) {
             customProds[idx] = updatedItem;
         } else {
             customProds.push(updatedItem);
         }
+
+        // DB Sync
+        if (typeof api !== 'undefined' && api.updateProduct) {
+            await api.updateProduct(editId, productPayload).catch(e => console.log('API updateProduct fallback'));
+        }
+
+        addSystemLog('stock', currentStaffUser ? currentStaffUser.name : 'Admin', editId, `Cập nhật thông tin/tồn kho sản phẩm: "${name}" (Tồn kho: ${stock}, Giá: ${new Intl.NumberFormat('vi-VN').format(price)}đ)`);
     } else {
-        const newItem = {
-            id: 'PROD-NEW-' + Date.now(),
-            name,
-            sku,
-            brand,
-            category_name: category,
-            price,
-            stock_quantity: stock,
-            images: image
-        };
+        const newId = 'PROD-NEW-' + Date.now();
+        const newItem = { id: newId, ...productPayload };
         customProds.unshift(newItem);
+
+        // DB Sync
+        if (typeof api !== 'undefined' && api.createProduct) {
+            await api.createProduct(productPayload).catch(e => console.log('API createProduct fallback'));
+        }
+
+        addSystemLog('stock', currentStaffUser ? currentStaffUser.name : 'Admin', newId, `Thêm sản phẩm mới vào kho: "${name}" (Tồn kho: ${stock}, Giá: ${new Intl.NumberFormat('vi-VN').format(price)}đ)`);
     }
 
     localStorage.setItem('pcshop_custom_products', JSON.stringify(customProds));
     renderProductsTable(null, currentProdPage);
+    renderLogsTable();
     renderNotifications();
     closeManageModal('productModal');
-    alert(editId ? 'Đã cập nhật sản phẩm thành công!' : 'Đã thêm sản phẩm mới vào kho thành công!');
+    showToast(editId ? `Đã cập nhật sản phẩm "${name}" thành công!` : `Đã thêm sản phẩm "${name}" vào kho thành công!`, 'success');
 }
 
-function deleteProduct(productId) {
+async function deleteProduct(productId) {
     if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi kho hàng?')) return;
+
+    const list = getCombinedProducts();
+    const prod = list.find(p => String(p.id) === String(productId));
 
     let deletedIds = JSON.parse(localStorage.getItem('pcshop_deleted_product_ids')) || [];
     if (!deletedIds.includes(String(productId))) {
@@ -629,8 +674,17 @@ function deleteProduct(productId) {
     customProds = customProds.filter(p => String(p.id) !== String(productId));
     localStorage.setItem('pcshop_custom_products', JSON.stringify(customProds));
 
+    // DB Sync
+    if (typeof api !== 'undefined' && api.deleteProduct) {
+        await api.deleteProduct(productId).catch(e => console.log('API deleteProduct fallback'));
+    }
+
+    addSystemLog('stock', currentStaffUser ? currentStaffUser.name : 'Admin', productId, `Xóa sản phẩm "${prod ? prod.name : productId}" khỏi hệ thống kho`);
+
     renderProductsTable(null, currentProdPage);
+    renderLogsTable();
     renderNotifications();
+    showToast(`Đã xóa sản phẩm khỏi hệ thống kho thành công!`, 'success');
 }
 
 function renderCustomersTable(customersToRender = null) {
@@ -791,14 +845,15 @@ function renderWarrantiesTable(warrantiesToRender = null) {
     }
 
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #94a3b8;">Không có phiếu bảo hành nào ở danh mục này.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #94a3b8;">Không có phiếu bảo hành nào ở danh mục này.</td></tr>`;
         return;
     }
 
     tbody.innerHTML = list.map(w => `
         <tr>
             <td><strong><a class="customer-name-link" onclick="viewWarrantyDetail('${w.id}')">${w.id}</a></strong></td>
-            <td>${w.customer}</td>
+            <td><strong>${w.customer || w.customerName || 'N/A'}</strong></td>
+            <td><small style="color:#0284c7; font-weight:600;">📞 ${w.customerPhone || 'N/A'}</small></td>
             <td><strong>${w.product}</strong></td>
             <td style="max-width:200px; font-size:12px; color:#ef4444;">${w.issue}</td>
             <td>${w.date}</td>
@@ -826,7 +881,8 @@ function viewWarrantyDetail(warrantyId) {
             <div class="order-detail-grid">
                 <div class="info-block">
                     <h4><i class="fa-solid fa-user"></i> THÔNG TIN KHÁCH HÀNG</h4>
-                    <p><strong>Khách hàng:</strong> ${war.customer}</p>
+                    <p><strong>Khách hàng:</strong> ${war.customer || war.customerName}</p>
+                    <p><strong>Số điện thoại:</strong> ${war.customerPhone || 'N/A'}</p>
                     <p><strong>Ngày tiếp nhận:</strong> ${war.date}</p>
                     <p><strong>Trạng thái xử lý:</strong> <span class="status-pill status-shipping">${war.status}</span></p>
                 </div>
@@ -860,16 +916,19 @@ function openAddWarrantyModal() {
     if (modal) modal.classList.add('open');
 }
 
-function saveWarranty(e) {
+async function saveWarranty(e) {
     e.preventDefault();
-    const customer = document.getElementById('warCustomer').value.trim();
+    const customerName = document.getElementById('warCustomerName')?.value.trim() || document.getElementById('warCustomer')?.value.trim();
+    const customerPhone = document.getElementById('warCustomerPhone')?.value.trim() || 'N/A';
     const product = document.getElementById('warProduct').value.trim();
     const issue = document.getElementById('warIssue').value.trim();
     const status = document.getElementById('warStatus').value;
 
     const newWar = {
         id: 'BH-' + new Date().getFullYear() + '-' + String(allWarranties.length + 1).padStart(3, '0'),
-        customer,
+        customer: customerName,
+        customerName: customerName,
+        customerPhone: customerPhone,
         product,
         issue,
         date: new Date().toLocaleDateString('vi-VN'),
@@ -879,13 +938,19 @@ function saveWarranty(e) {
     allWarranties.unshift(newWar);
     localStorage.setItem('pcshop_warranties', JSON.stringify(allWarranties));
 
-    addSystemLog('warranty', currentStaffUser ? currentStaffUser.name : 'Kỹ thuật viên', newWar.id, `Tạo phiếu tiếp nhận bảo hành mới: ${product} (${customer})`);
+    // DB API Sync
+    if (typeof api !== 'undefined' && api.createWarranty) {
+        await api.createWarranty(newWar).catch(e => console.log('API createWarranty fallback'));
+    }
+
+    addSystemLog('warranty', currentStaffUser ? currentStaffUser.name : 'Kỹ thuật viên', newWar.id, `Tạo phiếu tiếp nhận bảo hành mới #${newWar.id}: ${product} (Khách: ${customerName}, SĐT: ${customerPhone})`);
 
     renderWarrantiesTable();
+    renderLogsTable();
     renderKPIs();
     renderNotifications();
     closeManageModal('warrantyModal');
-    alert('Tạo phiếu tiếp nhận bảo hành mới thành công!');
+    showToast('Đã tạo phiếu tiếp nhận bảo hành mới thành công!', 'success');
 }
 
 function changeWarrantyStatus(warrantyId) {
@@ -893,7 +958,7 @@ function changeWarrantyStatus(warrantyId) {
     if (!war) return;
 
     document.getElementById('editWarId').value = war.id;
-    document.getElementById('editWarTitle').value = `${war.id} - ${war.product} (${war.customer})`;
+    document.getElementById('editWarTitle').value = `${war.id} - ${war.product} (${war.customer || war.customerName})`;
     document.getElementById('editWarStatusSelect').value = war.status;
     document.getElementById('editWarTechNote').value = war.techNote || '';
 
@@ -901,7 +966,7 @@ function changeWarrantyStatus(warrantyId) {
     if (modal) modal.classList.add('open');
 }
 
-function saveWarrantyStatusChange(e) {
+async function saveWarrantyStatusChange(e) {
     e.preventDefault();
     const warId = document.getElementById('editWarId').value;
     const newStatus = document.getElementById('editWarStatusSelect').value;
@@ -914,13 +979,19 @@ function saveWarrantyStatusChange(e) {
         if (note) war.techNote = note;
         localStorage.setItem('pcshop_warranties', JSON.stringify(allWarranties));
 
+        // DB API Sync
+        if (typeof api !== 'undefined' && api.updateWarrantyStatus) {
+            await api.updateWarrantyStatus(warId, { status: newStatus, note }).catch(e => console.log('API updateWarrantyStatus fallback'));
+        }
+
         addSystemLog('warranty', currentStaffUser ? currentStaffUser.name : 'Kỹ thuật viên', warId, `Đổi trạng thái BH từ "${oldStatus}" ➔ "${newStatus}". Ghi chú: ${note || 'Không có'}`);
 
         renderWarrantiesTable();
+        renderLogsTable();
         renderKPIs();
         renderNotifications();
         closeManageModal('updateWarrantyStatusModal');
-        alert(`Đã cập nhật trạng thái phiếu bảo hành #${warId} thành công!`);
+        showToast(`Đã cập nhật trạng thái phiếu bảo hành #${warId} thành công!`, 'success');
     }
 }
 
@@ -966,7 +1037,7 @@ function renderStaffTable(staffToRender = null) {
                 <td><strong style="color:#0284c7;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(staffRev)}</strong></td>
                 <td><span class="status-pill status-success">${s.status || 'Hoạt động'}</span></td>
                 <td>
-                    <button class="btn-table-action" onclick="alert('Đã cập nhật thông tin tài khoản nhân viên ${s.name}')" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
+                    <button class="btn-table-action" onclick="showToast('Đã cập nhật thông tin nhân viên ${s.name}', 'info')" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
                 </td>
             </tr>
         `;
@@ -980,7 +1051,7 @@ function openCreateStaffModal() {
     if (modal) modal.classList.add('open');
 }
 
-function saveNewStaff(e) {
+async function saveNewStaff(e) {
     e.preventDefault();
     const name = document.getElementById('staffFullName').value.trim();
     const username = document.getElementById('staffUsername').value.trim();
@@ -990,7 +1061,7 @@ function saveNewStaff(e) {
 
     let list = getStaffAccounts();
     if (list.some(s => s.username.toLowerCase() === username.toLowerCase())) {
-        alert('Tên đăng nhập này đã tồn tại! Vui lòng chọn tên đăng nhập khác.');
+        showToast('Tên đăng nhập này đã tồn tại! Vui lòng chọn tên khác.', 'error');
         return;
     }
 
@@ -1009,11 +1080,17 @@ function saveNewStaff(e) {
     list.push(newStaff);
     localStorage.setItem('pcshop_staff_accounts', JSON.stringify(list));
 
-    addSystemLog('system', currentStaffUser ? currentStaffUser.name : 'Admin', username, `Tạo tài khoản nhân viên mới: ${name} (${role})`);
+    // DB API Sync
+    if (typeof api !== 'undefined' && api.createStaff) {
+        await api.createStaff(newStaff).catch(e => console.log('API createStaff fallback'));
+    }
+
+    addSystemLog('system', currentStaffUser ? currentStaffUser.name : 'Admin', username, `Tạo tài khoản nhân viên mới: ${name} (username: ${username}, Quyền: ${role})`);
 
     renderStaffTable();
+    renderLogsTable();
     closeManageModal('createStaffModal');
-    alert(`Đã tạo tài khoản nhân viên ${name} (${username}) thành công!`);
+    showToast(`Đã tạo tài khoản nhân viên ${name} (${username}) thành công!`, 'success');
 }
 
 let activeLogSubtab = 'sales';
@@ -1342,7 +1419,8 @@ function filterManageGlobal(query) {
         } else {
             const filtered = allWarranties.filter(w =>
                 (w.id || '').toLowerCase().includes(q) ||
-                (w.customer || '').toLowerCase().includes(q) ||
+                (w.customer || w.customerName || '').toLowerCase().includes(q) ||
+                (w.customerPhone || '').toLowerCase().includes(q) ||
                 (w.product || '').toLowerCase().includes(q)
             );
             renderWarrantiesTable(filtered);

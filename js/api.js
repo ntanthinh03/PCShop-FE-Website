@@ -154,5 +154,162 @@ const api = {
             console.error('Lỗi nạp lịch sử đơn hàng từ Backend:', error);
             return { status: 'error', data: [] };
         }
+    },
+
+    // 🛡️ ADMIN & DASHBOARD DB REST APIS
+    createStaff: async (staffData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/staff`, {
+                method: 'POST',
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(staffData)
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi kết nối API Tạo Staff:', error);
+            return { status: 'error', message: 'Lỗi kết nối Backend' };
+        }
+    },
+
+    getStaffList: async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/staff`, {
+                headers: DEFAULT_HEADERS
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi nạp danh sách Staff từ API:', error);
+            return { status: 'error', data: [] };
+        }
+    },
+
+    createWarranty: async (warrantyData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/warranties`, {
+                method: 'POST',
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(warrantyData)
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi kết nối API Tạo Phiếu Bảo Hành:', error);
+            return { status: 'error', message: 'Lỗi kết nối Backend' };
+        }
+    },
+
+    getWarranties: async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/warranties`, {
+                headers: DEFAULT_HEADERS
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi nạp danh sách Bảo Hành:', error);
+            return { status: 'error', data: [] };
+        }
+    },
+
+    updateWarrantyStatus: async (id, statusData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/warranties/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(statusData)
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi cập nhật Bảo Hành:', error);
+            return { status: 'error', message: 'Lỗi kết nối Backend' };
+        }
+    },
+
+    createProduct: async (productData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/products`, {
+                method: 'POST',
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi tạo sản phẩm mới:', error);
+            return { status: 'error' };
+        }
+    },
+
+    updateProduct: async (id, productData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
+                method: 'PUT',
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi cập nhật sản phẩm:', error);
+            return { status: 'error' };
+        }
+    },
+
+    deleteProduct: async (id) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
+                method: 'DELETE',
+                headers: DEFAULT_HEADERS
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi xóa sản phẩm:', error);
+            return { status: 'error' };
+        }
+    },
+
+    updateOrderStatus: async (orderId, statusData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/orders/${orderId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(statusData)
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi cập nhật trạng thái đơn hàng:', error);
+            return { status: 'error' };
+        }
+    },
+
+    addSystemLog: async (logData) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/logs`, {
+                method: 'POST',
+                headers: {
+                    ...DEFAULT_HEADERS,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(logData)
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Lỗi lưu log hệ thống:', error);
+            return { status: 'error' };
+        }
     }
 };

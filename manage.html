@@ -364,6 +364,7 @@
                                 <tr>
                                     <th>Mã Phiếu BH</th>
                                     <th>Khách Hàng</th>
+                                    <th>Số Điện Thoại</th>
                                     <th>Sản Phẩm / Sê-ri</th>
                                     <th>Lỗi Chi Tiết</th>
                                     <th>Ngày Tiếp Nhận</th>
@@ -417,6 +418,7 @@
                     <button class="warranty-subtab active" onclick="switchLogSubtab('sales', this)"><i class="fa-solid fa-cart-shopping"></i> 1. Lịch Sử Bán Hàng</button>
                     <button class="warranty-subtab" onclick="switchLogSubtab('warranty', this)"><i class="fa-solid fa-shield-halved"></i> 2. Nhật Ký Bảo Hành</button>
                     <button class="warranty-subtab" onclick="switchLogSubtab('stock', this)"><i class="fa-solid fa-boxes-stacked"></i> 3. Điều Chỉnh Kho & Giá</button>
+                    <button class="warranty-subtab" onclick="switchLogSubtab('system', this)"><i class="fa-solid fa-user-gear"></i> 4. Tài Khoản & Hệ Thống</button>
                 </div>
 
                 <div class="table-card-box">
@@ -516,9 +518,13 @@
             </div>
             <form id="warrantyForm" onsubmit="saveWarranty(event)">
                 <div class="modal-form-grid">
-                    <div class="modal-form-group full-width">
-                        <label><i class="fa-solid fa-user"></i> Thông Tin Khách Hàng (Tên & SĐT) (*)</label>
-                        <input type="text" id="warCustomer" placeholder="VD: Nguyễn Văn A (0987654321)" required>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-user"></i> Họ và Tên Khách Hàng (*)</label>
+                        <input type="text" id="warCustomerName" placeholder="VD: Nguyễn Văn A" required>
+                    </div>
+                    <div class="modal-form-group">
+                        <label><i class="fa-solid fa-phone"></i> Số Điện Thoại (*)</label>
+                        <input type="tel" id="warCustomerPhone" placeholder="VD: 0987654321" required>
                     </div>
                     <div class="modal-form-group full-width">
                         <label><i class="fa-solid fa-desktop"></i> Tên Sản Phẩm & Số Serial (*)</label>
@@ -646,6 +652,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <!-- App API & Manage JS -->
     <script src="js/api.js"></script>
