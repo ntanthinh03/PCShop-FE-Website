@@ -4022,63 +4022,34 @@ body {
         gap: 12px;
     }
     .main-slider {
-        height: 220px;
+        height: 240px;
     }
-
-    /* Promo Banners Grid */
-    .ad-cards-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-    .promo-4-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-    .promo-2-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    /* Footer Mobile */
-    .footer-grid-rich {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 24px;
-    }
-
-    /* Header Category Dropdown full screen on mobile */
-    .header-category-dropdown {
-        width: 100% !important;
-        max-width: 320px;
-        left: 0 !important;
-    }
-    .header-category-dropdown .mega-menu {
-        display: none !important; /* Hide deep mega menu on mobile hover to avoid overflow */
-    }
-}
-
-/* 2. Phone Screen Adjustments (max-width: 640px) */
-@media (max-width: 640px) {
-    .logo {
-        font-size: 18px;
-    }
-
-    .btn-login span, 
-    #headerCategoryText {
-        font-size: 11px;
-    }
-
-    /* Hero Banner Mobile Height */
-    .main-slider {
-        height: 180px;
+    .slider-overlay {
+        padding: 14px 16px;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
     }
     .slider-overlay h2 {
-        font-size: 16px;
+        font-size: 18px;
+        line-height: 1.25;
+        margin-bottom: 6px;
     }
     .slider-overlay .slider-badge {
         font-size: 10px;
+        padding: 3px 8px;
+        margin-bottom: 6px;
+    }
+    .slider-overlay .slide-desc {
+        font-size: 11.5px;
+        line-height: 1.35;
+        margin-bottom: 8px;
     }
     .btn-slider-cta {
-        padding: 6px 12px;
+        padding: 6px 14px;
         font-size: 11px;
     }
 
@@ -6400,17 +6371,115 @@ img, video, iframe, canvas, table {
         gap: 10px !important;
     }
 
-    /* Sub Navigation Top Bar Horizontal Scroll */
+    /* Sub Navigation Top Bar Centered */
     .top-bar {
-        overflow-x: auto !important;
-        white-space: nowrap !important;
-        -webkit-overflow-scrolling: touch !important;
-        padding: 6px 12px !important;
+        overflow-x: hidden !important;
+        padding: 8px 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .container-top {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 20px !important;
+        align-items: center !important;
+        width: 100% !important;
     }
 
-    .nav-links {
-        display: inline-flex !important;
+    /* Hero Banner Main Slider Mobile Fix */
+    .hero-landing-grid {
+        grid-template-columns: 1fr !important;
         gap: 12px !important;
+    }
+
+    .main-slider {
+        height: 240px !important;
+        min-height: 240px !important;
+        max-height: 250px !important;
+        position: relative !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+
+    .main-slider img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .slider-overlay {
+        position: absolute !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        padding: 14px 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+        background: linear-gradient(to right, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.75) 55%, rgba(15, 23, 42, 0.2) 100%) !important;
+        box-sizing: border-box !important;
+    }
+
+    .slider-badge {
+        display: inline-block !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        padding: 3px 8px !important;
+        margin-bottom: 6px !important;
+        border-radius: 4px !important;
+        max-width: 90% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .slider-overlay h2 {
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        line-height: 1.25 !important;
+        margin-bottom: 6px !important;
+        color: #ffffff !important;
+        max-width: 95% !important;
+    }
+
+    .slider-overlay .slide-desc {
+        font-size: 11.5px !important;
+        line-height: 1.35 !important;
+        margin-bottom: 8px !important;
+        color: #cbd5e1 !important;
+        max-width: 90% !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    .btn-slider-cta {
+        padding: 6px 14px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        border-radius: 6px !important;
+    }
+
+    .slide-nav {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 14px !important;
+        background: rgba(15, 23, 42, 0.6) !important;
+    }
+
+    .slide-nav.prev {
+        left: 8px !important;
+    }
+
+    .slide-nav.next {
+        right: 8px !important;
+    }
+
+    .slider-dots {
+        bottom: 8px !important;
     }
 
     /* Grids & Cards Layout */
