@@ -308,7 +308,8 @@ body {
     margin: 0 auto;
     padding: 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 32px;
     align-items: center;
 }
 
@@ -3970,15 +3971,18 @@ body {
         margin-top: 4px;
     }
 
-    /* Top Bar scrollable on mobile */
+    /* Top Bar on mobile */
     .top-bar {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding: 8px 12px;
+        overflow-x: hidden;
+        padding: 8px 16px;
+        width: 100%;
+        box-sizing: border-box;
     }
     .container-top {
-        gap: 16px;
-        justify-content: flex-start;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
     }
 
     /* Sidebar hide desktop menu by default or full width */
